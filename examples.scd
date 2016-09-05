@@ -1,7 +1,6 @@
 
-a = CuePlayer(name: "test");
-
 (
+a = CuePlayer(name: "test");
 a.cueList[0] = {("yahoo" + 43.rand).postln};
 a.cueList[1] = {("yahoo" + 43.rand).postln};
 a.cueList[2] = {("yahoo" + 43.rand).postln};
