@@ -1,0 +1,2 @@
+
+a = CuePlayer(name: "test");
