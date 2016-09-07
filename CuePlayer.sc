@@ -1,6 +1,6 @@
 
 CuePlayer { 
-  var <t, <n;
+  var <clock, <n;
   var window, but_Reaper, but_Metro, slid_Metro, spec_Metro, box_Metro, box1Text, box2Text, metroText, pdefText, metroOutBox, reaperAddr;
   var level1, level2, boxIn1, boxIn2, boxInputText; // variables for level indicators
   /* ------------ */
@@ -8,7 +8,7 @@ CuePlayer {
   var instIN1 = 8,  instIN2 = 8;
   var out_meter, oscOutLevels, sig_meter, metroOut, metro_Vol;
   var <groupA, <groupB,  <groupZ;
-  var <>cueList, cuePatternFunction, cuePattern;
+  var <cueList, cuePatternFunction, cuePattern;
   var oscInputLevels;
   var trigButton, clockFace2, box2, bigTextCueNum, oscTrigBut, midiFunc, bigWinFunc;
   var <>front, <>side, <>rear, <>centre; 
@@ -29,8 +29,8 @@ CuePlayer {
   }
 
   initResources {
-    t = nil;
-    t = TempoClock(50/60).permanent_(true); // Define a Tempo to schedule everything according to this
+    clock = nil;
+    clock = TempoClock(50/60).permanent_(true); // Define a Tempo to schedule everything according to this
     reaperAddr = "192.168.1.2"; // needed only while composing
     cueList = List.newClear(size: 100 ); // set total number of cues
     //a pattern that goes through the elements of the List (ie the Cues)
@@ -195,7 +195,7 @@ CuePlayer {
 
     but_Metro.action = { arg butState;
       if ( butState.value == 1, {
-        Pdef(\metro, Pbind(\instrument, \metro, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(t, quant:[1]); 
+        Pdef(\metro, Pbind(\instrument, \metro, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(clock, quant:[1]); 
       });
       if ( butState.value == 0, { Pdef(\metro).clear});
     };
@@ -208,7 +208,7 @@ CuePlayer {
       metro_Vol = spec_Metro.map(slid_Metro.value);
       // while moving the slider , only evaluate the Pdef when it is already playing
       if (Pdef(\metro).isPlaying == true, { 
-        Pdef(\metro, Pbind(\instrument, \metro, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(t, quant:[1])
+        Pdef(\metro, Pbind(\instrument, \metro, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(clock, quant:[1])
       });
     };
 
@@ -234,8 +234,8 @@ CuePlayer {
 
     // schedules to send the OSC command at the next beat in order to be in sync with Reaper
     but_Reaper.action = { arg butState;
-      if ( butState.value == 1, { SystemClock.sched(t.timeToNextBeat , { n.sendMsg("/play", 1); } ) }); // ti works, unknown why
-      if ( butState.value == 0, {SystemClock.sched(t.timeToNextBeat , { n.sendMsg("/pause", 1); } ) });
+      if ( butState.value == 1, { SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/play", 1); } ) }); // ti works, unknown why
+      if ( butState.value == 0, {SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/pause", 1); } ) });
     };
 
     // receive OSC from Pd, used for FootSwitch
