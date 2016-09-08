@@ -1,5 +1,5 @@
 
-Cues { var <>cueList, current, cuePattern, cuePatternFunction;
+Cues { var <>cueList, <>current;
   
   *new {
     ^super.new.init;
