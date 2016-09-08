@@ -30,7 +30,7 @@ CuePlayerGUI {
     this.createInputLevels;
     this.createCueTrigger;
     /* this.createMetronomeGUI; */
-    /* this.createExternalInterfaceGUI; */
+    /* this.externalOSC; */
     /* this.createOutputLevels; */
     /* ----------- */
     this.initStructures;
@@ -191,7 +191,7 @@ CuePlayerGUI {
     };
   }
 
-  createExternalInterfaceGUI{
+  externalOSC {
     // This starts and pauses Reapers playback
     n = NetAddr(reaperAddr, 8000); // define IP-address + port number
     // set the same within Reaper  Preferences  Control Surfaces
@@ -205,21 +205,6 @@ CuePlayerGUI {
       if ( butState.value == 1, { SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/play", 1); } ) }); // ti works, unknown why
       if ( butState.value == 0, {SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/pause", 1); } ) });
     };
-
-    // receive OSC from Pd, used for FootSwitch
-    oscTrigBut = {OSCFunc({ arg msg, time, addr, recvPort;
-      if ( msg[1] == 101, { { trigButton.valueAction = 0 }.defer; })
-    }, '/from-Pd').permanent = true;};
-
-    oscTrigBut.value;
-    // receive MIDI from Reaper through IAC and trigger a Cue in SC
-    /* It is used only while composing to auto trigger the cues. It doesnt harm to leave it as such*/
-
-    midiFunc = {MIDIFunc.noteOn({ arg vel, noteNum, chan;
-      if (vel == 127 && noteNum == 73 && chan == 15, { { trigButton.valueAction = 0 }.defer; });
-    }).permanent = true;};
-
-    midiFunc.value;
   }
 
   createOutputLevels{
@@ -429,6 +414,5 @@ CuePlayerGUI {
   /*   {\nextCue} */
   /*   { cuePlayerView.nextCue}; */
   /* } */
-
 
 }
