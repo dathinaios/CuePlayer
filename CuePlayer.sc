@@ -1,7 +1,7 @@
 
 CuePlayer { 
 
-  var gui, <cues, name;
+  var gui, <cues, <name, <clock;
 
   *new { arg name;
     ^super.newCopyArgs(name).init;
@@ -9,10 +9,11 @@ CuePlayer {
 
   init {
     cues = Cues.new;
+    clock = TempoClock(50/60).permanent_(true);
   }
 
   gui {
-    gui = CuePlayerGUI(cues);
+    gui = CuePlayerGUI(this);
   }
 
   next {
@@ -20,7 +21,11 @@ CuePlayer {
   }
 
   setCurrent { arg cue;
-    cues.setCurrent(cue)
+    ^cues.setCurrent(cue)
   }
+
+  /* tempo { arg bpm = 120; */
+  /*   var beatDur = 1/(50/60); // time multiplier, gives the duration of 1 beat */
+  /* } */
 
 }
