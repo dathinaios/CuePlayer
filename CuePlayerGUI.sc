@@ -1,7 +1,8 @@
 
 CuePlayerGUI { 
-  var cues;
-  var <clock, <n;
+  var cuePlayer;
+  var cues, name;
+  var clock, <n;
   var window, but_Reaper, but_Metro, slid_Metro, spec_Metro, box_Metro, box1Text, box2Text, metroText, pdefText, metroOutBox, reaperAddr;
   var level1, level2, boxIn1, boxIn2, boxInputText; // variables for level indicators
   /* ------------ */
@@ -13,24 +14,24 @@ CuePlayerGUI {
   var trigButton, clockFace2, box2, bigTextCueNum, oscTrigBut, midiFunc, bigWinFunc;
   var <>front, <>side, <>rear, <>centre; 
 
-  //used?
-  /* var <>beatDur = 1/(50/60); // time multiplier, gives the duration of 1 beat */
 
 
-  *new { arg cues;
-    ^super.newCopyArgs(cues).init;
+  *new { arg cuePlayer;
+    ^super.newCopyArgs(cuePlayer).init;
   }
 
   init {
-    clock = TempoClock(50/60).permanent_(true); // Define a Tempo to schedule everything according to this
-    reaperAddr = "192.168.1.2"; // needed only while composing
+    cues = cuePlayer.cues;
+    clock = cuePlayer.clock;
+    name = cuePlayer.name ?? "Cue Player";
+    /* reaperAddr = "192.168.1.2"; // needed only while composing */
     /* ----------- */
     this.createMainWindow;
-    this.createLevelIndicators;
-    this.createAdditionalElements;
-    this.createMetronomeGUI;
-    this.createExternalInterfaceGUI;
-    this.createOutputLevels;
+    this.createInputLevels;
+    this.createCueTrigger;
+    /* this.createMetronomeGUI; */
+    /* this.createExternalInterfaceGUI; */
+    /* this.createOutputLevels; */
     /* ----------- */
     this.initStructures;
     this.initServerResources;
@@ -38,13 +39,12 @@ CuePlayerGUI {
   }
 
   createMainWindow {
-    window = Window.new("Cue Player - FullMoon", Rect(1400, 650, 290, 450));
+    window = Window.new(name, Rect(1400, 650, 290, 450));
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color(0.8, 0.8, 0.8));
-    //window.alwaysOnTop = true;
   }
 
-  createLevelIndicators {
+  createInputLevels {
     // Level Indicators & input number boxes
     boxInputText = StaticText(window, Rect(width:350, height: 20)).font_(Font("Arial", 11))
     .stringColor_(Color.black).string_("Input meters  / Define Ins using the number boxes");
@@ -68,7 +68,7 @@ CuePlayerGUI {
     level2 = LevelIndicator(window, Rect(width:  220, height: 20) );
 
     // an OSC responder receiving information about the amplitude of the 2 signals
-    oscInputLevels = {OSCFunc({arg msg;
+    oscInputLevels = OSCFunc({arg msg;
       {
         level1.value = msg[3].ampdb.linlin(-75, 0, 0, 1);
         level1.peakLevel = msg[4].ampdb.linlin(-75, 0, 0, 1);
@@ -77,9 +77,8 @@ CuePlayerGUI {
         level2.peakLevel = msg[6].ampdb.linlin(-75, 0, 0, 1);
 
       }.defer;
-    }, '/levels', Server.default.addr).permanent = true;};
-
-    oscInputLevels.value;
+    }, '/levels', Server.default.addr);
+    oscInputLevels.permanent = true;
 
     // modify the look of the level indicators
     level1.warning = -2.dbamp;
@@ -107,7 +106,7 @@ CuePlayerGUI {
     }}.defer(0);
   }
 
-  createAdditionalElements {
+  createCueTrigger {
     // More GUI elements
     box2Text = StaticText(window, Rect( width: 280, height: 20)).font_(Font("Arial", 11))
     .stringColor_(Color.black).string_("Trigger / Display & Reset Cue-number");
