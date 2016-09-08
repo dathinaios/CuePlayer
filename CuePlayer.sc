@@ -1,7 +1,7 @@
 
 CuePlayer { 
 
-  var gui, <cues;
+  var gui, <cues, name;
 
   *new { arg name;
     ^super.newCopyArgs(name).init;
@@ -17,6 +17,10 @@ CuePlayer {
 
   next {
     ^cues.next;
+  }
+
+  setCurrent { arg cue;
+    cues.setCurrent(cue)
   }
 
 }

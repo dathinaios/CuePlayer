@@ -11,8 +11,8 @@ Cues { var <>cueList, <>current;
   }
 
   next {
-    current = current + 1;
     cueList[current].value;
+    current = current + 1;
     ^current;
   }
 
@@ -23,8 +23,8 @@ Cues { var <>cueList, <>current;
     ^cueList.size;
   }
 
-  setCurrent {arg index;
-    current = index - 1;
+  setCurrent {arg cue;
+    current = cue - 1;
   }
 
 }
