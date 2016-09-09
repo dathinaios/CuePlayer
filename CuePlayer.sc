@@ -3,6 +3,7 @@ CuePlayer {
 
   var <name;
   var <cues, <clock;
+  var <guiInstance;
 
   *new { arg name;
     ^super.newCopyArgs(name).init;
@@ -14,7 +15,8 @@ CuePlayer {
   }
 
   gui {
-    CuePlayerGUI(this);
+    guiInstance = CuePlayerGUI(this);
+    cues.addDependant(guiInstance);
   }
 
   next {
@@ -25,20 +27,22 @@ CuePlayer {
     ^cues.setCurrent(cue)
   }
 
+  trigger { arg cue = 1;
+    ^cues.trigger(cue);
+  }
+
   tempo { arg bpm = 120;
     ("CuePlayer tempo set at " ++ bpm ++ " bpm").postln;
     clock.tempo = bpm/60;
     ^bpm;
   }
 
-  /* TODO */
   midiTrigger { arg note = 60, channel = 15;
-    /* from 1 to 127 velocity should actiavte the relevant cues */
-    /* When it reaches 127 it should move up a semitone */
-    midiFunc = {MIDIFunc.noteOn({ arg vel, noteNum, chan;
-      if (vel == 127 && noteNum == 73 && chan == 15, { { trigButton.valueAction = 0 }.defer; });
-    }).permanent = true;};
-    midiFunc.value;
+    MIDIFunc.noteOn({ arg vel, noteNum, chan;
+      if (noteNum == note && chan == channel, {
+        this.trigger(vel);
+      });
+    }).permanent = true;
   }
 
   quit {
