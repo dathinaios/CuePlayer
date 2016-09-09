@@ -8,24 +8,10 @@ a.cues.addCue({"cue: 4".postln});
 a.cues.addCue({"cue: 5".postln});
 a.cues.addCue({"cue: 6".postln});
 a.cues.addCue({"cue: 7".postln});
+a.gui;
 )
 
 a.next;
-a.setCurrent(1)
-a.gui;
-
-a.cueList
-
-b = Cues.new;
-b.next;
-(
-b.addCue({("yahoo" + 43.rand).postln});
-b.addCue({("yahoo" + 43.rand).postln});
-b.addCue({("yahoo" + 43.rand).postln});
-b.addCue({("yahoo" + 43.rand).postln});
-b.addCue({("yahoo" + 43.rand).postln});
-b.addCue({("yahoo" + 43.rand).postln});
-b.addCue({("yahoo" + 43.rand).postln});
-)
-
-b.cueList
+a.setCurrent(8);
+a.cues;
+a.guiInstance.window.onClose.value
