@@ -10,7 +10,6 @@ CuePlayerGUI {
   var instIN1 = 8,  instIN2 = 8;
   var out_meter, oscOutLevels, sig_meter, metroOut, metro_Vol;
   var <groupA, <groupB,  <groupZ;
-  var oscInputLevels;
   var oscTrigBut, midiFunc, bigWinFunc;
   var <>front, <>side, <>rear, <>centre; 
 
@@ -69,7 +68,7 @@ CuePlayerGUI {
     ^box;
   }
 
-  createOSCFuncForLevels { arg level1, level2;
+  createOSCFuncForLevels { arg level1, level2; var oscInputLevels;
     oscInputLevels = OSCFunc({arg msg;
       {
         level1.value = msg[3].ampdb.linlin(-75, 0, 0, 1);
@@ -412,6 +411,4 @@ CuePlayerGUI {
   /*     // Pdef.all.clear; // clear all pdefs */
   /*   })}); */
   /* } */
-
-
 }
