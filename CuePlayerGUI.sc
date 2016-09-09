@@ -3,7 +3,7 @@ CuePlayerGUI {
   var cuePlayer;
   var cues, name;
   var clock, <n;
-  var window, but_Reaper, but_Metro, slid_Metro, spec_Metro, box_Metro, box1Text, box2Text, metroText, pdefText, metroOutBox, reaperAddr;
+  var <window, but_Reaper, but_Metro, slid_Metro, spec_Metro, box_Metro, box1Text, metroText, pdefText, metroOutBox, reaperAddr;
   var level1, level2, boxIn1, boxIn2, boxInputText; // variables for level indicators
   /* ------------ */
   var numOfChannels = 2, widthOfBigWin = 950, visibilityOfBigWin = 0;
@@ -11,7 +11,7 @@ CuePlayerGUI {
   var out_meter, oscOutLevels, sig_meter, metroOut, metro_Vol;
   var <groupA, <groupB,  <groupZ;
   var oscInputLevels;
-  var trigButton, clockFace2, box2, bigTextCueNum, oscTrigBut, midiFunc, bigWinFunc;
+  var clockFace2, cueNumberDisplay, bigTextCueNum, oscTrigBut, midiFunc, bigWinFunc;
   var <>front, <>side, <>rear, <>centre; 
 
 
@@ -27,21 +27,25 @@ CuePlayerGUI {
     /* reaperAddr = "192.168.1.2"; // needed only while composing */
     /* ----------- */
     this.createMainWindow;
-    this.createInputLevels;
+    /* this.createInputLevels; */
     this.createCueTrigger;
     /* this.createMetronomeGUI; */
     /* this.externalOSC; */
     /* this.createOutputLevels; */
     /* ----------- */
-    this.initStructures;
-    this.initServerResources;
-    this.initStructures;
+    /* this.initStructures; */
+    /* this.initServerResources; */
   }
 
   createMainWindow {
     window = Window.new(name, Rect(1400, 650, 290, 450));
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color(0.8, 0.8, 0.8));
+    window.onClose = { 
+      cues.removeDependant(this);
+      oscOutLevels.free; 
+      out_meter.free;
+    };
   }
 
   createInputLevels {
@@ -106,31 +110,46 @@ CuePlayerGUI {
     }}.defer(0);
   }
 
-  createCueTrigger {
-    // More GUI elements
-    box2Text = StaticText(window, Rect( width: 280, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("Trigger / Display & Reset Cue-number");
+  createCueTrigger {     
+    this.createLabel("Trigger / Display & Reset Cue-number");
+    this.createTriggerButton;
+    this.createCueNumberDisplay;
+    this.createTimer;
+    window.front;
+  }
 
-    trigButton = Button(window, Rect(10, 200, 220, 60)).font_(Font("Arial", 12))
-    .states_([["Next Cue / FootSwitch", Color.white, Color(0.2, 0.6, 0.1)]]).action_(
+  createLabel { arg text = "placeholder text"; var label;
+    label = StaticText(window, Rect( width: 280, height: 20));
+    label.font_(Font("Arial", 11));
+    label.stringColor_(Color.black);
+    label.string_(text);
+  }
+
+  createTriggerButton { var trigButton;
+    trigButton = Button(window, Rect(10, 200, 220, 60));
+    trigButton.font_(Font("Arial", 12));
+    trigButton.states_([["Next Cue / FootSwitch", Color.white, Color(0.2, 0.6, 0.1)]]);
+    trigButton.action_(
       { 
         var cueNum; cueNum = cues.next;
         if (cueNum.value == 1) { clockFace2.cursecs_(0); clockFace2.play };
-        {box2.value=cueNum}.defer;
+        {cueNumberDisplay.value=cueNum}.defer;
         bigTextCueNum.string = cueNum.value; // used in the big cue number window
       }
     );
+  }
 
-    // display cuenumber
-    box2 = NumberBox(window, Rect(width: 50, height: 60)).align_(\center);
-    box2.font_(Font("Arial", 26));
-    box2.action = {
+  createCueNumberDisplay {
+    cueNumberDisplay = NumberBox(window, Rect(width: 50, height: 60)).align_(\center);
+    cueNumberDisplay.font_(Font("Arial", 26));
+    cueNumberDisplay.action = {
       arg inval; cues.current = inval;
       if (inval.value == 0) { clockFace2.stop };
       bigTextCueNum.string = inval.value; // used in the big cue number window
     }; //resume from particular cue
+  }
 
-    // The Timer
+  createTimer {
     clockFace2 = ClockFace2.new(window);
     /* Server.default.makeWindow(window); // embed the server window at the bottom */
     // BIG CUE NUMBER WINDOW, optional
@@ -144,7 +163,6 @@ CuePlayerGUI {
       bigTextCueNum.font_(Font("Arial", widthHeight * 0.73)).stringColor_(Color.white);
     }.value;
     // window.onClose = {oscInputLevels.free; sig_meter.free;};
-    window.front;
   }
 
   createMetronomeGUI {
@@ -381,7 +399,16 @@ CuePlayerGUI {
       out_meter = Synth(\out_meter, target: groupZ);
     })});
 
-    window.onClose = {oscOutLevels.free; out_meter.free};
+  }
+
+  update { arg theChanged, message;
+    switch (message)
+    {\current}
+    {this.setCurrent(theChanged.current)};
+  }
+
+  setCurrent { arg val;
+    ("set current to: " ++ val).postln;
   }
 
   /* setCmdPeriodActions { */
@@ -405,14 +432,5 @@ CuePlayerGUI {
   /*   })}); */
   /* } */
 
-  //use to respond to a model to view event
-  //dependant means that then we are responding to update messages when .changed is called
-  /* this.changed([\update]); */
-  /* this.addDependant(cuePlayerModel); */
-  /* update { arg theChanged, message; */
-  /*   switch (message) */
-  /*   {\nextCue} */
-  /*   { cuePlayerView.nextCue}; */
-  /* } */
 
 }
