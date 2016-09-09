@@ -16,6 +16,11 @@ Cues { var <>cueList, <>current;
     ^current;
   }
 
+  trigger { arg cue = 1;
+      this.setCurrent(cue - 1);
+      ^this.next;
+  }
+
   addCue { arg function;
     cueList.add(function);
     /* cuePatternFunction = {arg offset = 0; Pseq(list: cueList, repeats: inf, offset: offset).asStream;}; */
@@ -25,6 +30,7 @@ Cues { var <>cueList, <>current;
 
   setCurrent {arg cue;
     current = cue - 1;
+    this.changed(\current);
   }
 
 }
