@@ -4,13 +4,12 @@ CuePlayerGUI {
   var cues, name;
   var clock, <n;
   var timer, cueNumberDisplay, bigTextCueNum;
-  var <window, but_Reaper, but_Metro, slid_Metro, spec_Metro, box_Metro, box1Text, metroText, pdefText, metroOutBox, reaperAddr;
-  /* ------------ */
-  var numOfChannels = 2, widthOfBigWin = 950;
+  var <window, slid_Metro, pdefText, reaperAddr;
   var input1 = 0,  input2 = 0;
-  var out_meter, oscOutLevels, sig_meter, metroOut, metro_Vol;
+
+  /* Server and Routed Related */
+  var out_meter, oscOutLevels, sig_meter;
   var <groupA, <groupB,  <groupZ;
-  var oscTrigBut, midiFunc, bigWinFunc;
   var <>front, <>side, <>rear, <>centre; 
 
   *new { arg cuePlayer;
@@ -132,7 +131,7 @@ CuePlayerGUI {
     timer = ClockFace2.new(window);
   }
 
-  createLargeCueNumberDisplay { arg widthHeight = widthOfBigWin;
+  createLargeCueNumberDisplay { arg widthHeight = 950;
       var bigCueWin;
       bigCueWin = Window.new("Huge Cue Number", Rect(1259, 900, widthHeight, widthHeight)).front;
       bigCueWin.background = Color.black;
@@ -143,20 +142,18 @@ CuePlayerGUI {
 
   /* Metronome and Reaper */
 
-  createMetronomeGUI {
+  createMetronomeGUI { var but_Metro, spec_Metro, metroOutBox, metroOut, metro_Vol;
     // Metronome GUI
 
     metroOut = 1; // default output bus for metronome
     metro_Vol = 0.1; // default volume
 
-    metroText = StaticText(window, Rect(width: 290, height: 20)).font_(Font("Arial", 11))
+    StaticText(window, Rect(width: 290, height: 20)).font_(Font("Arial", 11))
     .stringColor_(Color.black).string_("Metronome / Metro Vol / Metro Bus / Start-Stop Reaper");
 
     but_Metro = Button(window, Rect(width: 80, height: 20) ); // 2 arguments: ( which_Window, bounds )
     but_Metro.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
     but_Metro.font_(Font("Arial", 11));
-
-
     but_Metro.action = { arg butState;
       if ( butState.value == 1, {
         Pdef(\metro, Pbind(\instrument, \metro, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(clock, quant:[1]); 
@@ -187,7 +184,7 @@ CuePlayerGUI {
     };
   }
 
-  externalOSC {
+  externalOSC { var but_Reaper;
     // This starts and pauses Reapers playback
     n = NetAddr(reaperAddr, 8000); // define IP-address + port number
     // set the same within Reaper  Preferences  Control Surfaces
@@ -210,7 +207,7 @@ CuePlayerGUI {
     this.monitor8b(window);
   }
 
-  initStructures { arg numOfChannels;
+  initStructures { arg numOfChannels = 2;
     // Chooses spatialisation strategy. Code works for any number of even speakers up to 8
     // no need to change these except if you want to do a different routing.
 
