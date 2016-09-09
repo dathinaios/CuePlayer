@@ -3,15 +3,16 @@ CuePlayerGUI {
   var cuePlayer;
   var cues, name;
   var clock, <n;
+  var timer, cueNumberDisplay, bigTextCueNum;
   var <window, but_Reaper, but_Metro, slid_Metro, spec_Metro, box_Metro, box1Text, metroText, pdefText, metroOutBox, reaperAddr;
   var level1, level2, boxIn1, boxIn2, boxInputText; // variables for level indicators
   /* ------------ */
-  var numOfChannels = 2, widthOfBigWin = 950, visibilityOfBigWin = 0;
+  var numOfChannels = 2, widthOfBigWin = 950;
   var instIN1 = 8,  instIN2 = 8;
   var out_meter, oscOutLevels, sig_meter, metroOut, metro_Vol;
   var <groupA, <groupB,  <groupZ;
   var oscInputLevels;
-  var clockFace2, cueNumberDisplay, bigTextCueNum, oscTrigBut, midiFunc, bigWinFunc;
+  var oscTrigBut, midiFunc, bigWinFunc;
   var <>front, <>side, <>rear, <>centre; 
 
 
@@ -132,7 +133,7 @@ CuePlayerGUI {
     trigButton.action_(
       { 
         var cueNum; cueNum = cues.next;
-        if (cueNum.value == 1) { clockFace2.cursecs_(0); clockFace2.play };
+        if (cueNum.value == 1) { timer.cursecs_(0); timer.play };
         {cueNumberDisplay.value=cueNum}.defer;
         bigTextCueNum.string = cueNum.value; // used in the big cue number window
       }
@@ -144,25 +145,22 @@ CuePlayerGUI {
     cueNumberDisplay.font_(Font("Arial", 26));
     cueNumberDisplay.action = {
       arg inval; cues.current = inval;
-      if (inval.value == 0) { clockFace2.stop };
+      if (inval.value == 0) { timer.stop };
       bigTextCueNum.string = inval.value; // used in the big cue number window
     }; //resume from particular cue
   }
 
   createTimer {
-    clockFace2 = ClockFace2.new(window);
-    /* Server.default.makeWindow(window); // embed the server window at the bottom */
-    // BIG CUE NUMBER WINDOW, optional
-    bigWinFunc = { arg widthHeight = widthOfBigWin, visible = visibilityOfBigWin;
+    timer = ClockFace2.new(window);
+  }
+
+  createLargeCueNumberDisplay { arg widthHeight = widthOfBigWin;
       var bigCueWin;
       bigCueWin = Window.new("Huge Cue Number", Rect(1259, 900, widthHeight, widthHeight)).front;
       bigCueWin.background = Color.black;
-      bigCueWin.visible = visible;
       // display cue-number
       bigTextCueNum =  StaticText(bigCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
       bigTextCueNum.font_(Font("Arial", widthHeight * 0.73)).stringColor_(Color.white);
-    }.value;
-    // window.onClose = {oscInputLevels.free; sig_meter.free;};
   }
 
   createMetronomeGUI {
@@ -426,7 +424,7 @@ CuePlayerGUI {
   /*     sig_meter = Synth(\sig_meter, [\in1, instIN1, \in2, instIN2], target: groupA ); */
   /*     // the synth which sends amplitude data */
 
-  /*     clockFace2.stop; */
+  /*     timer.stop; */
 
   /*     // Pdef.all.clear; // clear all pdefs */
   /*   })}); */
