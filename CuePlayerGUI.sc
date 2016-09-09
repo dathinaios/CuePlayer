@@ -4,7 +4,7 @@ CuePlayerGUI {
   var cues, name, clock;
   var timer, cueNumberDisplay, bigTextCueNum;
   var <window, slid_Metro, pdefText, reaperAddr;
-  var input1 = 0,  input2 = 0;
+  var input1 = 8,  input2 = 8;
 
   /* Server and Routed Related */
   var out_meter, oscOutLevels, sig_meter;
@@ -24,11 +24,11 @@ CuePlayerGUI {
     this.createMainWindow;
     this.createInputLevels;
     this.createCueTrigger;
-    /* this.createMetronomeGUI; */
+    this.createMetronomeGUI;
     /* this.externalOSC; */
-    /* this.createOutputLevels; */
+    this.createOutputLevels;
     /* ----------- */
-    this.initStructures;
+    this.calculateRouting;
     this.initServerResources;
   }
 
@@ -95,11 +95,12 @@ CuePlayerGUI {
     window.front;
   }
 
-  createLabel { arg text = "placeholder text"; var label;
-    label = StaticText(window, Rect( width: 280, height: 20));
+  createLabel { arg text = "placeholder text", width = 280; var label;
+    label = StaticText(window, Rect( width: width, height: 20));
     label.font_(Font("Arial", 11));
     label.stringColor_(Color.black);
     label.string_(text);
+    ^label;
   }
 
   createTriggerButton { var trigButton;
@@ -142,14 +143,9 @@ CuePlayerGUI {
   /* Metronome and Reaper */
 
   createMetronomeGUI { var but_Metro, spec_Metro, metroOutBox, metroOut, metro_Vol;
-    // Metronome GUI
-
     metroOut = 1; // default output bus for metronome
     metro_Vol = 0.1; // default volume
-
-    StaticText(window, Rect(width: 290, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("Metronome / Metro Vol / Metro Bus / Start-Stop Reaper");
-
+    this.createLabel("Metronome / Metro Vol / Metro Bus");
     but_Metro = Button(window, Rect(width: 80, height: 20) ); // 2 arguments: ( which_Window, bounds )
     but_Metro.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
     but_Metro.font_(Font("Arial", 11));
@@ -159,7 +155,6 @@ CuePlayerGUI {
       });
       if ( butState.value == 0, { Pdef(\metro).clear});
     };
-
     // metronomes volume slider
     slid_Metro = Slider(window, Rect(width: 82, height: 20) );
     spec_Metro = ControlSpec(minval: 0, maxval: 0.5);
@@ -183,33 +178,61 @@ CuePlayerGUI {
     };
   }
 
-  externalOSC { var but_Reaper; var n;
-    // This starts and pauses Reapers playback
-    n = NetAddr(reaperAddr, 8000); // define IP-address + port number
-    // set the same within Reaper  Preferences  Control Surfaces
-
-    but_Reaper = Button(window, Rect(width: 48, height: 20) ); // 2 arguments ( which_Window, bounds )
-    but_Reaper.states = [ ["Reaper", Color.white, Color.grey], ["Reaper", Color.white, Color(0.9, 0.5, 0.3)]];
-    but_Reaper.font_(Font("Arial", 11));
-
-    // schedules to send the OSC command at the next beat in order to be in sync with Reaper
-    but_Reaper.action = { arg butState;
-      if ( butState.value == 1, { SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/play", 1); } ) }); // ti works, unknown why
-      if ( butState.value == 0, {SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/pause", 1); } ) });
-    };
-  }
-
   /* Output Levels */
 
-  createOutputLevels{
-    StaticText(window, Rect(width:350, height: 20)).font_(Font("Arial", 11)).stringColor_(Color.black).string_("Monitor Outputs");
-    this.monitor8b(window);
+  createOutputLevels{ var outlev;
+    this.createLabel("Monitor Outputs");
+  
+    outlev = Array.newClear(10);
+    { out_meter = Synth(\out_meter, target: groupZ) } .defer(0);
+    8.do{ arg i; 
+      outlev[i] = LevelIndicator(window, Rect(width:  30, height: 50) );
+      outlev[i].warning = -2.dbamp;
+      outlev[i].critical = -1.dbamp;
+      outlev[i].drawsPeak = true;
+      outlev[i].background = Color.grey;
+      outlev[i].numTicks = 11;
+      outlev[i].numMajorTicks = 3;
+    };
+
+    oscOutLevels =
+      OSCFunc({arg msg; {
+        outlev[0].value = msg[3].ampdb.linlin(-75, 0, 0, 1);
+        outlev[0].peakLevel = msg[4].ampdb.linlin(-75, 0, 0, 1);
+
+        outlev[1].value = msg[5].ampdb.linlin(-75, 0, 0, 1);
+        outlev[1].peakLevel = msg[6].ampdb.linlin(-75, 0, 0, 1);
+
+        outlev[2].value = msg[7].ampdb.linlin(-75, 0, 0, 1);
+        outlev[2].peakLevel = msg[8].ampdb.linlin(-75, 0, 0, 1);
+
+        outlev[3].value = msg[9].ampdb.linlin(-75, 0, 0, 1);
+        outlev[3].peakLevel = msg[10].ampdb.linlin(-75, 0, 0, 1);
+
+        outlev[4].value = msg[11].ampdb.linlin(-75, 0, 0, 1);
+        outlev[4].peakLevel = msg[12].ampdb.linlin(-75, 0, 0, 1);
+
+        outlev[5].value = msg[13].ampdb.linlin(-75, 0, 0, 1);
+        outlev[5].peakLevel = msg[14].ampdb.linlin(-75, 0, 0, 1);
+
+        outlev[6].value = msg[15].ampdb.linlin(-75, 0, 0, 1);
+        outlev[6].peakLevel = msg[16].ampdb.linlin(-75, 0, 0, 1);
+
+        outlev[7].value = msg[17].ampdb.linlin(-75, 0, 0, 1);
+        outlev[7].peakLevel = msg[18].ampdb.linlin(-75, 0, 0, 1);
+      }.defer; }, '/out_levels', Server.default.addr);
+
+    8.do{arg i;
+      this.createLabel(i, 30).align_(\center);
+    };
+
+    /* CmdPeriod.add({SystemClock.sched(0.1, { */
+    /*   oscOutLevels.value; */
+    /*   out_meter = Synth(\out_meter, target: groupZ); */
+    /* })}); */
   }
 
-  initStructures { arg numOfChannels = 2;
-    // Chooses spatialisation strategy. Code works for any number of even speakers up to 8
-    // no need to change these except if you want to do a different routing.
-
+  calculateRouting { arg numOfChannels = 2;
     if ( numOfChannels == 2, {
       front = [0,1];
       side = [0,1];
@@ -237,13 +260,10 @@ CuePlayerGUI {
       rear = [4,5];
       centre = [6,7]; 
     }); 
-
-    groupA = Group.head(Server.default);
-    groupB = Group.after(groupA);
-    groupZ = Group.tail(Server.default);
   }
 
   initServerResources {
+    this.initGroups;
     // This synth constantly sends information about the signals amplitude to the language
     SynthDef(\sig_meter, {
       arg in1 = 0, in2 = 1;
@@ -304,77 +324,10 @@ CuePlayerGUI {
     }).add;
   }
 
-  monitor8b{ arg window; var outlev;
-    outlev = Array.newClear(10);
-    { out_meter = Synth(\out_meter, target: groupZ) } .defer(0);
-    for (0, 7, { arg i; outlev[i] = LevelIndicator(window, Rect(width:  30, height: 50) );});
-
-    // an OSC responder receiving information about the amplitude
-    oscOutLevels = {
-      OSCFunc({arg msg; {
-        outlev[0].value = msg[3].ampdb.linlin(-75, 0, 0, 1);
-        outlev[0].peakLevel = msg[4].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[1].value = msg[5].ampdb.linlin(-75, 0, 0, 1);
-        outlev[1].peakLevel = msg[6].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[2].value = msg[7].ampdb.linlin(-75, 0, 0, 1);
-        outlev[2].peakLevel = msg[8].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[3].value = msg[9].ampdb.linlin(-75, 0, 0, 1);
-        outlev[3].peakLevel = msg[10].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[4].value = msg[11].ampdb.linlin(-75, 0, 0, 1);
-        outlev[4].peakLevel = msg[12].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[5].value = msg[13].ampdb.linlin(-75, 0, 0, 1);
-        outlev[5].peakLevel = msg[14].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[6].value = msg[15].ampdb.linlin(-75, 0, 0, 1);
-        outlev[6].peakLevel = msg[16].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[7].value = msg[17].ampdb.linlin(-75, 0, 0, 1);
-        outlev[7].peakLevel = msg[18].ampdb.linlin(-75, 0, 0, 1);
-      }.defer; }, '/out_levels', Server.default.addr)
-    };
-
-    oscOutLevels.value;
-
-    // modify the look of the level indicators
-
-    for (0, 7, { arg i;
-      outlev[i].warning = -2.dbamp;
-      outlev[i].critical = -1.dbamp;
-      outlev[i].drawsPeak = true;
-      outlev[i].background = Color.grey;
-      outlev[i].numTicks = 11;
-      outlev[i].numMajorTicks = 3;
-
-    });
-
-    StaticText(window, Rect(width:30, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("0").align_(\center);
-    StaticText(window, Rect(width:30, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("1").align_(\center);
-    StaticText(window, Rect(width:30, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("2").align_(\center);
-    StaticText(window, Rect(width:30, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("3").align_(\center);
-    StaticText(window, Rect(width:30, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("4").align_(\center);
-    StaticText(window, Rect(width:30, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("5").align_(\center);
-    StaticText(window, Rect(width:30, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("6").align_(\center);
-    StaticText(window, Rect(width:30, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("7").align_(\center);
-
-
-    CmdPeriod.add({SystemClock.sched(0.1, {
-      oscOutLevels.value;
-      out_meter = Synth(\out_meter, target: groupZ);
-    })});
-
+  initGroups {
+    groupA = Group.head(Server.default);
+    groupB = Group.after(groupA);
+    groupZ = Group.tail(Server.default);
   }
 
   update { arg theChanged, message;
@@ -385,6 +338,22 @@ CuePlayerGUI {
 
   setCurrent { arg val;
     ("set current to: " ++ val).postln;
+  }
+
+  externalOSC { var but_Reaper; var n;
+    // This starts and pauses Reapers playback
+    n = NetAddr(reaperAddr, 8000); // define IP-address + port number
+    // set the same within Reaper  Preferences  Control Surfaces
+
+    but_Reaper = Button(window, Rect(width: 48, height: 20) ); // 2 arguments ( which_Window, bounds )
+    but_Reaper.states = [ ["Reaper", Color.white, Color.grey], ["Reaper", Color.white, Color(0.9, 0.5, 0.3)]];
+    but_Reaper.font_(Font("Arial", 11));
+
+    // schedules to send the OSC command at the next beat in order to be in sync with Reaper
+    but_Reaper.action = { arg butState;
+      if ( butState.value == 1, { SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/play", 1); } ) }); // ti works, unknown why
+      if ( butState.value == 0, {SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/pause", 1); } ) });
+    };
   }
 
   /* setCmdPeriodActions { */
