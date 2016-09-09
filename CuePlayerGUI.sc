@@ -5,7 +5,6 @@ CuePlayerGUI {
   var clock, <n;
   var timer, cueNumberDisplay, bigTextCueNum;
   var <window, but_Reaper, but_Metro, slid_Metro, spec_Metro, box_Metro, box1Text, metroText, pdefText, metroOutBox, reaperAddr;
-  var level1, level2, boxIn1, boxIn2, boxInputText; // variables for level indicators
   /* ------------ */
   var numOfChannels = 2, widthOfBigWin = 950;
   var instIN1 = 8,  instIN2 = 8;
@@ -14,8 +13,6 @@ CuePlayerGUI {
   var oscInputLevels;
   var oscTrigBut, midiFunc, bigWinFunc;
   var <>front, <>side, <>rear, <>centre; 
-
-
 
   *new { arg cuePlayer;
     ^super.newCopyArgs(cuePlayer).init;
@@ -28,7 +25,7 @@ CuePlayerGUI {
     /* reaperAddr = "192.168.1.2"; // needed only while composing */
     /* ----------- */
     this.createMainWindow;
-    /* this.createInputLevels; */
+    this.createInputLevels;
     this.createCueTrigger;
     /* this.createMetronomeGUI; */
     /* this.externalOSC; */
@@ -49,66 +46,48 @@ CuePlayerGUI {
     };
   }
 
-  createInputLevels {
-    // Level Indicators & input number boxes
-    boxInputText = StaticText(window, Rect(width:350, height: 20)).font_(Font("Arial", 11))
-    .stringColor_(Color.black).string_("Input meters  / Define Ins using the number boxes");
+  createInputLevel { var level;
+    level = LevelIndicator(window, Rect(width:  220, height: 20));
+    level.warning = -2.dbamp;
+    level.critical = -1.dbamp;
+    level.drawsPeak = true;
+    level.background = Color.black;
+    level.numTicks = 11;
+    level.numMajorTicks = 3;
+    ^level;
+  }
 
-    // define 1st level-indicators
-    level1 = LevelIndicator(window, Rect(width:  220, height: 20) );
+  createInputLevelBox { arg in; var box;
+    box = NumberBox(window, Rect(240, 25, 50, 20)).align_(\center);
+    box.background_(Color(0.9, 0.9, 0.9));
+    box.normalColor_(Color.black);
+    box.value = instIN1;
+    { box.action = {arg inval;
+        sig_meter.set(in, inval.value);
+      }
+    }.defer(0);
+    ^box;
+  }
 
-    // The box defines the input bus of the 1st instrument
-    // Changing the value here changes the input bus which is displayed
-    boxIn1 = NumberBox(window, Rect(240, 25, 50, 20)).align_(\center);
-    boxIn1.background_(Color(0.9, 0.9, 0.9));
-    boxIn1.normalColor_(Color.black);
-
-    boxIn1.value = instIN1;
-
-    { boxIn1.action = {arg inval;
-      sig_meter.set(\in1, inval.value); // choose input to display
-    }}.defer(0);
-
-    // define 2nd level-indicators
-    level2 = LevelIndicator(window, Rect(width:  220, height: 20) );
-
-    // an OSC responder receiving information about the amplitude of the 2 signals
+  createOSCFuncForLevels { arg level1, level2;
     oscInputLevels = OSCFunc({arg msg;
       {
         level1.value = msg[3].ampdb.linlin(-75, 0, 0, 1);
         level1.peakLevel = msg[4].ampdb.linlin(-75, 0, 0, 1);
-
         level2.value = msg[5].ampdb.linlin(-75, 0, 0, 1);
         level2.peakLevel = msg[6].ampdb.linlin(-75, 0, 0, 1);
-
       }.defer;
     }, '/levels', Server.default.addr);
     oscInputLevels.permanent = true;
+  }
 
-    // modify the look of the level indicators
-    level1.warning = -2.dbamp;
-    level1.critical = -1.dbamp;
-    level1.drawsPeak = true;
-    level1.background = Color.black;
-    level1.numTicks = 11;
-    level1.numMajorTicks = 3;
-
-    level2.warning = -2.dbamp;
-    level2.critical = -1.dbamp;
-    level2.drawsPeak = true;
-    level2.background = Color.black;
-    level2.numTicks = 11;
-    level2.numMajorTicks = 3;
-
-    // The box defines the input bus of the 1st instrument
-    // Changing the value here changes the input bus which is displayed
-    boxIn2 = NumberBox(window, Rect(240, 50, 50, 20)).align_(\center);
-    boxIn2.background_(Color(0.9, 0.9, 0.9));
-    boxIn2.normalColor_(Color.black);
-    boxIn2.value = instIN2;
-    {boxIn2.action = {arg inval;
-      sig_meter.set(\in2, inval.value) ; // choose input to display
-    }}.defer(0);
+  createInputLevels { var level1, level2;
+    this.createLabel("Input meters  / Define Ins using the number boxes");
+    level1 = this.createInputLevel;
+    this.createInputLevelBox(\in1);
+    level2 = this.createInputLevel;
+    this.createInputLevelBox(\in2);
+    this.createOSCFuncForLevels(level1, level2);
   }
 
   createCueTrigger {     
@@ -135,7 +114,7 @@ CuePlayerGUI {
         var cueNum; cueNum = cues.next;
         if (cueNum.value == 1) { timer.cursecs_(0); timer.play };
         {cueNumberDisplay.value=cueNum}.defer;
-        bigTextCueNum.string = cueNum.value; // used in the big cue number window
+        /* bigTextCueNum.string = cueNum.value; // used in the big cue number window */
       }
     );
   }
@@ -162,6 +141,8 @@ CuePlayerGUI {
       bigTextCueNum =  StaticText(bigCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
       bigTextCueNum.font_(Font("Arial", widthHeight * 0.73)).stringColor_(Color.white);
   }
+
+  /* Metronome and Reaper */
 
   createMetronomeGUI {
     // Metronome GUI
@@ -222,6 +203,8 @@ CuePlayerGUI {
       if ( butState.value == 0, {SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/pause", 1); } ) });
     };
   }
+
+  /* Output Levels */
 
   createOutputLevels{
     StaticText(window, Rect(width:350, height: 20)).font_(Font("Arial", 11)).stringColor_(Color.black).string_("Monitor Outputs");
