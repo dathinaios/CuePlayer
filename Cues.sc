@@ -21,10 +21,11 @@ Cues { var <>cueList, <>current;
       ^this.next;
   }
 
-  addCue { arg function;
-    cueList.add(function);
-    /* cuePatternFunction = {arg offset = 0; Pseq(list: cueList, repeats: inf, offset: offset).asStream;}; */
-    /* cuePattern = cuePatternFunction.value; */
+  addCue { arg function, cueNumber;
+    if(cueNumber.isNil,
+      {cueList.add(function)},
+      {cueList[cueNumber - 1] = function}
+    );
     ^cueList.size;
   }
 

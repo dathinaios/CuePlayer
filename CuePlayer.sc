@@ -19,6 +19,10 @@ CuePlayer {
     cues.addDependant(guiInstance);
   }
 
+  addCue { arg function, cueNumber;
+    ^cues.addCue(function, cueNumber);
+  }
+
   next {
     ^cues.next;
   }
