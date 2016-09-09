@@ -1,8 +1,7 @@
 
 CuePlayerGUI { 
   var cuePlayer;
-  var cues, name;
-  var clock, <n;
+  var cues, name, clock;
   var timer, cueNumberDisplay, bigTextCueNum;
   var <window, slid_Metro, pdefText, reaperAddr;
   var input1 = 0,  input2 = 0;
@@ -184,7 +183,7 @@ CuePlayerGUI {
     };
   }
 
-  externalOSC { var but_Reaper;
+  externalOSC { var but_Reaper; var n;
     // This starts and pauses Reapers playback
     n = NetAddr(reaperAddr, 8000); // define IP-address + port number
     // set the same within Reaper  Preferences  Control Surfaces
