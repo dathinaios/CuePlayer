@@ -7,7 +7,7 @@ CuePlayerGUI {
   var <window, but_Reaper, but_Metro, slid_Metro, spec_Metro, box_Metro, box1Text, metroText, pdefText, metroOutBox, reaperAddr;
   /* ------------ */
   var numOfChannels = 2, widthOfBigWin = 950;
-  var instIN1 = 8,  instIN2 = 8;
+  var input1 = 0,  input2 = 0;
   var out_meter, oscOutLevels, sig_meter, metroOut, metro_Vol;
   var <groupA, <groupB,  <groupZ;
   var oscTrigBut, midiFunc, bigWinFunc;
@@ -30,8 +30,8 @@ CuePlayerGUI {
     /* this.externalOSC; */
     /* this.createOutputLevels; */
     /* ----------- */
-    /* this.initStructures; */
-    /* this.initServerResources; */
+    this.initStructures;
+    this.initServerResources;
   }
 
   createMainWindow {
@@ -60,7 +60,7 @@ CuePlayerGUI {
     box = NumberBox(window, Rect(240, 25, 50, 20)).align_(\center);
     box.background_(Color(0.9, 0.9, 0.9));
     box.normalColor_(Color.black);
-    box.value = instIN1;
+    box.value = input1;
     { box.action = {arg inval;
         sig_meter.set(in, inval.value);
       }
@@ -301,7 +301,7 @@ CuePlayerGUI {
       ]);
     }).add;
     // This synth constantly sends information about the signals amplitude to the language
-    { sig_meter = Synth(\sig_meter, [\in1, instIN1, \in2, instIN2], target: groupA )}.defer(0);
+    { sig_meter = Synth(\sig_meter, [\in1, input1, \in2, input2], target: groupA )}.defer(0);
     /* Metronome SynthDef, handy to be used as clicktrack*/
     SynthDef(\metro, {arg amp = 0.2, freq = 800, out = 0;
       Out.ar(out, FSinOsc.ar(freq: freq, mul: amp * EnvGen.kr(Env.perc(attackTime:0.001, releaseTime:0.2),doneAction:2)))
@@ -403,7 +403,7 @@ CuePlayerGUI {
   /*     // midiFunc.value; */
   /*     // oscInputLevels.value; // the osc responder */
 
-  /*     sig_meter = Synth(\sig_meter, [\in1, instIN1, \in2, instIN2], target: groupA ); */
+  /*     sig_meter = Synth(\sig_meter, [\in1, input1, \in2, input2], target: groupA ); */
   /*     // the synth which sends amplitude data */
 
   /*     timer.stop; */
