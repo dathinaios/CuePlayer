@@ -6,8 +6,8 @@ CuePlayerGUI {
   var <window, slid_Metro, pdefText, reaperAddr;
   var input1 = 8,  input2 = 8;
 
-  /* Server and Routing Related */
-  var out_meter, oscOutLevels, sig_meter;
+  /* Server and Routing */
+  var outputLevels, oscOutLevels, inputLevels;
   var <groupA, <groupB,  <groupZ;
   var <>front, <>side, <>rear, <>centre; 
 
@@ -40,7 +40,7 @@ CuePlayerGUI {
     window.onClose = { 
       cues.removeDependant(this);
       oscOutLevels.free; 
-      out_meter.free;
+      outputLevels.free;
     };
   }
 
@@ -72,7 +72,7 @@ CuePlayerGUI {
     box.normalColor_(Color.black);
     box.value = input1;
     { box.action = {arg inval;
-        sig_meter.set(in, inval.value);
+        inputLevels.set(in, inval.value);
       }
     }.defer(0);
     ^box;
@@ -156,9 +156,9 @@ CuePlayerGUI {
     but_Metro.font_(Font("Arial", 11));
     but_Metro.action = { arg butState;
       if ( butState.value == 1, {
-        Pdef(\metro, Pbind(\instrument, \metro, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(clock, quant:[1]); 
+        Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(clock, quant:[1]); 
       });
-      if ( butState.value == 0, { Pdef(\metro).clear});
+      if ( butState.value == 0, { Pdef(\metronome).clear});
     };
     // metronomes volume slider
     slid_Metro = Slider(window, Rect(width: 82, height: 20) );
@@ -167,8 +167,8 @@ CuePlayerGUI {
     slid_Metro.action = { 
       metro_Vol = spec_Metro.map(slid_Metro.value);
       // while moving the slider , only evaluate the Pdef when it is already playing
-      if (Pdef(\metro).isPlaying == true, { 
-        Pdef(\metro, Pbind(\instrument, \metro, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(clock, quant:[1])
+      if (Pdef(\metronome).isPlaying == true, { 
+        Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(clock, quant:[1])
       });
     };
 
@@ -179,7 +179,7 @@ CuePlayerGUI {
 
     metroOutBox.value = metroOut;
     metroOutBox.action = {arg inval; metroOut = inval.value;
-      Pdef(\metro, Pbind(\instrument, \metro, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut ))
+      Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut ))
     };
   }
 
@@ -189,7 +189,6 @@ CuePlayerGUI {
     this.createLabel("Monitor Outputs");
   
     outlev = Array.newClear(10);
-    { out_meter = Synth(\out_meter, target: groupZ) } .defer(0);
     8.do{ arg i; 
       outlev[i] = LevelIndicator(window, Rect(width:  30, height: 50) );
       outlev[i].warning = -2.dbamp;
@@ -233,73 +232,17 @@ CuePlayerGUI {
 
     /* CmdPeriod.add({SystemClock.sched(0.1, { */
     /*   oscOutLevels.value; */
-    /*   out_meter = Synth(\out_meter, target: groupZ); */
+    /*   outputLevels = Synth(\outputLevels, target: groupZ); */
     /* })}); */
   }
 
-  /* Server */
+  /* Server Resources */
 
   initServerResources {
     this.calculateRouting;
     this.initGroups;
-    // This synth constantly sends information about the signals amplitude to the language
-    SynthDef(\sig_meter, {
-      arg in1 = 0, in2 = 1;
-      var trig, sig, delayTrig;
-
-      sig = SoundIn.ar( [in1, in2] );
-      trig = Impulse.kr(10);
-      delayTrig = Delay1.kr(trig);
-
-      SendReply.kr(trig, '/levels', [
-        Amplitude.kr( sig[0] ), // rms of signal1
-        K2A.ar(Peak.ar( sig[0], delayTrig).lag(0, 3)), // peak of signal1
-        Amplitude.kr( sig[1] ), // rms of signal2
-        K2A.ar(Peak.ar( sig[1] , delayTrig).lag(0, 3)), // peak of signal2
-      ]);
-    }).add;
-    // Monitor Outs 0-7, links to "monitor8b.scd"
-    out_meter = SynthDef(\out_meter, {
-      var trig, sig, delayTrig;
-
-      sig = In.ar( [0,1,2,3,4,5,6,7] );
-      trig = Impulse.kr(10);
-      delayTrig = Delay1.kr(trig);
-
-      SendReply.kr(trig, '/out_levels', [
-
-        Amplitude.kr( sig[0] ), // rms of signal1
-        K2A.ar(Peak.ar( sig[0], delayTrig).lag(0, 3)), // peak of signal1
-
-        Amplitude.kr( sig[1] ), // rms of signal2
-        K2A.ar(Peak.ar( sig[1] , delayTrig).lag(0, 3)), // peak of signal2
-
-        Amplitude.kr( sig[2] ),
-        K2A.ar(Peak.ar( sig[2] , delayTrig).lag(0, 3)),
-
-        Amplitude.kr( sig[3] ),
-        K2A.ar(Peak.ar( sig[3] , delayTrig).lag(0, 3)),
-
-        Amplitude.kr( sig[4] ),
-        K2A.ar(Peak.ar( sig[4] , delayTrig).lag(0, 3)),
-
-        Amplitude.kr( sig[5] ),
-        K2A.ar(Peak.ar( sig[5] , delayTrig).lag(0, 3)),
-
-        Amplitude.kr( sig[6] ),
-        K2A.ar(Peak.ar( sig[6] , delayTrig).lag(0, 3)),
-
-        Amplitude.kr( sig[7] ),
-        K2A.ar(Peak.ar( sig[7] , delayTrig).lag(0, 3)),
-
-      ]);
-    }).add;
-    // This synth constantly sends information about the signals amplitude to the language
-    { sig_meter = Synth(\sig_meter, [\in1, input1, \in2, input2], target: groupA )}.defer(0);
-    /* Metronome SynthDef, handy to be used as clicktrack*/
-    SynthDef(\metro, {arg amp = 0.2, freq = 800, out = 0;
-      Out.ar(out, FSinOsc.ar(freq: freq, mul: amp * EnvGen.kr(Env.perc(attackTime:0.001, releaseTime:0.2),doneAction:2)))
-    }).add;
+    this.addSynths;
+    this.runSynths;
   }
 
   calculateRouting { arg numOfChannels = 2;
@@ -336,6 +279,70 @@ CuePlayerGUI {
     groupA = Group.head(Server.default);
     groupB = Group.after(groupA);
     groupZ = Group.tail(Server.default);
+  }
+
+  addSynths {
+    SynthDef(\inputLevels, {
+      arg in1 = 0, in2 = 1;
+      var trig, sig, delayTrig;
+
+      sig = SoundIn.ar( [in1, in2] );
+      trig = Impulse.kr(10);
+      delayTrig = Delay1.kr(trig);
+
+      SendReply.kr(trig, '/levels', [
+        Amplitude.kr( sig[0] ), // rms of signal1
+        K2A.ar(Peak.ar( sig[0], delayTrig).lag(0, 3)), // peak of signal1
+        Amplitude.kr( sig[1] ), // rms of signal2
+        K2A.ar(Peak.ar( sig[1] , delayTrig).lag(0, 3)), // peak of signal2
+      ]);
+    }).add;
+    SynthDef(\outputLevels, {
+      var trig, sig, delayTrig;
+
+      sig = In.ar( [0,1,2,3,4,5,6,7] );
+      trig = Impulse.kr(10);
+      delayTrig = Delay1.kr(trig);
+
+      SendReply.kr(trig, '/out_levels', [
+
+        Amplitude.kr( sig[0] ), // rms of signal1
+        K2A.ar(Peak.ar( sig[0], delayTrig).lag(0, 3)), // peak of signal1
+
+        Amplitude.kr( sig[1] ), // rms of signal2
+        K2A.ar(Peak.ar( sig[1] , delayTrig).lag(0, 3)), // peak of signal2
+
+        Amplitude.kr( sig[2] ),
+        K2A.ar(Peak.ar( sig[2] , delayTrig).lag(0, 3)),
+
+        Amplitude.kr( sig[3] ),
+        K2A.ar(Peak.ar( sig[3] , delayTrig).lag(0, 3)),
+
+        Amplitude.kr( sig[4] ),
+        K2A.ar(Peak.ar( sig[4] , delayTrig).lag(0, 3)),
+
+        Amplitude.kr( sig[5] ),
+        K2A.ar(Peak.ar( sig[5] , delayTrig).lag(0, 3)),
+
+        Amplitude.kr( sig[6] ),
+        K2A.ar(Peak.ar( sig[6] , delayTrig).lag(0, 3)),
+
+        Amplitude.kr( sig[7] ),
+        K2A.ar(Peak.ar( sig[7] , delayTrig).lag(0, 3)),
+
+      ]);
+    }).add;
+    SynthDef(\metronome, {arg amp = 0.2, freq = 800, out = 0;
+      Out.ar(
+        out, 
+        FSinOsc.ar(freq: freq, mul: amp * EnvGen.kr(Env.perc(attackTime:0.001, releaseTime:0.2),doneAction:2))
+      );
+    }).add;
+  }
+
+  runSynths {
+    { inputLevels = Synth(\inputLevels, [\in1, input1, \in2, input2], target: groupA )}.defer(0);
+    { outputLevels = Synth(\outputLevels, target: groupZ) } .defer(0);
   }
 
   /* OSC */
