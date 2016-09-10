@@ -38,9 +38,11 @@ CuePlayerGUI {
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color(0.8, 0.8, 0.8));
     window.onClose = { 
+      Pdef(\metronome).clear;
       cues.removeDependant(this);
       oscOutLevels.free; 
       outputLevels.free;
+      inputLevels.free;
     };
   }
 
@@ -122,12 +124,13 @@ CuePlayerGUI {
 
   createCueNumberDisplay {
     cueNumberDisplay = NumberBox(window, Rect(width: 50, height: 60)).align_(\center);
+    cueNumberDisplay.value = cues.current;
     cueNumberDisplay.font_(Font("Arial", 26));
     cueNumberDisplay.action = {
       arg inval; cues.current = inval;
       if (inval.value == 0) { timer.stop };
       bigTextCueNum.string = inval.value; // used in the big cue number window
-    }; //resume from particular cue
+    };
   }
 
   createLargeCueNumberDisplay { arg widthHeight = 950;
