@@ -43,7 +43,7 @@ ClockFace2 {
 		//window = GUI.window.new("Digital Clock", Rect(10, 250, 450, 110)).front;
 		timeString = GUI.staticText.new(window, Rect(0, 0, 430, 100))
 			.string_(cursecs.asTimeString)
-			.font_(Font("Arial", 20));
+			.font_(Font("Arial", 45));
 		/* window.onClose_({this.stop}); */
 		}
 
