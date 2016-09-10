@@ -1,9 +1,10 @@
 
 CuePlayerGUI { 
+
   var cuePlayer;
   var cues, name, clock;
   var timer, cueNumberDisplay, bigTextCueNum;
-  var <window, slid_Metro, pdefText, reaperAddr;
+  var <window, pdefText, reaperAddr;
   var input1 = 8,  input2 = 8;
 
   /* Server and Routing */
@@ -19,7 +20,6 @@ CuePlayerGUI {
     cues = cuePlayer.cues;
     clock = cuePlayer.clock;
     name = cuePlayer.name ?? "Cue Player";
-    /* reaperAddr = "192.168.1.2"; // needed only while composing */
     /* ----------- */
     this.createMainWindow;
     this.createInputLevels;
@@ -150,7 +150,7 @@ CuePlayerGUI {
 
   /* Metronome */
 
-  createMetronome { var but_Metro, spec_Metro, metroOutBox, metroOut, metro_Vol;
+  createMetronome { var but_Metro, spec_Metro, metroOutBox, metroOut, metro_Vol, slid_Metro;
     metroOut = 1; // default output bus for metronome
     metro_Vol = 0.1; // default volume
     this.createLabel("Metronome / Metro Vol / Metro Bus");
@@ -344,13 +344,14 @@ CuePlayerGUI {
   }
 
   runSynths {
-    { inputLevels = Synth(\inputLevels, [\in1, input1, \in2, input2], target: groupA )}.defer(0);
-    { outputLevels = Synth(\outputLevels, target: groupZ) } .defer(0);
+    { inputLevels = Synth(\inputLevels, [\in1, input1, \in2, input2], target: groupA )}.defer(1);
+    { outputLevels = Synth(\outputLevels, target: groupZ) }.defer(1);
   }
 
   /* OSC */
 
   externalOSC { var but_Reaper; var n;
+    /* reaperAddr = "192.168.1.2"; // needed only while composing */
     // This starts and pauses Reapers playback
     n = NetAddr(reaperAddr, 8000); // define IP-address + port number
     // set the same within Reaper  Preferences  Control Surfaces
