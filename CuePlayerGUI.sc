@@ -6,7 +6,7 @@ CuePlayerGUI {
   var <window, slid_Metro, pdefText, reaperAddr;
   var input1 = 8,  input2 = 8;
 
-  /* Server and Routed Related */
+  /* Server and Routing Related */
   var out_meter, oscOutLevels, sig_meter;
   var <groupA, <groupB,  <groupZ;
   var <>front, <>side, <>rear, <>centre; 
@@ -24,12 +24,13 @@ CuePlayerGUI {
     this.createMainWindow;
     this.createInputLevels;
     this.createCueTrigger;
-    this.createMetronomeGUI;
+    this.createTimer;
+    this.createMetronome;
     /* this.externalOSC; */
     this.createOutputLevels;
     /* ----------- */
-    this.calculateRouting;
     this.initServerResources;
+    window.front;
   }
 
   createMainWindow {
@@ -41,6 +42,17 @@ CuePlayerGUI {
       oscOutLevels.free; 
       out_meter.free;
     };
+  }
+
+  /* -------- */
+
+  createInputLevels { var level1, level2;
+    this.createLabel("Input meters  / Define Ins using the number boxes");
+    level1 = this.createInputLevel;
+    this.createInputLevelBox(\in1);
+    level2 = this.createInputLevel;
+    this.createInputLevelBox(\in2);
+    this.createOSCFuncForLevels(level1, level2);
   }
 
   createInputLevel { var level;
@@ -78,21 +90,12 @@ CuePlayerGUI {
     oscInputLevels.permanent = true;
   }
 
-  createInputLevels { var level1, level2;
-    this.createLabel("Input meters  / Define Ins using the number boxes");
-    level1 = this.createInputLevel;
-    this.createInputLevelBox(\in1);
-    level2 = this.createInputLevel;
-    this.createInputLevelBox(\in2);
-    this.createOSCFuncForLevels(level1, level2);
-  }
+  /* Cue Trigger */
 
   createCueTrigger {     
     this.createLabel("Trigger / Display & Reset Cue-number");
     this.createTriggerButton;
     this.createCueNumberDisplay;
-    this.createTimer;
-    window.front;
   }
 
   createLabel { arg text = "placeholder text", width = 280; var label;
@@ -127,10 +130,6 @@ CuePlayerGUI {
     }; //resume from particular cue
   }
 
-  createTimer {
-    timer = ClockFace2.new(window);
-  }
-
   createLargeCueNumberDisplay { arg widthHeight = 950;
       var bigCueWin;
       bigCueWin = Window.new("Huge Cue Number", Rect(1259, 900, widthHeight, widthHeight)).front;
@@ -140,9 +139,15 @@ CuePlayerGUI {
       bigTextCueNum.font_(Font("Arial", widthHeight * 0.73)).stringColor_(Color.white);
   }
 
-  /* Metronome and Reaper */
+  /* Timer */
 
-  createMetronomeGUI { var but_Metro, spec_Metro, metroOutBox, metroOut, metro_Vol;
+  createTimer {
+    timer = ClockFace2.new(window);
+  }
+
+  /* Metronome */
+
+  createMetronome { var but_Metro, spec_Metro, metroOutBox, metroOut, metro_Vol;
     metroOut = 1; // default output bus for metronome
     metro_Vol = 0.1; // default volume
     this.createLabel("Metronome / Metro Vol / Metro Bus");
@@ -232,37 +237,10 @@ CuePlayerGUI {
     /* })}); */
   }
 
-  calculateRouting { arg numOfChannels = 2;
-    if ( numOfChannels == 2, {
-      front = [0,1];
-      side = [0,1];
-      rear = [0,1];
-      centre = [0,1]; 
-    });
-
-    if ( numOfChannels == 4, {
-      front = [0,1];
-      side = [2,3];
-      rear = [2,3];
-      centre = [0,1]; 
-    });
-
-    if ( numOfChannels == 6, {
-      front = [0,1];
-      side = [2,3];
-      rear = [4,5];
-      centre = [0,1]; 
-    });
-
-    if ( numOfChannels == 8, {
-      front = [0,1];
-      side = [2,3];
-      rear = [4,5];
-      centre = [6,7]; 
-    }); 
-  }
+  /* Server */
 
   initServerResources {
+    this.calculateRouting;
     this.initGroups;
     // This synth constantly sends information about the signals amplitude to the language
     SynthDef(\sig_meter, {
@@ -324,21 +302,43 @@ CuePlayerGUI {
     }).add;
   }
 
+  calculateRouting { arg numOfChannels = 2;
+    if ( numOfChannels == 2, {
+      front = [0,1];
+      side = [0,1];
+      rear = [0,1];
+      centre = [0,1]; 
+    });
+
+    if ( numOfChannels == 4, {
+      front = [0,1];
+      side = [2,3];
+      rear = [2,3];
+      centre = [0,1]; 
+    });
+
+    if ( numOfChannels == 6, {
+      front = [0,1];
+      side = [2,3];
+      rear = [4,5];
+      centre = [0,1]; 
+    });
+
+    if ( numOfChannels == 8, {
+      front = [0,1];
+      side = [2,3];
+      rear = [4,5];
+      centre = [6,7]; 
+    }); 
+  }
+
   initGroups {
     groupA = Group.head(Server.default);
     groupB = Group.after(groupA);
     groupZ = Group.tail(Server.default);
   }
 
-  update { arg theChanged, message;
-    switch (message)
-    {\current}
-    {this.setCurrent(theChanged.current)};
-  }
-
-  setCurrent { arg val;
-    ("set current to: " ++ val).postln;
-  }
+  /* OSC */
 
   externalOSC { var but_Reaper; var n;
     // This starts and pauses Reapers playback
@@ -356,24 +356,16 @@ CuePlayerGUI {
     };
   }
 
-  /* setCmdPeriodActions { */
-  /*   // Run some things on Cmd+Period */
-  /*   CmdPeriod.add({SystemClock.sched(0.1, { */
-  /*     // create groups */
-  /*     groupA = Group.head(Server.default); */
-  /*     groupB = Group.after(groupA); */
-  /*     groupZ = Group.tail(Server.default); */
+  /* Handle Events from Dependants */
 
-  /*     // oscTrigBut.value; */
-  /*     // midiFunc.value; */
-  /*     // oscInputLevels.value; // the osc responder */
+  update { arg theChanged, message;
+    switch (message)
+    {\current}
+    {this.setCurrent(theChanged.current)};
+  }
 
-  /*     sig_meter = Synth(\sig_meter, [\in1, input1, \in2, input2], target: groupA ); */
-  /*     // the synth which sends amplitude data */
+  setCurrent { arg val;
+    ("set current to: " ++ val).postln;
+  }
 
-  /*     timer.stop; */
-
-  /*     // Pdef.all.clear; // clear all pdefs */
-  /*   })}); */
-  /* } */
 }
