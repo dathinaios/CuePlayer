@@ -1,9 +1,9 @@
 ClockFace2 {
-	var <window, <starttime, <tempo, <>inc, <cursecs, isPlaying = false, clock, timeString;
+	var <window, <starttime, <tempo, <>inc, <>bounds, <cursecs, isPlaying = false, clock, timeString;
 	var remFun;
 
-	*new{ arg window, starttime = 0, tempo = 1, inc = 0.1;
-		^super.newCopyArgs(window, starttime, tempo, inc).init;
+	*new{ arg window, starttime = 0, tempo = 1, inc = 0.1, bounds = Rect(0, 0, 200, 100);
+		^super.newCopyArgs(window, starttime, tempo, inc, bounds).init;
 		}
 
 	init {
@@ -26,7 +26,7 @@ ClockFace2 {
 	cursecs_ {arg curtime, updateStart = true;
 		var curdisp;
 		cursecs = curtime;
-		curdisp = curtime.asTimeString;
+		curdisp = curtime.asTimeString.drop(1).drop(2);
 		curdisp = curdisp[0 .. (curdisp.size-3)];
 		updateStart.if({starttime = cursecs});
 		{timeString.string_(curdisp)}.defer;
@@ -41,8 +41,8 @@ ClockFace2 {
 
 	digitalGUI {
 		//window = GUI.window.new("Digital Clock", Rect(10, 250, 450, 110)).front;
-		timeString = GUI.staticText.new(window, Rect(0, 0, 430, 100))
-			.string_(cursecs.asTimeString)
+		timeString = GUI.staticText.new(window, bounds)
+			.string_(cursecs.asTimeString.drop(1).drop(2))
 			.font_(Font("Arial", 45));
 		/* window.onClose_({this.stop}); */
 		}
