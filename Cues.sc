@@ -13,6 +13,7 @@ Cues { var <>cueList, <>current;
   next {
     cueList[current].value;
     current = current + 1;
+    this.changed(\current);
     ^current;
   }
 

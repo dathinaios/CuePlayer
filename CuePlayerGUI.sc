@@ -3,14 +3,13 @@ CuePlayerGUI {
 
   var cuePlayer;
   var cues, name, clock;
-  var timer, cueNumberDisplay, bigTextCueNum;
+  var timer, timerState = \stopped, cueNumberDisplay, bigTextCueNum;
   var <window, pdefText, reaperAddr;
   var input1 = 8,  input2 = 8;
 
   /* Server and Routing */
   var outputLevels, oscOutLevels, inputLevels;
   var <groupA, <groupB,  <groupZ;
-  var <>front, <>side, <>rear, <>centre; 
 
   *new { arg cuePlayer;
     ^super.newCopyArgs(cuePlayer).init;
@@ -26,7 +25,7 @@ CuePlayerGUI {
     this.createCueTrigger;
     this.createTimer;
     this.createMetronome;
-    /* this.externalOSC; */
+    /* this.createExternalOSC; */
     this.createOutputLevels;
     /* ----------- */
     this.initServerResources;
@@ -114,10 +113,11 @@ CuePlayerGUI {
     trigButton.states_([["Next Cue / FootSwitch", Color.white, Color(0.2, 0.6, 0.1)]]);
     trigButton.action_(
       { 
-        var cueNum; cueNum = cues.next;
-        if (cueNum.value == 1) { timer.cursecs_(0); timer.play };
-        {cueNumberDisplay.value=cueNum}.defer;
-        /* bigTextCueNum.string = cueNum.value; // used in the big cue number window */
+        var cueNum; 
+        cueNum = cues.next;
+        switch (timerState)
+        {\paused} {timer.play; timerState = \playing}
+        {\stopped} {timer.play; timerState = \playing};
       }
     );
   }
@@ -127,9 +127,10 @@ CuePlayerGUI {
     cueNumberDisplay.value = cues.current;
     cueNumberDisplay.font_(Font("Arial", 26));
     cueNumberDisplay.action = {
-      arg inval; cues.current = inval;
-      if (inval.value == 0) { timer.stop };
-      bigTextCueNum.string = inval.value; // used in the big cue number window
+      arg box; 
+      cues.current = box.value;
+      timer.stop; 
+      timerState = \paused;
     };
   }
 
@@ -144,8 +145,16 @@ CuePlayerGUI {
 
   /* Timer */
 
-  createTimer {
+  createTimer { var pauseButton, stopButton;
     timer = ClockFace2.new(window);
+    pauseButton = Button(window, Rect(width: 30, height: 20) );
+    pauseButton.states = [ ["||", Color.white, Color.grey]];
+    pauseButton.font_(Font("Arial", 11));
+    pauseButton.action = { arg butState; timer.stop; timerState = \paused};
+    stopButton = Button(window, Rect(width: 30, height: 20) );
+    stopButton.states = [ ["[]", Color.white, Color.grey]];
+    stopButton.font_(Font("Arial", 11));
+    stopButton.action = { arg butState; timer.stop; timer.cursecs_(0); timerState = \stopped};
   }
 
   /* Metronome */
@@ -242,40 +251,9 @@ CuePlayerGUI {
   /* Server Resources */
 
   initServerResources {
-    this.calculateRouting;
     this.initGroups;
     this.addSynths;
     this.runSynths;
-  }
-
-  calculateRouting { arg numOfChannels = 2;
-    if ( numOfChannels == 2, {
-      front = [0,1];
-      side = [0,1];
-      rear = [0,1];
-      centre = [0,1]; 
-    });
-
-    if ( numOfChannels == 4, {
-      front = [0,1];
-      side = [2,3];
-      rear = [2,3];
-      centre = [0,1]; 
-    });
-
-    if ( numOfChannels == 6, {
-      front = [0,1];
-      side = [2,3];
-      rear = [4,5];
-      centre = [0,1]; 
-    });
-
-    if ( numOfChannels == 8, {
-      front = [0,1];
-      side = [2,3];
-      rear = [4,5];
-      centre = [6,7]; 
-    }); 
   }
 
   initGroups {
@@ -350,7 +328,7 @@ CuePlayerGUI {
 
   /* OSC */
 
-  externalOSC { var but_Reaper; var n;
+  createExternalOSC { var but_Reaper; var n;
     /* reaperAddr = "192.168.1.2"; // needed only while composing */
     // This starts and pauses Reapers playback
     n = NetAddr(reaperAddr, 8000); // define IP-address + port number
@@ -376,7 +354,7 @@ CuePlayerGUI {
   }
 
   setCurrent { arg val;
-    ("set current to: " ++ val).postln;
+    cueNumberDisplay.value = val;
   }
 
 }
