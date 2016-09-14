@@ -1,7 +1,7 @@
 
 CuePlayerGUI { 
 
-  var cuePlayer;
+  var cuePlayer, monitorInChannels, monitorOutChannels;
   var cues, name, clock;
   var timer, timerState = \stopped, cueNumberDisplay, bigTextCueNum;
   var <window, pdefText, reaperAddr;
@@ -11,8 +11,8 @@ CuePlayerGUI {
   var outputLevels, oscOutLevels, inputLevels;
   var <groupA, <groupB,  <groupZ;
 
-  *new { arg cuePlayer;
-    ^super.newCopyArgs(cuePlayer).init;
+  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8;
+    ^super.newCopyArgs(cuePlayer, monitorInChannels, monitorOutChannels).init;
   }
 
   init {
@@ -26,7 +26,7 @@ CuePlayerGUI {
     this.createTimer;
     this.createMetronome;
     /* this.createExternalOSC; */
-    this.createOutputLevels;
+    this.createOutputLevels(monitorOutChannels);
     /* ----------- */
     this.initServerResources;
     window.front;
@@ -197,11 +197,11 @@ CuePlayerGUI {
 
   /* Output Levels */
 
-  createOutputLevels{ var outlev;
+  createOutputLevels{ arg numOfOutChannels = 8; var outlev, cycle = 0;
     this.createLabel("Monitor Outputs");
   
-    outlev = Array.newClear(10);
-    8.do{ arg i; 
+    outlev = Array.newClear(numOfOutChannels);
+    numOfOutChannels.do{ arg i;
       outlev[i] = LevelIndicator(window, Rect(width:  30, height: 50) );
       outlev[i].warning = -2.dbamp;
       outlev[i].critical = -1.dbamp;
@@ -209,6 +209,13 @@ CuePlayerGUI {
       outlev[i].background = Color.grey;
       outlev[i].numTicks = 11;
       outlev[i].numMajorTicks = 3;
+      if ((i+1)%8 == 0, { var chanNumOffset = 0;
+        chanNumOffset = cycle * 8;
+        8.do{ arg index;
+          this.createLabel(index+1+chanNumOffset, 30).align_(\center);
+        };
+        cycle = cycle + 1;
+      });
     };
 
     oscOutLevels =
@@ -237,10 +244,6 @@ CuePlayerGUI {
         outlev[7].value = msg[17].ampdb.linlin(-75, 0, 0, 1);
         outlev[7].peakLevel = msg[18].ampdb.linlin(-75, 0, 0, 1);
       }.defer; }, '/out_levels', Server.default.addr);
-
-    8.do{arg i;
-      this.createLabel(i, 30).align_(\center);
-    };
 
     /* CmdPeriod.add({SystemClock.sched(0.1, { */
     /*   oscOutLevels.value; */

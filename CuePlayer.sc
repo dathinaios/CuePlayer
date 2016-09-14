@@ -14,8 +14,8 @@ CuePlayer {
     clock = TempoClock(120/60).permanent_(true);
   }
 
-  gui {
-    guiInstance = CuePlayerGUI(this);
+  gui {arg monitorInChannels, monitorOutChannels;
+    guiInstance = CuePlayerGUI(this, monitorInChannels, monitorOutChannels);
     cues.addDependant(guiInstance);
   }
 
