@@ -72,7 +72,9 @@ CuePlayerGUI {
     box.background_(Color(0.9, 0.9, 0.9));
     box.normalColor_(Color.black);
     box.value = input1;
-    { box.action = {arg inval;
+    { box.action = 
+      {
+        arg inval;
         inputLevels.set(in, inval.value);
       }
     }.defer(0);
@@ -135,12 +137,12 @@ CuePlayerGUI {
   }
 
   createLargeCueNumberDisplay { arg widthHeight = 950;
-      var bigCueWin;
-      bigCueWin = Window.new("Huge Cue Number", Rect(1259, 900, widthHeight, widthHeight)).front;
-      bigCueWin.background = Color.black;
-      // display cue-number
-      bigTextCueNum =  StaticText(bigCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
-      bigTextCueNum.font_(Font("Arial", widthHeight * 0.73)).stringColor_(Color.white);
+    var bigCueWin;
+    bigCueWin = Window.new("Huge Cue Number", Rect(1259, 900, widthHeight, widthHeight)).front;
+    bigCueWin.background = Color.black;
+    // display cue-number
+    bigTextCueNum =  StaticText(bigCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
+    bigTextCueNum.font_(Font("Arial", widthHeight * 0.73)).stringColor_(Color.white);
   }
 
   /* Timer */
@@ -199,7 +201,7 @@ CuePlayerGUI {
 
   createOutputLevels{ arg numOfOutChannels = 8; var outlev, cycle = 0;
     this.createLabel("Monitor Outputs");
-  
+
     outlev = Array.newClear(numOfOutChannels);
     numOfOutChannels.do{ arg i;
       outlev[i] = LevelIndicator(window, Rect(width:  30, height: 50) );
@@ -209,6 +211,7 @@ CuePlayerGUI {
       outlev[i].background = Color.grey;
       outlev[i].numTicks = 11;
       outlev[i].numMajorTicks = 3;
+      /* create the label every 8 channels */
       if ((i+1)%8 == 0, { var chanNumOffset = 0;
         chanNumOffset = cycle * 8;
         8.do{ arg index;
@@ -216,36 +219,22 @@ CuePlayerGUI {
         };
         cycle = cycle + 1;
       });
+      /* create oscfunction */
     };
 
-    oscOutLevels =
-      OSCFunc({arg msg; {
-        outlev[0].value = msg[3].ampdb.linlin(-75, 0, 0, 1);
-        outlev[0].peakLevel = msg[4].ampdb.linlin(-75, 0, 0, 1);
+    oscOutLevels = 
+    OSCFunc({arg msg; var curMsg = 3; 
+      {
+        monitorOutChannels.do{ arg chan;
+          outlev[chan].value = msg[curMsg].ampdb.linlin(-75, 0, 0, 1);
+          outlev[chan].peakLevel = msg[curMsg+1].ampdb.linlin(-75, 0, 0, 1);
+          curMsg = curMsg + 2;
+        } 
+      }.defer; 
+    }, '/out_levels', Server.default.addr
+  );
 
-        outlev[1].value = msg[5].ampdb.linlin(-75, 0, 0, 1);
-        outlev[1].peakLevel = msg[6].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[2].value = msg[7].ampdb.linlin(-75, 0, 0, 1);
-        outlev[2].peakLevel = msg[8].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[3].value = msg[9].ampdb.linlin(-75, 0, 0, 1);
-        outlev[3].peakLevel = msg[10].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[4].value = msg[11].ampdb.linlin(-75, 0, 0, 1);
-        outlev[4].peakLevel = msg[12].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[5].value = msg[13].ampdb.linlin(-75, 0, 0, 1);
-        outlev[5].peakLevel = msg[14].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[6].value = msg[15].ampdb.linlin(-75, 0, 0, 1);
-        outlev[6].peakLevel = msg[16].ampdb.linlin(-75, 0, 0, 1);
-
-        outlev[7].value = msg[17].ampdb.linlin(-75, 0, 0, 1);
-        outlev[7].peakLevel = msg[18].ampdb.linlin(-75, 0, 0, 1);
-      }.defer; }, '/out_levels', Server.default.addr);
-
-    /* CmdPeriod.add({SystemClock.sched(0.1, { */
+  /* CmdPeriod.add({SystemClock.sched(0.1, { */
     /*   oscOutLevels.value; */
     /*   outputLevels = Synth(\outputLevels, target: groupZ); */
     /* })}); */
@@ -284,37 +273,16 @@ CuePlayerGUI {
     SynthDef(\outputLevels, {
       var trig, sig, delayTrig;
 
-      sig = In.ar( [0,1,2,3,4,5,6,7] );
+      sig = In.ar( monitorOutChannels.collect{arg i; i});
       trig = Impulse.kr(10);
       delayTrig = Delay1.kr(trig);
 
-      SendReply.kr(trig, '/out_levels', [
-
-        Amplitude.kr( sig[0] ), // rms of signal1
-        K2A.ar(Peak.ar( sig[0], delayTrig).lag(0, 3)), // peak of signal1
-
-        Amplitude.kr( sig[1] ), // rms of signal2
-        K2A.ar(Peak.ar( sig[1] , delayTrig).lag(0, 3)), // peak of signal2
-
-        Amplitude.kr( sig[2] ),
-        K2A.ar(Peak.ar( sig[2] , delayTrig).lag(0, 3)),
-
-        Amplitude.kr( sig[3] ),
-        K2A.ar(Peak.ar( sig[3] , delayTrig).lag(0, 3)),
-
-        Amplitude.kr( sig[4] ),
-        K2A.ar(Peak.ar( sig[4] , delayTrig).lag(0, 3)),
-
-        Amplitude.kr( sig[5] ),
-        K2A.ar(Peak.ar( sig[5] , delayTrig).lag(0, 3)),
-
-        Amplitude.kr( sig[6] ),
-        K2A.ar(Peak.ar( sig[6] , delayTrig).lag(0, 3)),
-
-        Amplitude.kr( sig[7] ),
-        K2A.ar(Peak.ar( sig[7] , delayTrig).lag(0, 3)),
-
-      ]);
+      SendReply.kr(trig, '/out_levels',
+        monitorOutChannels.collect{ arg i;
+          [Amplitude.kr( sig[i] ), // rms of signal1
+          K2A.ar(Peak.ar( sig[i], delayTrig).lag(0, 3))] // peak of signal1
+        }.flatten;
+      );
     }).add;
     SynthDef(\metronome, {arg amp = 0.2, freq = 800, out = 0;
       Out.ar(
