@@ -16,6 +16,7 @@ CuePlayerGUI {
   }
 
   init {
+    Server.default.options.numOutputBusChannels = monitorOutChannels; 
     cues = cuePlayer.cues;
     clock = cuePlayer.clock;
     name = cuePlayer.name ?? "Cue Player";
@@ -191,9 +192,9 @@ CuePlayerGUI {
     metroOutBox.background_(Color(0.9, 0.9, 0.9));
     metroOutBox.normalColor_(Color.black);
 
-    metroOutBox.value = metroOut;
-    metroOutBox.action = {arg inval; metroOut = inval.value;
-      Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut ))
+    metroOutBox.value = metroOut - 1;
+    metroOutBox.action = {arg box; metroOut = box.value;
+      Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 ))
     };
   }
 
