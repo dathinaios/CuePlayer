@@ -25,7 +25,7 @@ CuePlayerGUI {
     this.createTimer;
     this.createMetronome;
     /* this.createExternalOSC; */
-    this.createOutputLevels(monitorOutChannels);
+    this.createOutputLevels;
     /* ----------- */
     this.initServerResources;
     window.front;
@@ -168,7 +168,7 @@ CuePlayerGUI {
     but_Metro.font_(Font("Arial", 11));
     but_Metro.action = { arg butState;
       if ( butState.value == 1, {
-        Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(clock, quant:[1]); 
+        Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(clock, quant:[1]); 
       });
       if ( butState.value == 0, { Pdef(\metronome).clear});
     };
@@ -189,7 +189,7 @@ CuePlayerGUI {
     metroOutBox.background_(Color(0.9, 0.9, 0.9));
     metroOutBox.normalColor_(Color.black);
 
-    metroOutBox.value = metroOut - 1;
+    metroOutBox.value = metroOut;
     metroOutBox.action = {arg box; metroOut = box.value;
       Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 ))
     };
@@ -197,11 +197,11 @@ CuePlayerGUI {
 
   /* Output Levels */
 
-  createOutputLevels{ arg numOfOutChannels = 8; var outlev, cycle = 0;
+  createOutputLevels{ var outlev, cycle = 0;
     this.createLabel("Monitor Outputs");
 
-    outlev = Array.newClear(numOfOutChannels);
-    numOfOutChannels.do{ arg i;
+    outlev = Array.newClear(monitorOutChannels);
+    monitorOutChannels.do{ arg i;
       outlev[i] = LevelIndicator(window, Rect(width:  30, height: 50) );
       outlev[i].warning = -2.dbamp;
       outlev[i].critical = -1.dbamp;
