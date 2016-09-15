@@ -36,7 +36,7 @@ CuePlayer {
   }
 
   tempo { arg bpm = 120;
-    ("CuePlayer tempo set at " ++ bpm ++ " bpm").postln;
+    ("CuePlayer tempo set to " ++ bpm ++ " bpm").postln;
     clock.tempo = bpm/60;
     ^bpm;
   }

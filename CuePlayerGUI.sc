@@ -24,6 +24,7 @@ CuePlayerGUI {
     this.createCueTrigger;
     this.createTimer;
     this.createMetronome;
+    this.createBpmField;
     /* this.createExternalOSC; */
     this.createOutputLevels;
     /* ----------- */
@@ -192,6 +193,16 @@ CuePlayerGUI {
     metroOutBox.value = metroOut;
     metroOutBox.action = {arg box; metroOut = box.value;
       Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 ))
+    };
+  }
+
+  createBpmField { var bpm;
+    bpm = NumberBox(window, Rect(width:50, height:20)).align_(\center);
+    bpm.background_(Color(0.9, 0.9, 0.9));
+    bpm.normalColor_(Color.black);
+    bpm.value = 120;
+    bpm.action = {arg box;
+      cuePlayer.tempo(box.value);
     };
   }
 
