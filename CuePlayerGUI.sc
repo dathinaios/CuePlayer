@@ -5,10 +5,9 @@ CuePlayerGUI {
   var cues, name, clock;
   var timer, timerState = \stopped, cueNumberDisplay, bigTextCueNum;
   var <window, pdefText, reaperAddr;
-  var input1 = 8,  input2 = 8;
 
   /* Server and Routing */
-  var outputLevels, oscOutLevels, inputLevels;
+  var outputLevels, inputLevels, oscInputLevels, oscOutLevels;
   var <groupA, <groupB,  <groupZ;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8;
@@ -16,7 +15,6 @@ CuePlayerGUI {
   }
 
   init {
-    Server.default.options.numOutputBusChannels = monitorOutChannels; 
     cues = cuePlayer.cues;
     clock = cuePlayer.clock;
     name = cuePlayer.name ?? "Cue Player";
@@ -41,6 +39,7 @@ CuePlayerGUI {
       Pdef(\metronome).clear;
       cues.removeDependant(this);
       oscOutLevels.free; 
+      oscInputLevels.free;
       outputLevels.free;
       inputLevels.free;
     };
@@ -48,13 +47,23 @@ CuePlayerGUI {
 
   /* -------- */
 
-  createInputLevels { var level1, level2;
+  createInputLevels { var level1, level2; var inLevelArray;
     this.createLabel("Input meters  / Define Ins using the number boxes");
-    level1 = this.createInputLevel;
-    this.createInputLevelBox(\in1);
-    level2 = this.createInputLevel;
-    this.createInputLevelBox(\in2);
-    this.createOSCFuncForLevels(level1, level2);
+    inLevelArray = Array.newClear(monitorInChannels);
+    monitorInChannels.do{ arg i;
+      inLevelArray[i] = this.createInputLevel;
+      /* this.createInputLevelBox(\in1); */
+    };
+    oscInputLevels = OSCFunc({arg msg; var curMsg = 3;
+      {
+        monitorInChannels.do{ arg chan;
+          inLevelArray[chan].value = msg[curMsg].ampdb.linlin(-75, 0, 0, 1);
+          inLevelArray[chan].peakLevel = msg[curMsg+1].ampdb.linlin(-75, 0, 0, 1);
+          curMsg = curMsg + 2;
+        } 
+      }.defer;
+    }, '/in_levels', Server.default.addr);
+    oscInputLevels.permanent = true;
   }
 
   createInputLevel { var level;
@@ -72,7 +81,7 @@ CuePlayerGUI {
     box = NumberBox(window, Rect(240, 25, 50, 20)).align_(\center);
     box.background_(Color(0.9, 0.9, 0.9));
     box.normalColor_(Color.black);
-    box.value = input1;
+    box.value = 0;
     { box.action = 
       {
         arg inval;
@@ -80,18 +89,6 @@ CuePlayerGUI {
       }
     }.defer(0);
     ^box;
-  }
-
-  createOSCFuncForLevels { arg level1, level2; var oscInputLevels;
-    oscInputLevels = OSCFunc({arg msg;
-      {
-        level1.value = msg[3].ampdb.linlin(-75, 0, 0, 1);
-        level1.peakLevel = msg[4].ampdb.linlin(-75, 0, 0, 1);
-        level2.value = msg[5].ampdb.linlin(-75, 0, 0, 1);
-        level2.peakLevel = msg[6].ampdb.linlin(-75, 0, 0, 1);
-      }.defer;
-    }, '/levels', Server.default.addr);
-    oscInputLevels.permanent = true;
   }
 
   /* Cue Trigger */
@@ -257,19 +254,18 @@ CuePlayerGUI {
 
   addSynths {
     SynthDef(\inputLevels, {
-      arg in1 = 0, in2 = 1;
       var trig, sig, delayTrig;
 
-      sig = SoundIn.ar( [in1, in2] );
+      sig = SoundIn.ar( monitorInChannels.collect{arg i; i});
       trig = Impulse.kr(10);
       delayTrig = Delay1.kr(trig);
 
-      SendReply.kr(trig, '/levels', [
-        Amplitude.kr( sig[0] ), // rms of signal1
-        K2A.ar(Peak.ar( sig[0], delayTrig).lag(0, 3)), // peak of signal1
-        Amplitude.kr( sig[1] ), // rms of signal2
-        K2A.ar(Peak.ar( sig[1] , delayTrig).lag(0, 3)), // peak of signal2
-      ]);
+      SendReply.kr(trig, '/in_levels',
+        monitorInChannels.collect{ arg i;
+          [Amplitude.kr( sig[i] ), // rms of signal1
+          K2A.ar(Peak.ar( sig[i], delayTrig).lag(0, 3))] // peak of signal1
+        }.flatten;
+      );
     }).add;
     SynthDef(\outputLevels, {
       var trig, sig, delayTrig;
@@ -294,7 +290,7 @@ CuePlayerGUI {
   }
 
   runSynths {
-    { inputLevels = Synth(\inputLevels, [\in1, input1, \in2, input2], target: groupA )}.defer(1);
+    { inputLevels = Synth(\inputLevels, target: groupA )}.defer(1);
     { outputLevels = Synth(\outputLevels, target: groupZ) }.defer(1);
   }
 
