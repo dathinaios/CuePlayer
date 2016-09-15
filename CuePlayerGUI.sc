@@ -25,7 +25,6 @@ CuePlayerGUI {
     this.createTimer;
     this.createMetronome;
     this.createBpmField;
-    /* this.createExternalOSC; */
     this.createOutputLevels;
     /* ----------- */
     this.initServerResources;
@@ -48,10 +47,11 @@ CuePlayerGUI {
 
   /* -------- */
 
-  createInputLevels { var level1, level2; var inLevelArray;
-    this.createLabel("Input meters  / Define Ins using the number boxes");
+  createInputLevels { var inLevelArray;
+    this.createLabel("Input meters").align_(\center);
     inLevelArray = Array.newClear(monitorInChannels);
     monitorInChannels.do{ arg i;
+      this.createLabel(i+1, 30).align_(\center);
       inLevelArray[i] = this.createInputLevel;
     };
     oscInputLevels = OSCFunc({arg msg; var curMsg = 3;
@@ -80,7 +80,7 @@ CuePlayerGUI {
   /* Cue Trigger */
 
   createCueTrigger {     
-    this.createLabel("Trigger / Display & Reset Cue-number");
+    this.createLabel("Trigger / Display & Reset Cue-number").align_(\center);
     this.createTriggerButton;
     this.createCueNumberDisplay;
   }
@@ -148,7 +148,7 @@ CuePlayerGUI {
   createMetronome { var but_Metro, spec_Metro, metroOutBox, metroOut, metro_Vol, slid_Metro;
     metroOut = 1; // default output bus for metronome
     metro_Vol = 0.1; // default volume
-    this.createLabel("Metronome / Metro Vol / Metro Bus");
+    this.createLabel("Metronome / Metro Vol / Metro Out / BPM").align_(\center);
     but_Metro = Button(window, Rect(width: 80, height: 20) ); // 2 arguments: ( which_Window, bounds )
     but_Metro.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
     but_Metro.font_(Font("Arial", 11));
@@ -194,7 +194,7 @@ CuePlayerGUI {
   /* Output Levels */
 
   createOutputLevels{ var outlev, cycle = 0;
-    this.createLabel("Monitor Outputs");
+    this.createLabel("Monitor Outputs").align_(\center);
 
     outlev = Array.newClear(monitorOutChannels);
     monitorOutChannels.do{ arg i;
