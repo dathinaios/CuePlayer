@@ -49,6 +49,11 @@ CuePlayer {
     }).permanent = true;
   }
 
+  sendOSC { arg ip = "127.0.0.1", port = 57120, msg = ["\play", 1]; var address;
+    address = NetAddr(ip, port);
+    clock.sched(clock.timeToNextBeat,{address.sendMsg(msg)});
+  }
+
   quit {
   }
 

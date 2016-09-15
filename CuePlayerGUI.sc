@@ -53,7 +53,6 @@ CuePlayerGUI {
     inLevelArray = Array.newClear(monitorInChannels);
     monitorInChannels.do{ arg i;
       inLevelArray[i] = this.createInputLevel;
-      /* this.createInputLevelBox(\in1); */
     };
     oscInputLevels = OSCFunc({arg msg; var curMsg = 3;
       {
@@ -76,20 +75,6 @@ CuePlayerGUI {
     level.numTicks = 11;
     level.numMajorTicks = 3;
     ^level;
-  }
-
-  createInputLevelBox { arg in; var box;
-    box = NumberBox(window, Rect(240, 25, 50, 20)).align_(\center);
-    box.background_(Color(0.9, 0.9, 0.9));
-    box.normalColor_(Color.black);
-    box.value = 0;
-    { box.action = 
-      {
-        arg inval;
-        inputLevels.set(in, inval.value);
-      }
-    }.defer(0);
-    ^box;
   }
 
   /* Cue Trigger */
@@ -303,25 +288,6 @@ CuePlayerGUI {
   runSynths {
     { inputLevels = Synth(\inputLevels, target: groupA )}.defer(1);
     { outputLevels = Synth(\outputLevels, target: groupZ) }.defer(1);
-  }
-
-  /* OSC */
-
-  createExternalOSC { var but_Reaper; var n;
-    /* reaperAddr = "192.168.1.2"; // needed only while composing */
-    // This starts and pauses Reapers playback
-    n = NetAddr(reaperAddr, 8000); // define IP-address + port number
-    // set the same within Reaper  Preferences  Control Surfaces
-
-    but_Reaper = Button(window, Rect(width: 48, height: 20) ); // 2 arguments ( which_Window, bounds )
-    but_Reaper.states = [ ["Reaper", Color.white, Color.grey], ["Reaper", Color.white, Color(0.9, 0.5, 0.3)]];
-    but_Reaper.font_(Font("Arial", 11));
-
-    // schedules to send the OSC command at the next beat in order to be in sync with Reaper
-    but_Reaper.action = { arg butState;
-      if ( butState.value == 1, { SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/play", 1); } ) }); // ti works, unknown why
-      if ( butState.value == 0, {SystemClock.sched(clock.timeToNextBeat , { n.sendMsg("/pause", 1); } ) });
-    };
   }
 
   /* Handle Events from Dependants */
