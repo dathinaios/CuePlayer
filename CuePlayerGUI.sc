@@ -166,7 +166,7 @@ CuePlayerGUI {
       metro_Vol = spec_Metro.map(slid_Metro.value);
       // while moving the slider , only evaluate the Pdef when it is already playing
       if (Pdef(\metronome).isPlaying == true, { 
-        Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut )).play(clock, quant:[1])
+        Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(clock, quant:[1])
       });
     };
 
