@@ -1,17 +1,17 @@
 
 CuePlayerGUI { 
 
-  var cuePlayer, monitorInChannels, monitorOutChannels;
+  var cuePlayer, monitorInChannels, monitorOutChannels, largeDisplay;
   var cues, name, clock;
-  var timer, timerState = \stopped, cueNumberDisplay, bigTextCueNum;
+  var timer, timerState = \stopped, cueNumberDisplay, lrgCueWin, largeCueNumberDisplay;
   var <window, pdefText, reaperAddr;
 
   /* Server and Routing */
   var outputLevels, inputLevels, oscInputLevels, oscOutLevels;
   var <groupA, <groupB,  <groupZ;
 
-  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8;
-    ^super.newCopyArgs(cuePlayer, monitorInChannels, monitorOutChannels).init;
+  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, largeDisplay = false;
+    ^super.newCopyArgs(cuePlayer, monitorInChannels, monitorOutChannels, largeDisplay).init;
   }
 
   init {
@@ -42,6 +42,7 @@ CuePlayerGUI {
       oscInputLevels.free;
       outputLevels.free;
       inputLevels.free;
+      lrgCueWin.close;
     };
   }
 
@@ -83,6 +84,7 @@ CuePlayerGUI {
     this.createLabel("Trigger / Display & Reset Cue-number").align_(\center);
     this.createTriggerButton;
     this.createCueNumberDisplay;
+    if (largeDisplay, { this.createLargeCueNumberDisplay })
   }
 
   createLabel { arg text = "placeholder text", width = 280; var label;
@@ -117,16 +119,17 @@ CuePlayerGUI {
       cues.current = box.value;
       timer.stop; 
       timerState = \paused;
+      if (largeDisplay, { largeCueNumberDisplay.string = box.value })
+      
     };
   }
 
   createLargeCueNumberDisplay { arg widthHeight = 950;
-    var bigCueWin;
-    bigCueWin = Window.new("Huge Cue Number", Rect(1259, 900, widthHeight, widthHeight)).front;
-    bigCueWin.background = Color.black;
-    // display cue-number
-    bigTextCueNum =  StaticText(bigCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
-    bigTextCueNum.font_(Font("Arial", widthHeight * 0.73)).stringColor_(Color.white);
+    lrgCueWin = Window.new("Huge Cue Number", Rect(1259, 900, widthHeight, widthHeight)).front;
+    lrgCueWin.background = Color.black;
+    largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
+    largeCueNumberDisplay.font_(Font("Arial", widthHeight * 0.73)).stringColor_(Color.white);
+    largeCueNumberDisplay.string = cues.current;
   }
 
   /* Timer */
@@ -300,6 +303,7 @@ CuePlayerGUI {
 
   setCurrent { arg val;
     cueNumberDisplay.value = val;
+    if (largeDisplay, { largeCueNumberDisplay.string = val });
   }
 
 }
