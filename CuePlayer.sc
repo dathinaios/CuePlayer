@@ -1,5 +1,5 @@
 
-CuePlayer { 
+CuePlayer {
 
   var <name;
   var <cues, <clock;
@@ -44,8 +44,8 @@ CuePlayer {
   midiTrigger { arg note = 60, channel = 15;
     MIDIFunc.noteOn({ arg vel, noteNum, chan;
       if (noteNum == note && chan == channel, {
-        this.trigger(vel);
-      });
+        this.trigger(vel+1);
+      }.defer);
     }).permanent = true;
   }
 
