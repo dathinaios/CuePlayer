@@ -18,7 +18,7 @@ Cues { var <>cueList, <>current;
   }
 
   trigger { arg cue = 1;
-      this.setCurrent(cue - 1);
+      this.setCurrent(cue);
       ^this.next;
   }
 
