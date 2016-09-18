@@ -1,8 +1,8 @@
-ClockFace2 {
+ClockFaceCP {
 	var <window, <starttime, <tempo, <>inc, <>bounds, <cursecs, isPlaying = false, clock, timeString;
 	var remFun;
 
-	*new{ arg window, starttime = 0, tempo = 1, inc = 0.1, bounds = Rect(0, 0, 200, 20);
+	*new{ arg window, starttime = 0, tempo = 1, inc = 0.1, bounds = Rect(0, 0, 209, 20);
 		^super.newCopyArgs(window, starttime, tempo, inc, bounds).init;
 		}
 
@@ -43,7 +43,10 @@ ClockFace2 {
 		//window = GUI.window.new("Digital Clock", Rect(10, 250, 450, 110)).front;
 		timeString = GUI.staticText.new(window, bounds)
 			.string_(cursecs.asTimeString.drop(1).drop(2))
-			.font_(Font("Arial", 25));
+		.font_(Font("Arial", 20))
+		.align_(\center)
+		.stringColor_(Color.white);
+
 		/* window.onClose_({this.stop}); */
 		}
 

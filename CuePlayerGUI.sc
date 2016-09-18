@@ -1,5 +1,5 @@
 
-CuePlayerGUI { 
+CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, largeDisplay;
   var cues, name, clock;
@@ -32,13 +32,13 @@ CuePlayerGUI {
   }
 
   createMainWindow {
-    window = Window.new(name, Rect(1400, 650, 290, 450));
+    window = Window.new(name, Rect(1400, 650, 285, 365));
     window.view.decorator = FlowLayout( window.view.bounds );
-    window.background_(Color(0.8, 0.8, 0.8));
-    window.onClose = { 
+    window.background_(Color.fromHexString("#282828"));
+    window.onClose = {
       Pdef(\metronome).clear;
       cues.removeDependant(this);
-      oscOutLevels.free; 
+      oscOutLevels.free;
       oscInputLevels.free;
       outputLevels.free;
       inputLevels.free;
@@ -49,11 +49,11 @@ CuePlayerGUI {
   /* -------- */
 
   createInputLevels { var inLevelArray;
-    this.createLabel("Input meters").align_(\center);
+    this.createLabel("Input meters").align_(\left);
     inLevelArray = Array.newClear(monitorInChannels);
     monitorInChannels.do{ arg i;
-      this.createLabel(i+1, 30).align_(\center);
       inLevelArray[i] = this.createInputLevel;
+			this.createLabel("  input " ++ (i+1), 40).align_(\center);
     };
     oscInputLevels = OSCFunc({arg msg; var curMsg = 3;
       {
@@ -61,7 +61,7 @@ CuePlayerGUI {
           inLevelArray[chan].value = msg[curMsg].ampdb.linlin(-75, 0, 0, 1);
           inLevelArray[chan].peakLevel = msg[curMsg+1].ampdb.linlin(-75, 0, 0, 1);
           curMsg = curMsg + 2;
-        } 
+        }
       }.defer;
     }, '/in_levels', Server.default.addr);
     oscInputLevels.permanent = true;
@@ -72,7 +72,7 @@ CuePlayerGUI {
     level.warning = -2.dbamp;
     level.critical = -1.dbamp;
     level.drawsPeak = true;
-    level.background = Color.black;
+    level.background = Color.fromHexString("#A0A0A0");
     level.numTicks = 11;
     level.numMajorTicks = 3;
     ^level;
@@ -80,8 +80,8 @@ CuePlayerGUI {
 
   /* Cue Trigger */
 
-  createCueTrigger {     
-    this.createLabel("Trigger / Display & Reset Cue-number").align_(\center);
+  createCueTrigger {
+    this.createLabel("Trigger / Display & Reset Cue-number").align_(\left);
     this.createTriggerButton;
     this.createCueNumberDisplay;
     if (largeDisplay, { this.createLargeCueNumberDisplay })
@@ -90,7 +90,7 @@ CuePlayerGUI {
   createLabel { arg text = "placeholder text", width = 280; var label;
     label = StaticText(window, Rect( width: width, height: 20));
     label.font_(Font("Arial", 11));
-    label.stringColor_(Color.black);
+    label.stringColor_(Color.fromHexString("#A0A0A0"););
     label.string_(text);
     ^label;
   }
@@ -98,10 +98,10 @@ CuePlayerGUI {
   createTriggerButton { var trigButton;
     trigButton = Button(window, Rect(10, 200, 220, 60));
     trigButton.font_(Font("Arial", 12));
-    trigButton.states_([["Next Cue / FootSwitch", Color.white, Color(0.2, 0.6, 0.1)]]);
+    trigButton.states_([["Next Cue / FootSwitch", Color.white, Color.fromHexString("#1DA34D")]]);
     trigButton.action_(
-      { 
-        var cueNum; 
+      {
+        var cueNum;
         cueNum = cues.next;
         switch (timerState)
         {\paused} {timer.play; timerState = \playing}
@@ -115,12 +115,12 @@ CuePlayerGUI {
     cueNumberDisplay.value = cues.current;
     cueNumberDisplay.font_(Font("Arial", 26));
     cueNumberDisplay.action = {
-      arg box; 
+      arg box;
       cues.current = box.value;
-      timer.stop; 
+      timer.stop;
       timerState = \paused;
       if (largeDisplay, { largeCueNumberDisplay.string = box.value })
-      
+
     };
   }
 
@@ -135,13 +135,16 @@ CuePlayerGUI {
   /* Timer */
 
   createTimer { var pauseButton, stopButton;
-    timer = ClockFace2.new(window);
-    pauseButton = Button(window, Rect(width: 30, height: 20) );
+		this.createLabel("Timer / Pause & Stop stopwatch");
+    this.createLabel("", 8);
+		timer = ClockFaceCP.new(window);
+
+    pauseButton = Button(window, Rect(width: 22, height: 20) );
     pauseButton.states = [ ["||", Color.white, Color.grey]];
     pauseButton.font_(Font("Arial", 11));
     pauseButton.action = { arg butState; timer.stop; timerState = \paused};
-    stopButton = Button(window, Rect(width: 30, height: 20) );
-    stopButton.states = [ ["[]", Color.white, Color.grey]];
+    stopButton = Button(window, Rect(width: 22, height: 20) );
+    stopButton.states = [ ["[ ]", Color.white, Color.grey]];
     stopButton.font_(Font("Arial", 11));
     stopButton.action = { arg butState; timer.stop; timer.cursecs_(0); timerState = \stopped};
   }
@@ -151,24 +154,24 @@ CuePlayerGUI {
   createMetronome { var but_Metro, spec_Metro, metroOutBox, metroOut, metro_Vol, slid_Metro;
     metroOut = 1; // default output bus for metronome
     metro_Vol = 0.1; // default volume
-    this.createLabel("Metronome / Metro Vol / Metro Out / BPM").align_(\center);
+    this.createLabel("Metronome / Metro Vol. / Metro Output / Bpm").align_(\left);
     but_Metro = Button(window, Rect(width: 80, height: 20) ); // 2 arguments: ( which_Window, bounds )
     but_Metro.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
     but_Metro.font_(Font("Arial", 11));
     but_Metro.action = { arg butState;
       if ( butState.value == 1, {
-        Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(clock, quant:[1]); 
+        Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(clock, quant:[1]);
       });
       if ( butState.value == 0, { Pdef(\metronome).clear});
     };
     // metronomes volume slider
-    slid_Metro = Slider(window, Rect(width: 82, height: 20) );
+    slid_Metro = Slider(window, Rect(width: 82, height: 20) ).background_(Color.fromHexString("#A0A0A0"));
     spec_Metro = ControlSpec(minval: 0, maxval: 0.5);
     slid_Metro.value = metro_Vol;
-    slid_Metro.action = { 
+    slid_Metro.action = {
       metro_Vol = spec_Metro.map(slid_Metro.value);
       // while moving the slider , only evaluate the Pdef when it is already playing
-      if (Pdef(\metronome).isPlaying == true, { 
+      if (Pdef(\metronome).isPlaying == true, {
         Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(clock, quant:[1])
       });
     };
@@ -197,7 +200,7 @@ CuePlayerGUI {
   /* Output Levels */
 
   createOutputLevels{ var outlev, cycle = 0;
-    this.createLabel("Monitor Outputs").align_(\center);
+    this.createLabel("Output meters").align_(\left);
 
     outlev = Array.newClear(monitorOutChannels);
     monitorOutChannels.do{ arg i;
@@ -205,7 +208,7 @@ CuePlayerGUI {
       outlev[i].warning = -2.dbamp;
       outlev[i].critical = -1.dbamp;
       outlev[i].drawsPeak = true;
-      outlev[i].background = Color.grey;
+      outlev[i].background = Color.fromHexString("#A0A0A0");
       outlev[i].numTicks = 11;
       outlev[i].numMajorTicks = 3;
       /* create the label every 8 channels */
@@ -219,15 +222,15 @@ CuePlayerGUI {
       /* create oscfunction */
     };
 
-    oscOutLevels = 
-    OSCFunc({arg msg; var curMsg = 3; 
+    oscOutLevels =
+    OSCFunc({arg msg; var curMsg = 3;
       {
         monitorOutChannels.do{ arg chan;
           outlev[chan].value = msg[curMsg].ampdb.linlin(-75, 0, 0, 1);
           outlev[chan].peakLevel = msg[curMsg+1].ampdb.linlin(-75, 0, 0, 1);
           curMsg = curMsg + 2;
-        } 
-      }.defer; 
+        }
+      }.defer;
     }, '/out_levels', Server.default.addr
   );
 
@@ -282,7 +285,7 @@ CuePlayerGUI {
     }).add;
     SynthDef(\metronome, {arg amp = 0.2, freq = 800, out = 0;
       Out.ar(
-        out, 
+        out,
         FSinOsc.ar(freq: freq, mul: amp * EnvGen.kr(Env.perc(attackTime:0.001, releaseTime:0.2),doneAction:2))
       );
     }).add;
