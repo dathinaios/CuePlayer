@@ -36,6 +36,7 @@ Cues { var <>cueList, <>current;
   }
 
   setCurrent {arg cue;
+    ("Next cue will be " ++ cue).postln;
     current = cue - 1;
     this.changed(\current);
   }
