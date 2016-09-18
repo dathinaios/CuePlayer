@@ -31,7 +31,7 @@ ClockFaceCP {
 	cursecs_ {arg curtime, updateStart = true;
 		var curdisp;
 		cursecs = curtime;
-		curdisp = curtime.asTimeString.drop(1).drop(2);
+		curdisp = curtime.asTimeString;
 		curdisp = curdisp[0 .. (curdisp.size-3)];
 		updateStart.if({starttime = cursecs});
 		{timeString.string_(curdisp)}.defer;
@@ -47,7 +47,7 @@ ClockFaceCP {
 	digitalGUI {
 		//window = GUI.window.new("Digital Clock", Rect(10, 250, 450, 110)).front;
 		timeString = GUI.staticText.new(window, bounds)
-			.string_(cursecs.asTimeString.drop(1).drop(2))
+			.string_(cursecs.asTimeString)
 		.font_(Font("Arial", 20))
 		.align_(\center)
 		.stringColor_(Color.white);
