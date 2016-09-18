@@ -116,11 +116,11 @@ CuePlayerGUI {
     cueNumberDisplay.font_(Font("Arial", 26));
     cueNumberDisplay.action = {
       arg box;
-      cues.current = box.value;
+      cues.current = box.value.abs;
       timer.stop;
       timerState = \paused;
+      if(box.value == 0){timer.stop; timer.cursecs_(0)};
       if (largeDisplay, { largeCueNumberDisplay.string = box.value })
-
     };
   }
 
@@ -219,9 +219,8 @@ CuePlayerGUI {
         };
         cycle = cycle + 1;
       });
-      /* create oscfunction */
     };
-
+    /* create oscfunction */
     oscOutLevels =
     OSCFunc({arg msg; var curMsg = 3;
       {
