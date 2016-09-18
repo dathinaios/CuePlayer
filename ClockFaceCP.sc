@@ -1,3 +1,8 @@
+/* 
+  This class is modified from the ClockFace class created by Josh Parmenter.
+  The original can be found at: https://github.com/supercollider-quarks/ClockFace 
+*/
+
 ClockFaceCP {
 	var <window, <starttime, <tempo, <>inc, <>bounds, <cursecs, isPlaying = false, clock, timeString;
 	var remFun;
