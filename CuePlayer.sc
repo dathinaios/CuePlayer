@@ -18,23 +18,6 @@ CuePlayer {
     guiInstance = CuePlayerGUI(this, monitorInChannels, monitorOutChannels, largeDisplay);
     cues.addDependant(guiInstance);
   }
-
-  addCue { arg function, cueNumber;
-    ^cues.addCue(function, cueNumber);
-  }
-
-  next {
-    ^cues.next;
-  }
-
-  setCurrent { arg cue;
-    ^cues.setCurrent(cue)
-  }
-
-  trigger { arg cue = 1;
-    ^cues.trigger(cue);
-  }
-
   tempo { arg bpm = 120;
     ("CuePlayer tempo set to " ++ bpm ++ " bpm").postln;
     clock.tempo = bpm/60;
@@ -56,5 +39,28 @@ CuePlayer {
 
   quit {
   }
+
+  /* interacting with the Cues */
+
+  addCue { arg function, cueNumber;
+    ^cues.addCue(function, cueNumber);
+  }
+
+  next {
+    ^cues.next;
+  }
+
+  current {
+    ^cues.current;
+  }
+
+  setCurrent { arg cue;
+    ^cues.setCurrent(cue);
+  }
+
+  trigger { arg cue = 1;
+    ^cues.trigger(cue);
+  }
+
 
 }
