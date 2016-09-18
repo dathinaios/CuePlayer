@@ -18,10 +18,12 @@ CuePlayer {
   gui {arg monitorInChannels = 2, monitorOutChannels = 8, largeDisplay = false;
     guiInstance = CuePlayerGUI(this, monitorInChannels, monitorOutChannels, largeDisplay);
     cues.addDependant(guiInstance);
+    this.addDependant(guiInstance);
   }
   tempo { arg bpm = 120;
     ("CuePlayer tempo set to " ++ bpm ++ " bpm").postln;
     clock.tempo = bpm/60;
+    this.changed(\tempo);
     ^bpm;
   }
 

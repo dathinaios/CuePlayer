@@ -3,7 +3,7 @@ CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, largeDisplay;
   var cues, name, clock;
-  var timer, timerState = \stopped, cueNumberDisplay, lrgCueWin, largeCueNumberDisplay;
+  var timer, timerState = \stopped, cueNumberDisplay, bpm, lrgCueWin, largeCueNumberDisplay;
   var <window, pdefText, reaperAddr;
 
   /* Server and Routing */
@@ -187,7 +187,7 @@ CuePlayerGUI {
     };
   }
 
-  createBpmField { var bpm;
+  createBpmField {
     bpm = NumberBox(window, Rect(width:50, height:20)).align_(\center);
     bpm.background_(Color(0.9, 0.9, 0.9));
     bpm.normalColor_(Color.black);
@@ -301,7 +301,9 @@ CuePlayerGUI {
   update { arg theChanged, message;
     switch (message)
     {\current}
-    {this.setCurrent(theChanged.current)};
+    {this.setCurrent(theChanged.current)}
+    {\tempo}
+    {bpm.value = theChanged.clock.tempo*60}
   }
 
   setCurrent { arg val;
