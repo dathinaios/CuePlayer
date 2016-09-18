@@ -7,7 +7,7 @@ Cues { var <>cueList, <>current;
 
   init {
     current = 0;
-    cueList = List.new;
+    cueList = Array.new;
   }
 
   next {
@@ -24,8 +24,13 @@ Cues { var <>cueList, <>current;
 
   addCue { arg function, cueNumber;
     if(cueNumber.isNil,
-      {cueList.add(function)},
-      {cueList[cueNumber - 1] = function}
+      {cueList = cueList.add(function)},
+      { 
+        if(cueList.size < cueNumber) {
+          cueList = cueList.extend(cueNumber, nil)
+        }; 
+        cueList[cueNumber - 1] = function;
+      }
     );
     ^cueList.size;
   }
