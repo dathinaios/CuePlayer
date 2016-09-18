@@ -12,6 +12,7 @@ CuePlayer {
   init {
     cues = Cues.new;
     clock = TempoClock(120/60).permanent_(true);
+    MIDIIn.connectAll;
   }
 
   gui {arg monitorInChannels = 2, monitorOutChannels = 8, largeDisplay = false;
