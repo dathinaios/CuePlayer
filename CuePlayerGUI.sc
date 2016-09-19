@@ -3,7 +3,7 @@ CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, largeDisplay;
   var cues, name, clock;
-  var timer, timerState = \stopped, cueNumberDisplay, bpm, lrgCueWin, largeCueNumberDisplay;
+  var timer, pauseButton, cueNumberDisplay, bpm, lrgCueWin, largeCueNumberDisplay;
   var <window, pdefText, reaperAddr;
 
   /* Server and Routing */
@@ -110,9 +110,7 @@ CuePlayerGUI {
       {
         var cueNum;
         cueNum = cues.next;
-        switch (timerState)
-        {\paused} {timer.play; timerState = \playing}
-        {\stopped} {timer.play; timerState = \playing};
+        if (timer.isPlaying.not) {timer.play; pauseButton.value_(1)};
       }
     );
   }
@@ -125,7 +123,6 @@ CuePlayerGUI {
       arg box;
       cues.current = box.value.abs;
       timer.stop;
-      timerState = \paused;
       if(box.value == 0){timer.stop; timer.cursecs_(0)};
       if (largeDisplay, { largeCueNumberDisplay.string = box.value })
     };
@@ -141,19 +138,24 @@ CuePlayerGUI {
 
   /* Timer */
 
-  createTimer { var pauseButton, stopButton;
+  createTimer { var stopButton;
 		this.createLabel("Timer / Pause & Stop stopwatch");
     this.createLabel("", 8);
 		timer = ClockFaceCP.new(window);
 
     pauseButton = Button(window, Rect(width: 22, height: 20) );
-    pauseButton.states = [ ["||", Color.white, Color.grey]];
+    pauseButton.states = [[">", Color.white, Color.grey], ["||", Color.white, Color.grey]];
     pauseButton.font_(Font("Arial", 11));
-    pauseButton.action = { arg butState; timer.stop; timerState = \paused};
+    pauseButton.action = { arg button; 
+      if(button.value == 0, 
+        { timer.stop  },
+        { timer.play  }
+      );
+    };
     stopButton = Button(window, Rect(width: 22, height: 20) );
     stopButton.states = [ ["[ ]", Color.white, Color.grey]];
     stopButton.font_(Font("Arial", 11));
-    stopButton.action = { arg butState; timer.stop; timer.cursecs_(0); timerState = \stopped};
+    stopButton.action = { arg butState; timer.stop; timer.cursecs_(0); };
   }
 
   /* Metronome */
