@@ -29,8 +29,17 @@ CuePlayerGUI {
     this.createBpmField;
     this.createOutputLevels;
     this.initServerResources;
+    this.setCmdPeriodActions;
 
     window.front;
+  }
+
+  setCmdPeriodActions {
+    CmdPeriod.add({
+      SystemClock.sched(0.1, {
+        this.initServerResources;
+      });
+    });
   }
 
   initStyleVariables {
@@ -40,11 +49,12 @@ CuePlayerGUI {
   }
 
   createMainWindow {
-    window = Window.new(name, Rect(1400, 650, 282, 250 + this.calculateLevelSumHeight + (marginTop*5)), resizable: false);
+    window = Window.new(name, Rect(1400, 650, 282, 250 + this.calculateLevelSumHeight + (marginTop*4)), resizable: false);
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
       Pdef(\metronome).clear;
+      timer.stop;
       cues.removeDependant(this);
       oscOutLevels.free;
       oscInputLevels.free;
@@ -67,12 +77,11 @@ CuePlayerGUI {
   /* -------- */
 
   createInputLevels { var inLevelArray;
-    this.createLabel("", 282, marginTop);
     this.createLabel("Input meters").align_(\left);
     inLevelArray = Array.newClear(monitorInChannels);
     monitorInChannels.do{ arg i;
       inLevelArray[i] = this.createInputLevel;
-			this.createLabel("  " ++ (i+1), 20).align_(\center);
+      this.createLabel("  " ++ (i+1), 20).align_(\center);
     };
     oscInputLevels = OSCFunc({arg msg; var curMsg = 3;
       {
@@ -154,9 +163,9 @@ CuePlayerGUI {
 
   createTimer { var stopButton;
     this.createLabel("", 282, marginTop);
-		this.createLabel("Timer / Pause & Stop stopwatch");
+    this.createLabel("Timer / Pause & Stop stopwatch");
     this.createLabel("", 8);
-		timer = ClockFaceCP.new(window);
+    timer = ClockFaceCP.new(window);
 
     pauseButton = Button(window, Rect(width: 22, height: 20) );
     pauseButton.states = [[">", Color.white, Color.grey], ["||", Color.white, Color.grey]];
@@ -257,13 +266,8 @@ CuePlayerGUI {
           curMsg = curMsg + 2;
         }
       }.defer;
-    }, '/out_levels', Server.default.addr
-  );
-
-  /* CmdPeriod.add({SystemClock.sched(0.1, { */
-    /*   oscOutLevels.value; */
-    /*   outputLevels = Synth(\outputLevels, target: groupZ); */
-    /* })}); */
+    }, '/out_levels', Server.default.addr);
+    oscOutLevels.permanent = true;
   }
 
   /* Server Resources */

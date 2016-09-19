@@ -5,7 +5,6 @@ The original can be found at: https://github.com/supercollider-quarks/ClockFace
 
 ClockFaceCP {
   var <window, <starttime, <tempo, <>inc, <>bounds, <cursecs, <isPlaying = false, clock, timeString;
-  var remFun;
 
   *new{ 
     arg window, starttime = 0, tempo = 1, inc = 0.1, bounds = Rect(0, 0, 209, 20);
@@ -21,8 +20,6 @@ ClockFaceCP {
     var start;
     clock = TempoClock.new(tempo);
     start = clock.elapsedBeats;
-    remFun = {this.stop};
-    CmdPeriod.add(remFun);
     clock.sched(inc, {
       this.cursecs_(clock.elapsedBeats - start + starttime, false);
       inc;
@@ -42,7 +39,6 @@ ClockFaceCP {
   stop {
     starttime = cursecs;
     clock.clear;
-    CmdPeriod.remove(remFun);
     clock.stop;
     isPlaying = false;
   }
