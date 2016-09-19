@@ -5,6 +5,7 @@ CuePlayerGUI {
   var cues, name, clock;
   var timer, pauseButton, cueNumberDisplay, bpm, lrgCueWin, largeCueNumberDisplay;
   var <window, pdefText, reaperAddr;
+  var font, titleFontSize, marginTop;
 
   /* Server and Routing */
   var outputLevels, inputLevels, oscInputLevels, oscOutLevels;
@@ -18,7 +19,8 @@ CuePlayerGUI {
     cues = cuePlayer.cues;
     clock = cuePlayer.clock;
     name = cuePlayer.name ?? "Cue Player";
-    /* ----------- */
+
+    this.initStyleVariables;
     this.createMainWindow;
     this.createInputLevels;
     this.createCueTrigger;
@@ -26,13 +28,19 @@ CuePlayerGUI {
     this.createMetronome;
     this.createBpmField;
     this.createOutputLevels;
-    /* ----------- */
     this.initServerResources;
+
     window.front;
   }
 
+  initStyleVariables {
+    font = "Lucida Grande";
+    titleFontSize = 11;
+    marginTop = 5;
+  }
+
   createMainWindow {
-    window = Window.new(name, Rect(1400, 650, 282, 255 + this.calculateLevelSumHeight), resizable: false);
+    window = Window.new(name, Rect(1400, 650, 282, 250 + this.calculateLevelSumHeight + (marginTop*5)), resizable: false);
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
@@ -48,6 +56,9 @@ CuePlayerGUI {
 
   calculateLevelSumHeight { 
     var outHeightSum, inHeightSum, labelHeight = 20, outMeterHeight = 50, inMeterHeight = 20;
+    labelHeight = labelHeight + 5;
+    outMeterHeight = outMeterHeight;
+    inMeterHeight = inMeterHeight + 5;
     outHeightSum = ((monitorOutChannels/8).roundUp(1))*(outMeterHeight+labelHeight);
     inHeightSum = monitorInChannels*inMeterHeight;
     ^(outHeightSum + inHeightSum);
@@ -56,11 +67,12 @@ CuePlayerGUI {
   /* -------- */
 
   createInputLevels { var inLevelArray;
+    this.createLabel("", 282, marginTop);
     this.createLabel("Input meters").align_(\left);
     inLevelArray = Array.newClear(monitorInChannels);
     monitorInChannels.do{ arg i;
       inLevelArray[i] = this.createInputLevel;
-			this.createLabel("  input " ++ (i+1), 40).align_(\center);
+			this.createLabel("  " ++ (i+1), 20).align_(\center);
     };
     oscInputLevels = OSCFunc({arg msg; var curMsg = 3;
       {
@@ -80,23 +92,24 @@ CuePlayerGUI {
     level.critical = -1.dbamp;
     level.drawsPeak = true;
     level.background = Color.fromHexString("#A0A0A0");
-    level.numTicks = 11;
-    level.numMajorTicks = 3;
+    /* level.numTicks = 11; */
+    /* level.numMajorTicks = 3; */
     ^level;
   }
 
   /* Cue Trigger */
 
   createCueTrigger {
+    this.createLabel("", 282, marginTop);
     this.createLabel("Trigger / Display & Reset Cue-number").align_(\left);
     this.createTriggerButton;
     this.createCueNumberDisplay;
     if (largeDisplay, { this.createLargeCueNumberDisplay })
   }
 
-  createLabel { arg text = "placeholder text", width = 280; var label;
-    label = StaticText(window, Rect( width: width, height: 20));
-    label.font_(Font("Arial", 11));
+  createLabel { arg text = "placeholder text", width = 280, height = 20; var label;
+    label = StaticText(window, Rect( width: width, height: height));
+    label.font_(Font(font, titleFontSize));
     label.stringColor_(Color.fromHexString("#A0A0A0"););
     label.string_(text);
     ^label;
@@ -104,7 +117,7 @@ CuePlayerGUI {
 
   createTriggerButton { var trigButton;
     trigButton = Button(window, Rect(10, 200, 220, 60));
-    trigButton.font_(Font("Arial", 12));
+    trigButton.font_(Font(font, 12));
     trigButton.states_([["Next Cue / FootSwitch", Color.white, Color.fromHexString("#1DA34D")]]);
     trigButton.action_(
       {
@@ -118,7 +131,7 @@ CuePlayerGUI {
   createCueNumberDisplay {
     cueNumberDisplay = NumberBox(window, Rect(width: 50, height: 60)).align_(\center);
     cueNumberDisplay.value = cues.current;
-    cueNumberDisplay.font_(Font("Arial", 26));
+    cueNumberDisplay.font_(Font(font, 26));
     cueNumberDisplay.action = {
       arg box;
       cues.current = box.value.abs;
@@ -132,20 +145,21 @@ CuePlayerGUI {
     lrgCueWin = Window.new("Huge Cue Number", Rect(1259, 900, widthHeight, widthHeight)).front;
     lrgCueWin.background = Color.black;
     largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
-    largeCueNumberDisplay.font_(Font("Arial", widthHeight * 0.73)).stringColor_(Color.white);
+    largeCueNumberDisplay.font_(Font(font, widthHeight * 0.73)).stringColor_(Color.white);
     largeCueNumberDisplay.string = cues.current;
   }
 
   /* Timer */
 
   createTimer { var stopButton;
+    this.createLabel("", 282, marginTop);
 		this.createLabel("Timer / Pause & Stop stopwatch");
     this.createLabel("", 8);
 		timer = ClockFaceCP.new(window);
 
     pauseButton = Button(window, Rect(width: 22, height: 20) );
     pauseButton.states = [[">", Color.white, Color.grey], ["||", Color.white, Color.grey]];
-    pauseButton.font_(Font("Arial", 11));
+    pauseButton.font_(Font(font, titleFontSize));
     pauseButton.action = { arg button; 
       if(button.value == 0, 
         { timer.stop  },
@@ -154,7 +168,7 @@ CuePlayerGUI {
     };
     stopButton = Button(window, Rect(width: 22, height: 20) );
     stopButton.states = [ ["[ ]", Color.white, Color.grey]];
-    stopButton.font_(Font("Arial", 11));
+    stopButton.font_(Font(font, titleFontSize));
     stopButton.action = { arg butState; timer.stop; timer.cursecs_(0); };
   }
 
@@ -163,10 +177,11 @@ CuePlayerGUI {
   createMetronome { var but_Metro, spec_Metro, metroOutBox, metroOut, metro_Vol, slid_Metro;
     metroOut = 1; // default output bus for metronome
     metro_Vol = 0.1; // default volume
+    this.createLabel("", 282, marginTop);
     this.createLabel("Metronome / Metro Vol. / Metro Output / Bpm").align_(\left);
     but_Metro = Button(window, Rect(width: 80, height: 20) ); // 2 arguments: ( which_Window, bounds )
     but_Metro.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
-    but_Metro.font_(Font("Arial", 11));
+    but_Metro.font_(Font(font, titleFontSize));
     but_Metro.action = { arg butState;
       if ( butState.value == 1, {
         Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(clock, quant:[1]);
@@ -209,6 +224,7 @@ CuePlayerGUI {
   /* Output Levels */
 
   createOutputLevels{ var outlev, label;
+    this.createLabel("", 282, marginTop);
     this.createLabel("Output meters").align_(\left);
 
     outlev = Array.newClear(monitorOutChannels);
@@ -222,7 +238,7 @@ CuePlayerGUI {
       /* outlev[i].numTicks = 11; */
       /* outlev[i].numMajorTicks = 3; */
       label = StaticText(compView, Rect( 0, 50, width: 30, height: 20)).align_(\center);
-      label.font_(Font("Arial", 11));
+      label.font_(Font(font, titleFontSize));
       label.stringColor_(Color.fromHexString("#A0A0A0"));
       label.string = i+1;
     };
