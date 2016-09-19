@@ -32,7 +32,7 @@ CuePlayerGUI {
   }
 
   createMainWindow {
-    window = Window.new(name, Rect(1400, 650, 285, 365));
+    window = Window.new(name, Rect(1400, 650, 282, 255 + this.calculateLevelSumHeight));
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
@@ -42,8 +42,15 @@ CuePlayerGUI {
       oscInputLevels.free;
       outputLevels.free;
       inputLevels.free;
-      lrgCueWin.close;
+      if (lrgCueWin.notNil and: {lrgCueWin.isClosed.not}) {lrgCueWin.close};
     };
+  }
+
+  calculateLevelSumHeight { 
+    var outHeightSum, inHeightSum, labelHeight = 30, outMeterHeight = 50, inMeterHeight = 20;
+    outHeightSum = (monitorOutChannels/8)*(outMeterHeight+labelHeight);
+    inHeightSum = monitorInChannels*inMeterHeight;
+    ^(outHeightSum + inHeightSum);
   }
 
   /* -------- */
