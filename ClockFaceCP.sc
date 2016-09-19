@@ -43,15 +43,13 @@ ClockFaceCP {
     isPlaying = false;
   }
 
-  digitalGUI {
-    //window = GUI.window.new("Digital Clock", Rect(10, 250, 450, 110)).front;
+  digitalGUI { var initialValue;
+    initialValue = "00:00:00:0";
     timeString = GUI.staticText.new(window, bounds)
-    .string_(cursecs.asTimeString)
+    .string_(initialValue)
     .font_(Font("Arial", 20))
     .align_(\center)
     .stringColor_(Color.white);
-
-    /* window.onClose_({this.stop}); */
   }
 
 }
