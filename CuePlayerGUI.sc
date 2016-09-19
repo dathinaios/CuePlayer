@@ -164,7 +164,7 @@ CuePlayerGUI {
 
   createTimer { var stopButton;
     this.createLabel("", 282, marginTop);
-    this.createLabel("Timer / Pause & Stop stopwatch");
+    this.createLabel("Timer");
     this.createLabel("", 8);
     timer = ClockFaceCP.new(window);
 
@@ -191,7 +191,7 @@ CuePlayerGUI {
     metroOut = 1; // default output bus for metronome
     metro_Vol = 0.1; // default volume
     this.createLabel("", 282, marginTop);
-    this.createLabel("Metronome / Metro Vol. / Metro Output / Bpm").align_(\left);
+    this.createLabel("Metronome       Metro Vol.         Out          Bpm").align_(\left);
     but_Metro = Button(window, Rect(width: 80, height: 20) ); // 2 arguments: ( which_Window, bounds )
     but_Metro.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
     but_Metro.canFocus = false;
