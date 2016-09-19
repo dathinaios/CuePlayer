@@ -36,7 +36,7 @@ CuePlayerGUI {
   initStyleVariables {
     font = "Lucida Grande";
     titleFontSize = 11;
-    marginTop = 5;
+    marginTop = 3;
   }
 
   createMainWindow {
@@ -118,6 +118,7 @@ CuePlayerGUI {
   createTriggerButton { var trigButton;
     trigButton = Button(window, Rect(10, 200, 220, 60));
     trigButton.font_(Font(font, 12));
+    trigButton.canFocus = false;
     trigButton.states_([["Next Cue / FootSwitch", Color.white, Color.fromHexString("#1DA34D")]]);
     trigButton.action_(
       {
@@ -160,6 +161,7 @@ CuePlayerGUI {
     pauseButton = Button(window, Rect(width: 22, height: 20) );
     pauseButton.states = [[">", Color.white, Color.grey], ["||", Color.white, Color.grey]];
     pauseButton.font_(Font(font, titleFontSize));
+    pauseButton.canFocus = false;
     pauseButton.action = { arg button; 
       if(button.value == 0, 
         { timer.stop  },
@@ -169,6 +171,7 @@ CuePlayerGUI {
     stopButton = Button(window, Rect(width: 22, height: 20) );
     stopButton.states = [ ["[ ]", Color.white, Color.grey]];
     stopButton.font_(Font(font, titleFontSize));
+    stopButton.canFocus = false;
     stopButton.action = { arg butState; timer.stop; timer.cursecs_(0); };
   }
 
@@ -181,6 +184,7 @@ CuePlayerGUI {
     this.createLabel("Metronome / Metro Vol. / Metro Output / Bpm").align_(\left);
     but_Metro = Button(window, Rect(width: 80, height: 20) ); // 2 arguments: ( which_Window, bounds )
     but_Metro.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
+    but_Metro.canFocus = false;
     but_Metro.font_(Font(font, titleFontSize));
     but_Metro.action = { arg butState;
       if ( butState.value == 1, {
@@ -192,6 +196,7 @@ CuePlayerGUI {
     slid_Metro = Slider(window, Rect(width: 82, height: 20) ).background_(Color.fromHexString("#A0A0A0"));
     spec_Metro = ControlSpec(minval: 0, maxval: 0.5);
     slid_Metro.value = metro_Vol;
+    slid_Metro.canFocus = false;
     slid_Metro.action = {
       metro_Vol = spec_Metro.map(slid_Metro.value);
       // while moving the slider , only evaluate the Pdef when it is already playing
