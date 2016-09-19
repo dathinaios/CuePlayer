@@ -32,7 +32,7 @@ CuePlayerGUI {
   }
 
   createMainWindow {
-    window = Window.new(name, Rect(1400, 650, 282, 255 + this.calculateLevelSumHeight));
+    window = Window.new(name, Rect(1400, 650, 282, 255 + this.calculateLevelSumHeight), resizable: false);
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
@@ -47,8 +47,8 @@ CuePlayerGUI {
   }
 
   calculateLevelSumHeight { 
-    var outHeightSum, inHeightSum, labelHeight = 30, outMeterHeight = 50, inMeterHeight = 20;
-    outHeightSum = (monitorOutChannels/8)*(outMeterHeight+labelHeight);
+    var outHeightSum, inHeightSum, labelHeight = 20, outMeterHeight = 50, inMeterHeight = 20;
+    outHeightSum = ((monitorOutChannels/8).roundUp(1))*(outMeterHeight+labelHeight);
     inHeightSum = monitorInChannels*inMeterHeight;
     ^(outHeightSum + inHeightSum);
   }
@@ -208,26 +208,23 @@ CuePlayerGUI {
 
   /* Output Levels */
 
-  createOutputLevels{ var outlev, cycle = 0;
+  createOutputLevels{ var outlev, label;
     this.createLabel("Output meters").align_(\left);
 
     outlev = Array.newClear(monitorOutChannels);
-    monitorOutChannels.do{ arg i;
-      outlev[i] = LevelIndicator(window, Rect(width:  30, height: 50) );
+    monitorOutChannels.do{ arg i; var compView;
+      compView = CompositeView(window, Rect(width:  30, height: 70) );
+      outlev[i] = LevelIndicator(compView, Rect(3, 0, width:  35, height: 50) );
       outlev[i].warning = -2.dbamp;
       outlev[i].critical = -1.dbamp;
       outlev[i].drawsPeak = true;
       outlev[i].background = Color.fromHexString("#A0A0A0");
-      outlev[i].numTicks = 11;
-      outlev[i].numMajorTicks = 3;
-      /* create the label every 8 channels */
-      if ((i+1)%8 == 0, { var chanNumOffset = 0;
-        chanNumOffset = cycle * 8;
-        8.do{ arg index;
-          this.createLabel(index+1+chanNumOffset, 30).align_(\center);
-        };
-        cycle = cycle + 1;
-      });
+      /* outlev[i].numTicks = 11; */
+      /* outlev[i].numMajorTicks = 3; */
+      label = StaticText(compView, Rect( 0, 50, width: 30, height: 20)).align_(\center);
+      label.font_(Font("Arial", 11));
+      label.stringColor_(Color.fromHexString("#A0A0A0"));
+      label.string = i+1;
     };
     /* create oscfunction */
     oscOutLevels =
