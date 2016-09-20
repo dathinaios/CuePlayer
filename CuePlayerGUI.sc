@@ -5,7 +5,7 @@ CuePlayerGUI {
   var cues, name, clock;
   var timer, pauseButton, cueNumberDisplay, bpm, lrgCueWin, largeCueNumberDisplay;
   var <window, pdefText, reaperAddr;
-  var font, titleFontSize, marginTop;
+  var font, titleFontSize, marginTop, <active = false;
 
   /* Server and Routing */
   var outputLevels, <inputLevels, oscInputLevels, oscOutLevels;
@@ -32,6 +32,7 @@ CuePlayerGUI {
     this.createServerVolumeSlider;
     this.setCmdPeriodActions;
 
+    active = true;
     window.front;
   }
 
@@ -62,6 +63,7 @@ CuePlayerGUI {
       outputLevels.free;
       inputLevels.free;
       if (lrgCueWin.notNil and: {lrgCueWin.isClosed.not}) {lrgCueWin.close};
+      active = false;
     };
   }
 

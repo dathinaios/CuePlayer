@@ -16,9 +16,12 @@ CuePlayer {
   }
 
   gui {arg monitorInChannels = 2, monitorOutChannels = 8, monitorInOffset = 0, largeDisplay = false;
-    guiInstance = CuePlayerGUI(this, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay);
-    cues.addDependant(guiInstance);
-    this.addDependant(guiInstance);
+    if (guiInstance.isNil or: {guiInstance.active.not},
+    {
+      guiInstance = CuePlayerGUI(this, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay);
+      cues.addDependant(guiInstance);
+      this.addDependant(guiInstance);
+    }, {"The GUI for this CuePlayer is already active".warn;})
   }
 
   tempo { arg bpm = 120;
