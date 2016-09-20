@@ -8,6 +8,10 @@ FunkySchedulerCP {
     ^super.newCopyArgs(clock).init;
   }
 
+  *newFromArray { arg clock, array;
+    ^super.newCopyArgs(clock, array).init.fillFromArray(array);
+  }
+
   init {
     if(clock.isNil, {clock = TempoClock(queueSize: 2048 * 128).permanent_(true)});
     functionList = List.new;
@@ -15,6 +19,12 @@ FunkySchedulerCP {
 
   add{ arg time, function;
     functionList.add([time, function]);
+  }
+
+  fillFromArray { arg array;
+    array.pairsDo{ arg time, function;
+      this.add(time, function);
+    }
   }
 
   play{ arg mode = \beats;
@@ -48,6 +58,10 @@ FunkySchedulerCP {
 
   stop {
     clock.clear;
+  }
+
+  value { arg mode = \beats;
+    this.play(mode);
   }
 
 }

@@ -11,7 +11,7 @@ CuePlayer {
 
   init {
     cues = Cues.new;
-    clock = TempoClock(120/60, queueSize: 2048 * 128).permanent_(true);
+    clock = TempoClock(120/60, queueSize: 2048 * 16).permanent_(true);
     MIDIIn.connectAll;
   }
 
@@ -20,6 +20,7 @@ CuePlayer {
     cues.addDependant(guiInstance);
     this.addDependant(guiInstance);
   }
+
   tempo { arg bpm = 120;
     ("CuePlayer tempo set to " ++ bpm ++ " bpm").postln;
     clock.tempo = bpm/60;
@@ -40,13 +41,11 @@ CuePlayer {
     this.sched(clock.timeToNextBeat,{address.sendMsg(msg)});
   }
 
-  quit {
-  }
-
   /* interacting with the Cues */
 
-  addCue { arg function, cueNumber;
-    ^cues.addCue(function, cueNumber);
+  addCue { arg function, cueNumber, timeline, timeLineMode = \beats;
+    timeline = this.initFunkyScheduler(timeline);
+    ^cues.addCue({function.value; timeline.value(timeLineMode)}, cueNumber);
   }
 
   next {
@@ -63,6 +62,21 @@ CuePlayer {
 
   trigger { arg cue = 1;
     ^cues.trigger(cue);
+  }
+
+  /* Helper Methods */
+
+  initFunkyScheduler { arg timeline;
+    case
+    { timeline.class == Array }
+    { ^FunkySchedulerCP.newFromArray(clock, timeline); }
+    {timeline.class == String } 
+    {
+      timeline = timeline.standardizePath.load;
+      ^FunkySchedulerCP.newFromArray(clock, timeline);
+    }
+    {timeline.class == FunkySchedulerCP}
+    { ^timeline };
   }
 
   sched { arg time, function;
