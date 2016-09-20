@@ -2,7 +2,7 @@
 FunkySchedulerCP {
 
   var <clock;
-  var functionList;
+  var <functionList;
 
   *new { arg clock;
     ^super.newCopyArgs(clock).init;
@@ -27,16 +27,23 @@ FunkySchedulerCP {
     functionList.do{arg item; var beat, function;
       beat = item[0];
       function = item[1];
-      clock.sched(clock.timeToNextBeat+beat, function);
+      this.sched(clock.timeToNextBeat+beat, function);
     }
   }
 
   scheduleToTime {
     functionList.do{arg item; var time, function;
-      time = this.secs2beats(item[0]);
+      time = item[0]*clock.tempo;
       function = item[1];
-      clock.sched(clock.timeToNextBeat+time, function)
+      this.sched(clock.timeToNextBeat+time, function)
     }
+  }
+
+  sched { arg time, function;
+    Routine {
+      time.wait;
+      Server.default.makeBundle(nil, function);
+    }.play(clock);
   }
 
   stop {

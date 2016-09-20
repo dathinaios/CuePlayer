@@ -35,9 +35,9 @@ CuePlayer {
     }).permanent = true;
   }
 
-  sendOSC { arg ip = "127.0.0.1", port = 57120, msg = ["\play", 1]; var address;
+  sendOSC { arg ip = "127.0.0.1", port = 57120, msg = ["/play", 1]; var address;
     address = NetAddr(ip, port);
-    clock.sched(clock.timeToNextBeat,{address.sendMsg(msg)});
+    this.sched(clock.timeToNextBeat,{address.sendMsg(msg)});
   }
 
   quit {
@@ -65,5 +65,11 @@ CuePlayer {
     ^cues.trigger(cue);
   }
 
+  sched { arg time, function;
+    Routine {
+      time.wait;
+      Server.default.makeBundle(nil, function);
+    }.play(clock);
+  }
 
 }
