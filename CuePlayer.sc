@@ -2,7 +2,7 @@
 CuePlayer {
 
   var <name;
-  var <cues, <clock;
+  var <cues, <>clock;
   var <guiInstance;
 
   *new { arg name;
@@ -31,6 +31,8 @@ CuePlayer {
     ^bpm;
   }
 
+  /* External Control */
+
   midiTrigger { arg note = 60, channel = 15;
     MIDIFunc.noteOn({ arg vel, noteNum, chan;
       if (noteNum == note && chan == channel, {
@@ -47,8 +49,9 @@ CuePlayer {
   /* interacting with the Cues */
 
   addCue { arg function, cueNumber, timeline, timelineMode = \beats;
-    timeline = this.initFunkyScheduler(timeline);
-    ^cues.addCue({function.value; timeline.value(timelineMode)}, cueNumber);
+    timeline = timeline.asFunkySchedulerCP(clock);
+    timeline.debug("timeline");
+    ^cues.addCue({function.value; timeline.play(timelineMode)}, cueNumber);
   }
 
   next {
@@ -68,19 +71,6 @@ CuePlayer {
   }
 
   /* Helper Methods */
-
-  initFunkyScheduler { arg timeline;
-    case
-    { timeline.class == Array }
-    { ^FunkySchedulerCP.newFromArray(clock, timeline); }
-    {timeline.class == String } 
-    {
-      timeline = timeline.standardizePath.load;
-      ^FunkySchedulerCP.newFromArray(clock, timeline);
-    }
-    {timeline.class == FunkySchedulerCP}
-    { ^timeline };
-  }
 
   sched { arg time, function;
     Routine {

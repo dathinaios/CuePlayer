@@ -8,12 +8,12 @@ FunkySchedulerCP {
     ^super.newCopyArgs(clock).init;
   }
 
-  *newFromArray { arg clock, array;
-    ^super.newCopyArgs(clock, array).init.fillFromArray(array);
+  *newFromArray { arg array, clock;
+    ^super.newCopyArgs(clock).init.fillFromArray(array);
   }
 
   init {
-    if(clock.isNil, {clock = TempoClock(queueSize: 2048 * 128).permanent_(true)});
+    if(clock.isNil, {clock = TempoClock.new.permanent_(true)});
     functionList = List.new;
   }
 
@@ -60,8 +60,8 @@ FunkySchedulerCP {
     clock.clear;
   }
 
-  value { arg mode = \beats;
-    this.play(mode);
+  asFunkySchedulerCP {
+    ^this;
   }
 
 }
