@@ -11,7 +11,7 @@ CuePlayer {
 
   init {
     cues = Cues.new;
-    clock = TempoClock(120/60).permanent_(true);
+    clock = TempoClock(120/60, queueSize: 2048 * 128).permanent_(true);
     MIDIIn.connectAll;
   }
 

@@ -2,14 +2,14 @@
 FunkySchedulerCP {
 
   var <clock;
-  var <functionList;
+  var <functionList, <>latency;
 
   *new { arg clock;
     ^super.newCopyArgs(clock).init;
   }
 
   init {
-    if(clock.isNil, {clock = TempoClock.new.permanent_(true)});
+    if(clock.isNil, {clock = TempoClock(queueSize: 2048 * 128).permanent_(true)});
     functionList = List.new;
   }
 
@@ -42,7 +42,7 @@ FunkySchedulerCP {
   sched { arg time, function;
     Routine {
       time.wait;
-      Server.default.makeBundle(nil, function);
+      Server.default.makeBundle(latency, function);
     }.play(clock);
   }
 
