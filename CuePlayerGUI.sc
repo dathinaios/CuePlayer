@@ -310,7 +310,7 @@ CuePlayerGUI {
     volSlider.value = spec.unmap(0);
     volSlider.canFocus = false;
     volSlider.action = { arg slider;
-      Server.default.volume = spec.map(slider.value).postln;
+      Server.default.volume = spec.map(slider.value);
     };
     this.createLabel("", 282, marginTop);
     peakCPULabel = this.createLabel("Peak CPU : " ++ Server.local.peakCPU.round(0.1) ++ " %", width: 134, height: 20).align_(\left).stringColor_(Color.white);
