@@ -1,18 +1,18 @@
 
 CuePlayerGUI {
 
-  var cuePlayer, monitorInChannels, monitorOutChannels, largeDisplay;
+  var cuePlayer, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay;
   var cues, name, clock;
   var timer, pauseButton, cueNumberDisplay, bpm, lrgCueWin, largeCueNumberDisplay;
   var <window, pdefText, reaperAddr;
   var font, titleFontSize, marginTop;
 
   /* Server and Routing */
-  var outputLevels, inputLevels, oscInputLevels, oscOutLevels;
+  var outputLevels, <inputLevels, oscInputLevels, oscOutLevels;
   var <groupA, <groupB,  <groupZ;
 
-  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, largeDisplay = false;
-    ^super.newCopyArgs(cuePlayer, monitorInChannels, monitorOutChannels, largeDisplay).init;
+  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, monitorInOffset = 0, largeDisplay = false;
+    ^super.newCopyArgs(cuePlayer, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay).init;
   }
 
   init {
@@ -82,7 +82,7 @@ CuePlayerGUI {
     inLevelArray = Array.newClear(monitorInChannels);
     monitorInChannels.do{ arg i;
       inLevelArray[i] = this.createInputLevel;
-      this.createLabel("  " ++ (i+1), 20).align_(\center);
+      this.createLabel("  " ++ (i+1+monitorInOffset), 20).align_(\center);
     };
     oscInputLevels = OSCFunc({arg msg; var curMsg = 3;
       {
@@ -289,7 +289,7 @@ CuePlayerGUI {
     SynthDef(\inputLevels, {
       var trig, sig, delayTrig;
 
-      sig = SoundIn.ar( monitorInChannels.collect{arg i; i});
+      sig = SoundIn.ar( monitorInChannels.collect{arg i; i+(monitorInOffset)});
       trig = Impulse.kr(10);
       delayTrig = Delay1.kr(trig);
 

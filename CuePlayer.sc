@@ -11,12 +11,12 @@ CuePlayer {
 
   init {
     cues = Cues.new;
-    clock = TempoClock(120/60, queueSize: 2048 * 16).permanent_(true);
+    clock = TempoClock(120/60, queueSize: 2048 * 2).permanent_(true);
     MIDIIn.connectAll;
   }
 
-  gui {arg monitorInChannels = 2, monitorOutChannels = 8, largeDisplay = false;
-    guiInstance = CuePlayerGUI(this, monitorInChannels, monitorOutChannels, largeDisplay);
+  gui {arg monitorInChannels = 2, monitorOutChannels = 8, monitorInOffset = 0, largeDisplay = false;
+    guiInstance = CuePlayerGUI(this, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay);
     cues.addDependant(guiInstance);
     this.addDependant(guiInstance);
   }
@@ -43,9 +43,9 @@ CuePlayer {
 
   /* interacting with the Cues */
 
-  addCue { arg function, cueNumber, timeline, timeLineMode = \beats;
+  addCue { arg function, cueNumber, timeline, timelineMode = \beats;
     timeline = this.initFunkyScheduler(timeline);
-    ^cues.addCue({function.value; timeline.value(timeLineMode)}, cueNumber);
+    ^cues.addCue({function.value; timeline.value(timelineMode)}, cueNumber);
   }
 
   next {
