@@ -12,7 +12,7 @@ CuePlayerGUI {
   var <groupA, <groupB,  <groupZ;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, monitorInOffset = 0, largeDisplay = false;
-    ^super.newCopyArgs(cuePlayer, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay).init;
+    ^super.newCopyArgs(cuePlayer, monitorInChannels.clip(2, 8), monitorOutChannels, monitorInOffset, largeDisplay).init;
   }
 
   init {
@@ -289,7 +289,7 @@ CuePlayerGUI {
     SynthDef(\inputLevels, {
       var trig, sig, delayTrig;
 
-      sig = SoundIn.ar( monitorInChannels.collect{arg i; i+(monitorInOffset)});
+      sig = SoundIn.ar( monitorInChannels.collect{arg i; i+monitorInOffset});
       trig = Impulse.kr(10);
       delayTrig = Delay1.kr(trig);
 
