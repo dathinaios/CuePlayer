@@ -3,7 +3,7 @@ CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay;
   var cues, name, clock;
-  var timer, pauseButton, cueNumberDisplay, bpm, lrgCueWin, largeCueNumberDisplay;
+  var timer, pauseButton, cueNumberDisplay, metronome, metroOutBox, metronomeVolume, bpm, lrgCueWin, largeCueNumberDisplay;
   var <window, pdefText, reaperAddr;
   var font, titleFontSize, marginTop, <active = false;
 
@@ -38,8 +38,11 @@ CuePlayerGUI {
 
   setCmdPeriodActions {
     CmdPeriod.add({
-      SystemClock.sched(0.1, {
+      AppClock.sched(0.1, {
         this.initServerResources;
+        if ( metronome.value == 1, {
+          Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metronomeVolume.value.linlin(0,1,0,0.5), \dur, 1, \freq, 800, \out, metroOutBox.value - 1 )).play(clock, quant:[1]);
+        });
       });
     });
   }
@@ -189,35 +192,32 @@ CuePlayerGUI {
 
   /* Metronome */
 
-  createMetronome { var but_Metro, spec_Metro, metroOutBox, metroOut, metro_Vol, slid_Metro;
-    metroOut = 1; // default output bus for metronome
-    metro_Vol = 0.1; // default volume
+  createMetronome { var spec_Metro, metroOut, metro_Vol;
+    metroOut = 1;
+    metro_Vol = 0.1;
     this.createLabel("", 282, marginTop);
     this.createLabel("Metronome       Metro Vol.         Out          Bpm").align_(\left);
-    but_Metro = Button(window, Rect(width: 80, height: 20) ); // 2 arguments: ( which_Window, bounds )
-    but_Metro.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
-    but_Metro.canFocus = false;
-    but_Metro.font_(Font(font, titleFontSize));
-    but_Metro.action = { arg butState;
+    metronome = Button(window, Rect(width: 80, height: 20) );
+    metronome.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
+    metronome.canFocus = false;
+    metronome.font_(Font(font, titleFontSize));
+    metronome.action = { arg butState;
       if ( butState.value == 1, {
         Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(clock, quant:[1]);
       });
       if ( butState.value == 0, { Pdef(\metronome).clear});
     };
-    // metronomes volume slider
-    slid_Metro = Slider(window, Rect(width: 82, height: 20) ).background_(Color.fromHexString("#A0A0A0"));
+    metronomeVolume = Slider(window, Rect(width: 82, height: 20) ).background_(Color.fromHexString("#A0A0A0"));
     spec_Metro = ControlSpec(minval: 0, maxval: 0.5);
-    slid_Metro.value = metro_Vol;
-    slid_Metro.canFocus = false;
-    slid_Metro.action = {
-      metro_Vol = spec_Metro.map(slid_Metro.value);
-      // while moving the slider , only evaluate the Pdef when it is already playing
+    metronomeVolume.value = spec_Metro.unmap(metro_Vol);
+    metronomeVolume.canFocus = false;
+    metronomeVolume.action = {
+      metro_Vol = spec_Metro.map(metronomeVolume.value);
       if (Pdef(\metronome).isPlaying == true, {
         Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(clock, quant:[1])
       });
     };
 
-    // defines metronomes output bus
     metroOutBox = NumberBox(window, Rect(width:50, height:20)).align_(\center);
     metroOutBox.background_(Color(0.9, 0.9, 0.9));
     metroOutBox.normalColor_(Color.black);
