@@ -3,7 +3,8 @@ CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay;
   var cues, name, clock;
-  var timer, pauseButton, cueNumberDisplay, metronome, metroOutBox, metronomeVolume, bpm, lrgCueWin, largeCueNumberDisplay;
+  var timer, pauseButton, cueNumberDisplay, metronome, metroOutBox, 
+      metronomeVolume, bpm, serverInfoRoutine, lrgCueWin, largeCueNumberDisplay;
   var <window, pdefText, reaperAddr;
   var font, titleFontSize, marginTop, <active = false;
 
@@ -29,7 +30,7 @@ CuePlayerGUI {
     this.createBpmField;
     this.createOutputLevels;
     this.initServerResources;
-    this.createServerVolumeSlider;
+    this.createServerControls;
     this.setCmdPeriodActions;
 
     active = true;
@@ -54,12 +55,13 @@ CuePlayerGUI {
   }
 
   createMainWindow {
-    window = Window.new(name, Rect(1400, 650, 282, 310 + this.calculateLevelSumHeight + (marginTop*4)), resizable: false);
+    window = Window.new(name, Rect(1400, 650, 282, 330 + this.calculateLevelSumHeight + (marginTop*4)), resizable: false);
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
       Pdef(\metronome).clear;
       timer.stop;
+      serverInfoRoutine.stop;
       cues.removeDependant(this);
       oscOutLevels.free;
       oscInputLevels.free;
@@ -273,6 +275,41 @@ CuePlayerGUI {
     oscOutLevels.permanent = true;
   }
 
+  /* Master */
+
+  createServerControls { var volSlider, spec, muteButton, peakCPULabel, numSynthsLabel;
+    this.createLabel("Master Level").align_(\left);
+    muteButton = Button(window, Rect(width: 80, height: 20) );
+    muteButton.states = [["Mute", Color.white, Color.grey], ["Unmute", Color.white,  Color(0.9, 0.5, 0.3)]];
+    muteButton.canFocus = false;
+    muteButton.font_(Font(font, titleFontSize));
+    if(Server.default.volume.isMuted){muteButton.value = 1};
+    muteButton.action = { arg button;
+      if(button.value == 0,
+        {Server.default.unmute},
+        {Server.default.mute}
+      );
+    };
+    volSlider = Slider(window, Rect(width: 190, height: 20) ).background_(Color.fromHexString("#A0A0A0"));
+    spec = ControlSpec(0.ampdb, 2.ampdb, \db, units: " dB");
+    volSlider.value = spec.unmap(0);
+    volSlider.canFocus = false;
+    volSlider.action = { arg slider;
+      Server.default.volume = spec.map(slider.value).postln;
+    };
+    this.createLabel("", 282, marginTop);
+    peakCPULabel = this.createLabel("Peak CPU : " ++ Server.local.peakCPU.round(0.1) ++ " %", width: 134, height: 20).align_(\left).stringColor_(Color.white);
+    numSynthsLabel = this.createLabel("Synths : " ++ Server.local.numSynths, width: 134, height: 20).align_(\right).stringColor_(Color.white);
+    serverInfoRoutine = Routine{ 
+      inf.do{
+        peakCPULabel.string = "Peak CPU : " ++ Server.local.peakCPU.round(0.1) ++ " %";
+        numSynthsLabel.string = "Synths : " ++ Server.local.numSynths;
+        0.1.wait;
+      }
+    }.play(AppClock);
+  }
+
+
   /* Server Resources */
 
   initServerResources {
@@ -327,28 +364,6 @@ CuePlayerGUI {
   runSynths {
     { inputLevels = Synth(\inputLevels, target: groupA )}.defer(1);
     { outputLevels = Synth(\outputLevels, target: groupZ) }.defer(1);
-  }
-
-  createServerVolumeSlider { var volSlider, spec, muteButton;
-    this.createLabel("Master Level").align_(\left);
-    muteButton = Button(window, Rect(width: 80, height: 20) );
-    muteButton.states = [["Mute", Color.white, Color.grey], ["Unmute", Color.white,  Color(0.9, 0.5, 0.3)]];
-    muteButton.canFocus = false;
-    muteButton.font_(Font(font, titleFontSize));
-    if(Server.default.volume.isMuted){muteButton.value = 1};
-    muteButton.action = { arg button;
-      if(button.value == 0,
-        {Server.default.unmute},
-        {Server.default.mute}
-      );
-    };
-    volSlider = Slider(window, Rect(width: 190, height: 20) ).background_(Color.fromHexString("#A0A0A0"));
-    spec = ControlSpec(0.ampdb, 2.ampdb, \db, units: " dB");
-    volSlider.value = spec.unmap(0);
-    volSlider.canFocus = false;
-    volSlider.action = { arg slider;
-      Server.default.volume = spec.map(slider.value).postln;
-    };
   }
 
   /* Handle Events from Dependants */
