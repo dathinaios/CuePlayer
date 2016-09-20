@@ -3,8 +3,9 @@ CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay;
   var cues, name, clock;
-  var timer, pauseButton, cueNumberDisplay, metronome, metroOutBox, 
-      metronomeVolume, bpm, serverInfoRoutine, lrgCueWin, largeCueNumberDisplay;
+  var timer, trigButton, pauseButton, cueNumberDisplay, metronome, metroOutBox, 
+      metronomeVolume, bpm, serverInfoRoutine, lrgCueWin, largeCueNumberDisplay,
+      muteButton;
   var <window, pdefText, reaperAddr;
   var font, titleFontSize, marginTop, <active = false;
 
@@ -31,6 +32,7 @@ CuePlayerGUI {
     this.createOutputLevels;
     this.initServerResources;
     this.createServerControls;
+    this.registerShortcuts;
     this.setCmdPeriodActions;
 
     active = true;
@@ -80,6 +82,19 @@ CuePlayerGUI {
     outHeightSum = ((monitorOutChannels/8).roundUp(1))*(outMeterHeight+labelHeight);
     inHeightSum = monitorInChannels*inMeterHeight;
     ^(outHeightSum + inHeightSum);
+  }
+
+  registerShortcuts {
+    window.view.keyDownAction = { 
+      arg view, char, modifiers, unicode, keycode; 
+      [char, modifiers, unicode, keycode].postln; 
+      switch(unicode)
+      {32} { trigButton.doAction(0) } //space
+      {109} {} // m
+      {77} {} //M
+      {112} {} //p
+    }; 
+    
   }
 
   /* -------- */
@@ -132,7 +147,7 @@ CuePlayerGUI {
     ^label;
   }
 
-  createTriggerButton { var trigButton;
+  createTriggerButton {
     trigButton = Button(window, Rect(10, 200, 220, 60));
     trigButton.font_(Font(font, 12));
     trigButton.canFocus = false;
@@ -277,7 +292,7 @@ CuePlayerGUI {
 
   /* Master */
 
-  createServerControls { var volSlider, spec, muteButton, peakCPULabel, numSynthsLabel;
+  createServerControls { var volSlider, spec, peakCPULabel, numSynthsLabel;
     this.createLabel("Master Level").align_(\left);
     muteButton = Button(window, Rect(width: 80, height: 20) );
     muteButton.states = [["Mute", Color.white, Color.grey], ["Unmute", Color.white,  Color(0.9, 0.5, 0.3)]];
