@@ -12,7 +12,7 @@ CuePlayerGUI {
   var <groupA, <groupB,  <groupZ;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, monitorInOffset = 0, largeDisplay = false;
-    ^super.newCopyArgs(cuePlayer, monitorInChannels.clip(2, 8), monitorOutChannels, monitorInOffset, largeDisplay).init;
+    ^super.newCopyArgs(cuePlayer, monitorInChannels.clip(2, 8), monitorOutChannels.clip(1, 256), monitorInOffset, largeDisplay).init;
   }
 
   init {
