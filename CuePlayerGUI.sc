@@ -329,14 +329,7 @@ CuePlayerGUI {
 
   createServerVolumeSlider { var volSlider, spec, muteButton;
     this.createLabel("Master Level").align_(\left);
-    volSlider = Slider(window, Rect(width: 200, height: 20) ).background_(Color.fromHexString("#A0A0A0"));
-    spec = ControlSpec(0.ampdb, 2.ampdb, \db, units: " dB");
-    volSlider.value = spec.unmap(0);
-    volSlider.canFocus = false;
-    volSlider.action = { arg slider;
-      Server.default.volume = spec.map(slider.value).postln;
-    };
-    muteButton = Button(window, Rect(width: 65, height: 20) );
+    muteButton = Button(window, Rect(width: 80, height: 20) );
     muteButton.states = [["Mute", Color.white, Color.grey], ["Unmute", Color.white,  Color(0.9, 0.5, 0.3)]];
     muteButton.canFocus = false;
     muteButton.font_(Font(font, titleFontSize));
@@ -346,6 +339,13 @@ CuePlayerGUI {
         {Server.default.unmute},
         {Server.default.mute}
       );
+    };
+    volSlider = Slider(window, Rect(width: 190, height: 20) ).background_(Color.fromHexString("#A0A0A0"));
+    spec = ControlSpec(0.ampdb, 2.ampdb, \db, units: " dB");
+    volSlider.value = spec.unmap(0);
+    volSlider.canFocus = false;
+    volSlider.action = { arg slider;
+      Server.default.volume = spec.map(slider.value).postln;
     };
   }
 
