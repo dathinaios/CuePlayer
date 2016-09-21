@@ -2,7 +2,7 @@
 CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, options; 
-  var cues, name, clock;
+  var name, clock;
   var timer, trigButton, pauseButton, cueNumberDisplay, metronome, metroOutBox, 
       metronomeVolume, bpm, serverInfoRoutine, lrgCueWin, largeCueNumberDisplay,
       muteButton;
@@ -18,7 +18,6 @@ CuePlayerGUI {
   }
 
   init {
-    cues = cuePlayer;
     clock = cuePlayer.clock;
     name = cuePlayer.name ?? "Cue Player";
 
@@ -64,7 +63,7 @@ CuePlayerGUI {
       Pdef(\metronome).clear;
       timer.stop;
       serverInfoRoutine.stop;
-      cues.removeDependant(this);
+      cuePlayer.removeDependant(this);
       oscOutLevels.free;
       oscInputLevels.free;
       outputLevels.free;
@@ -155,7 +154,7 @@ CuePlayerGUI {
     trigButton.action_(
       {
         var cueNum;
-        cueNum = cues.next;
+        cueNum = cuePlayer.next;
         if (timer.isPlaying.not) {timer.play; pauseButton.value_(1)};
       }
     );
@@ -163,11 +162,11 @@ CuePlayerGUI {
 
   createCueNumberDisplay {
     cueNumberDisplay = NumberBox(window, Rect(width: 50, height: 60)).align_(\center);
-    cueNumberDisplay.value = cues.current;
+    cueNumberDisplay.value = cuePlayer.current;
     cueNumberDisplay.font_(Font(font, 26));
     cueNumberDisplay.action = {
       arg box;
-      cues.current = box.value.abs;
+      cuePlayer.current = box.value.abs;
       timer.stop;
       if(box.value == 0){timer.stop; timer.cursecs_(0)};
       if (options.largeDisplay, { largeCueNumberDisplay.string = box.value })
@@ -179,7 +178,7 @@ CuePlayerGUI {
     lrgCueWin.background = Color.black;
     largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
     largeCueNumberDisplay.font_(Font(font, widthHeight * 0.73)).stringColor_(Color.white);
-    largeCueNumberDisplay.string = cues.current;
+    largeCueNumberDisplay.string = cuePlayer.current;
   }
 
   /* Timer */
