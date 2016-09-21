@@ -10,18 +10,6 @@ Cues { var <>cueList, <>current;
     cueList = Array.new;
   }
 
-  next {
-    cueList[current].value;
-    current = current + 1;
-    this.changed(\current);
-    ^current;
-  }
-
-  trigger { arg cue = 1;
-      this.setCurrent(cue);
-      ^this.next;
-  }
-
   addCue { arg function, cueNumber;
     if(cueNumber.isNil,
       {cueList = cueList.add(function)},
@@ -33,6 +21,18 @@ Cues { var <>cueList, <>current;
       }
     );
     ^cueList.size;
+  }
+
+  next {
+    cueList[current].value;
+    current = current + 1;
+    this.changed(\current);
+    ^current;
+  }
+
+  trigger { arg cue = 1;
+      this.setCurrent(cue);
+      ^this.next;
   }
 
   setCurrent {arg cue;

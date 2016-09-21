@@ -18,7 +18,7 @@ CuePlayerGUI {
   }
 
   init {
-    cues = cuePlayer.cues;
+    cues = cuePlayer;
     clock = cuePlayer.clock;
     name = cuePlayer.name ?? "Cue Player";
 
@@ -87,7 +87,7 @@ CuePlayerGUI {
   registerShortcuts {
     window.view.keyDownAction = { 
       arg view, char, modifiers, unicode, keycode; 
-      [char, modifiers, unicode, keycode].postln; 
+      /* [char, modifiers, unicode, keycode].postln; */ 
       switch(unicode)
       {32} { trigButton.doAction(0) } //space
       {109} {} // m

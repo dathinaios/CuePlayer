@@ -1,25 +1,28 @@
 
-CuePlayer {
+CuePlayer : Cues {
 
   var <name;
-  var <cues, <>clock;
-  var <guiInstance;
+  var <>clock, <guiInstance;
 
   *new { arg name;
     ^super.newCopyArgs(name).init;
   }
 
   init {
-    cues = Cues.new;
+    super.init;
     clock = TempoClock(120/60, queueSize: 2048 * 2).permanent_(true);
     MIDIIn.connectAll;
+  }
+
+  addCue { arg function, cueNumber, timeline, timelineMode = \beats;
+    timeline = timeline.asFunkySchedulerCP(clock);
+    ^super.addCue({function.value; timeline.play(timelineMode)}, cueNumber);
   }
 
   gui {arg monitorInChannels = 2, monitorOutChannels = 8, monitorInOffset = 0, largeDisplay = false;
     if (guiInstance.isNil or: {guiInstance.active.not},
     {
       guiInstance = CuePlayerGUI(this, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay);
-      cues.addDependant(guiInstance);
       this.addDependant(guiInstance);
     }, {"The GUI for this CuePlayer is already active".warn;})
   }
@@ -46,31 +49,7 @@ CuePlayer {
     this.sched(clock.timeToNextBeat,{address.sendMsg(msg)});
   }
 
-  /* interacting with the Cues */
-
-  addCue { arg function, cueNumber, timeline, timelineMode = \beats;
-    timeline = timeline.asFunkySchedulerCP(clock);
-    timeline.debug("timeline");
-    ^cues.addCue({function.value; timeline.play(timelineMode)}, cueNumber);
-  }
-
-  next {
-    ^cues.next;
-  }
-
-  current {
-    ^cues.current;
-  }
-
-  setCurrent { arg cue;
-    ^cues.setCurrent(cue);
-  }
-
-  trigger { arg cue = 1;
-    ^cues.trigger(cue);
-  }
-
-  /* Helper Methods */
+  /* Private */
 
   sched { arg time, function;
     Routine {
