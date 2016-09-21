@@ -13,7 +13,7 @@ CuePlayerGUI {
   var outputLevels, <inputLevels, oscInputLevels, oscOutLevels;
   var <groupA, <groupB,  <groupZ;
 
-  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options = (monitorInOffset: 0, largeDisplay: false);
+  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options;
     ^super.newCopyArgs(cuePlayer, monitorInChannels.clip(2, 8), monitorOutChannels.clip(1, 256), options).init;
   }
 
@@ -21,6 +21,7 @@ CuePlayerGUI {
     clock = cuePlayer.clock;
     name = cuePlayer.name ?? "Cue Player";
 
+    this.setDefaultOptions;
     this.initStyleVariables;
     this.createMainWindow;
     this.createInputLevels;
@@ -36,6 +37,14 @@ CuePlayerGUI {
 
     active = true;
     window.front;
+  }
+
+
+  setDefaultOptions {
+    options.monitorInOffset ?? { options.monitorInOffset = 0 };
+    options.largeDisplay ?? { options.largeDisplay = false };
+    options.left ?? { options.left = 1400 };
+    options.top ?? { options.top = 650 };
   }
 
   setCmdPeriodActions {
@@ -56,7 +65,7 @@ CuePlayerGUI {
   }
 
   createMainWindow {
-    window = Window.new(name, Rect(1400, 650, 282, 330 + this.calculateLevelSumHeight + (marginTop*4)), resizable: false);
+    window = Window.new(name, Rect(options.left, options.top, 282, 330 + this.calculateLevelSumHeight + (marginTop*4)), resizable: false);
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
