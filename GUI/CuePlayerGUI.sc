@@ -4,7 +4,7 @@ CuePlayerGUI {
   var cuePlayer, monitorInChannels, monitorOutChannels, options; 
   var <window;
   var name, clock;
-  var timer, trigButton, pauseButton, cueNumberDisplay, metronome, 
+  var timer, trigButton, pauseButton, cueNumberDisplay, <metronome, 
       serverInfoRoutine, lrgCueWin, largeCueNumberDisplay, muteButton;
   var font, titleFontSize, marginTop, <active = false;
 
@@ -210,7 +210,7 @@ CuePlayerGUI {
 
   createMetronome{
     this.createLabel("", 282, marginTop);
-    metronome = MetronomeCP(window, options: (clock: clock, font: Font(font, titleFontSize)));
+    metronome = MetronomeCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
   }
 
   /* Output Levels */
