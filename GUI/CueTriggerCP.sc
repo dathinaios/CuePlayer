@@ -62,7 +62,7 @@ CueTriggerCP : AbstractGUIComponentCP {
   }
 
   windowHeight {
-    ^100
+    ^95
   }
 
   setCurrent { arg val;

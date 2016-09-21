@@ -57,7 +57,7 @@ ServerWindowCP : AbstractGUIComponentCP {
   }
 
   windowHeight {
-    ^85
+    ^80
   }
 
 }

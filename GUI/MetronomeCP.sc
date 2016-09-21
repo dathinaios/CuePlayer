@@ -86,7 +86,7 @@ MetronomeCP : AbstractGUIComponentCP {
   }
 
   windowHeight {
-    ^60
+    ^55
   }
 
 

@@ -58,7 +58,7 @@ TimerCP : AbstractGUIComponentCP {
   }
 
   windowHeight {
-    ^60
+    ^55
   }
 
   cursecs_{ arg val;
