@@ -15,6 +15,7 @@ CuePlayerGUI {
     clock = cuePlayer.clock;
     name = cuePlayer.name ?? "Cue Player";
 
+    this.initGroups;
     this.setDefaultOptions;
     this.initStyleVariables;
     this.createMainWindow;
@@ -23,7 +24,6 @@ CuePlayerGUI {
     this.createTimer;
     this.createMetronome;
     this.createOutputLevels;
-    this.initGroups;
     this.createServerControls;
     this.registerShortcuts;
 
@@ -147,10 +147,16 @@ CuePlayerGUI {
 
   /* Server Resources */
 
-  initGroups {
-    groupA = Group.head(Server.default);
-    groupB = Group.after(groupA);
-    groupZ = Group.tail(Server.default);
+  initGroups { var groups;
+    groups  = {
+      groupA = Group.head(Server.default);
+      groupB = Group.after(groupA);
+      groupZ = Group.tail(Server.default);
+    };
+    groups.value;
+    Server.default.tree = {
+      groups.value;
+    };
   }
 
   /* Handle Events from Dependants */
