@@ -19,10 +19,10 @@ CuePlayer : Cues {
     ^super.addCue({function.value; timeline.play(timelineMode)}, cueNumber);
   }
 
-  gui {arg monitorInChannels = 2, monitorOutChannels = 8, monitorInOffset = 0, largeDisplay = false;
+  gui {arg monitorInChannels = 2, monitorOutChannels = 8, options;
     if (guiInstance.isNil or: {guiInstance.active.not},
     {
-      guiInstance = CuePlayerGUI(this, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay);
+      guiInstance = CuePlayerGUI(this, monitorInChannels, monitorOutChannels, options);
       this.addDependant(guiInstance);
     }, {"The GUI for this CuePlayer is already active".warn;})
   }

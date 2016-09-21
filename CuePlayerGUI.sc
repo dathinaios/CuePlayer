@@ -1,7 +1,7 @@
 
 CuePlayerGUI {
 
-  var cuePlayer, monitorInChannels, monitorOutChannels, monitorInOffset, largeDisplay;
+  var cuePlayer, monitorInChannels, monitorOutChannels, options; 
   var cues, name, clock;
   var timer, trigButton, pauseButton, cueNumberDisplay, metronome, metroOutBox, 
       metronomeVolume, bpm, serverInfoRoutine, lrgCueWin, largeCueNumberDisplay,
@@ -13,8 +13,8 @@ CuePlayerGUI {
   var outputLevels, <inputLevels, oscInputLevels, oscOutLevels;
   var <groupA, <groupB,  <groupZ;
 
-  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, monitorInOffset = 0, largeDisplay = false;
-    ^super.newCopyArgs(cuePlayer, monitorInChannels.clip(2, 8), monitorOutChannels.clip(1, 256), monitorInOffset, largeDisplay).init;
+  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options; //current options: monitorInOffset = 0, largeDisplay = false;
+    ^super.newCopyArgs(cuePlayer, monitorInChannels.clip(2, 8), monitorOutChannels.clip(1, 256), options).init;
   }
 
   init {
@@ -104,7 +104,7 @@ CuePlayerGUI {
     inLevelArray = Array.newClear(monitorInChannels);
     monitorInChannels.do{ arg i;
       inLevelArray[i] = this.createInputLevel;
-      this.createLabel("  " ++ (i+1+monitorInOffset), 20).align_(\center);
+      this.createLabel("  " ++ (i+1+options.monitorInOffset), 20).align_(\center);
     };
     oscInputLevels = OSCFunc({arg msg; var curMsg = 3;
       {
@@ -136,7 +136,7 @@ CuePlayerGUI {
     this.createLabel("Trigger / Display & Reset Cue-number").align_(\left);
     this.createTriggerButton;
     this.createCueNumberDisplay;
-    if (largeDisplay, { this.createLargeCueNumberDisplay })
+    if (options.largeDisplay, { this.createLargeCueNumberDisplay })
   }
 
   createLabel { arg text = "placeholder text", width = 280, height = 20; var label;
@@ -170,7 +170,7 @@ CuePlayerGUI {
       cues.current = box.value.abs;
       timer.stop;
       if(box.value == 0){timer.stop; timer.cursecs_(0)};
-      if (largeDisplay, { largeCueNumberDisplay.string = box.value })
+      if (options.largeDisplay, { largeCueNumberDisplay.string = box.value })
     };
   }
 
@@ -343,7 +343,7 @@ CuePlayerGUI {
     SynthDef(\inputLevels, {
       var trig, sig, delayTrig;
 
-      sig = SoundIn.ar( monitorInChannels.collect{arg i; i+monitorInOffset});
+      sig = SoundIn.ar( monitorInChannels.collect{arg i; i+options.monitorInOffset});
       trig = Impulse.kr(10);
       delayTrig = Delay1.kr(trig);
 
@@ -393,7 +393,7 @@ CuePlayerGUI {
 
   setCurrent { arg val;
     cueNumberDisplay.value = val;
-    if (largeDisplay, { largeCueNumberDisplay.string = val });
+    if (options.largeDisplay, { largeCueNumberDisplay.string = val });
   }
 
 }
