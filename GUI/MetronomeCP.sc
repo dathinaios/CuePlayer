@@ -20,7 +20,7 @@ MetronomeCP : AbstractGUIComponentCP {
     metroButton = Button(window, Rect(width: 80, height: 20) );
     metroButton.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
     metroButton.canFocus = false;
-    metroButton.font_();
+    metroButton.font_(options.font);
     metroButton.action = { arg butState;
       if ( butState.value == 1, {
         Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(options.tempoClock, quant:[1]);

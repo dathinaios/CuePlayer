@@ -13,7 +13,7 @@ ServerWindowCP : AbstractGUIComponentCP {
     muteButton = Button(window, Rect(width: 80, height: 20) );
     muteButton.states = [["Mute", Color.white, Color.grey], ["Unmute", Color.white,  Color(0.9, 0.5, 0.3)]];
     muteButton.canFocus = false;
-    muteButton.font_(Font(options.font, options.titleFontSize));
+    muteButton.font_(options.font);
     if(Server.default.volume.isMuted){muteButton.value = 1};
     muteButton.action = { arg button;
       if(button.value == 0,
