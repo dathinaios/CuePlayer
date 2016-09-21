@@ -13,7 +13,7 @@ CuePlayerGUI {
   var outputLevels, <inputLevels, oscInputLevels, oscOutLevels;
   var <groupA, <groupB,  <groupZ;
 
-  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options;
+  *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options = ();
     ^super.newCopyArgs(cuePlayer, monitorInChannels.clip(2, 8), monitorOutChannels.clip(1, 256), options).init;
   }
 
