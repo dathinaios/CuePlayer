@@ -100,7 +100,7 @@ CuePlayerGUI {
   /* -------- */
 
   createInputLevels {
-    inputLevels = InputMetersSC(
+    inputLevels = InputMetersCP(
       window, 
       options: (
         monitorInChannels: monitorInChannels, 

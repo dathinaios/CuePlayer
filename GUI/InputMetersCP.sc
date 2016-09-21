@@ -1,5 +1,5 @@
 
-InputMetersSC : AbstractGUIComponentCP { 
+InputMetersCP : AbstractGUIComponentCP { 
 
   var <inputLevels, oscInputLevels;
 
