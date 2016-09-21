@@ -4,7 +4,7 @@ CuePlayerGUI {
   var cuePlayer, monitorInChannels, monitorOutChannels, options; 
   var <window, name, clock;
   var inputLevels,  cueTrigger, timer, <metronome, outputLevels, serverWindow;
-  var font, titleFontSize, marginTop, <active = false;
+  var <windowHeight = 0, font, titleFontSize, marginTop, <active = false;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options = ();
     ^super.newCopyArgs(cuePlayer, monitorInChannels, monitorOutChannels, options).init;
@@ -17,15 +17,17 @@ CuePlayerGUI {
     this.setDefaultOptions;
     this.initStyleVariables;
     this.createMainWindow;
-    this.createInputLevels;
+    if(options.inputLevels) {this.createInputLevels};
     this.createCueTrigger;
-    this.createTimer;
-    this.createMetronome;
-    this.createOutputLevels;
-    this.createServerControls;
+    if(options.timer) {this.createTimer };
+    if(options.metronome) { this.createMetronome };
+    if(options.outputLevels) { this.createOutputLevels };
+    if(options.serverControls) { this.createServerControls };
     this.registerShortcuts;
 
     active = true;
+    window.bounds.height = windowHeight;
+    window.bounds = window.bounds.height_(windowHeight + 10);
     window.front;
   }
 
@@ -34,6 +36,11 @@ CuePlayerGUI {
     options.largeDisplay ?? { options.largeDisplay = false };
     options.left ?? { options.left = 1400 };
     options.top ?? { options.top = 650 };
+    options.inputLevels ?? { options.inputLevels = true };
+    options.timer ?? { options.timer = true };
+    options.metronome ?? { options.metronome = true };
+    options.outputLevels ?? { options.outputLevels = true };
+    options.serverControls ?? { options.serverControls = true };
   }
 
   initStyleVariables {
@@ -43,7 +50,7 @@ CuePlayerGUI {
   }
 
   createMainWindow {
-    window = Window.new(name, Rect(options.left, options.top, 282, 330 + this.calculateLevelSumHeight + (marginTop*4)), resizable: false);
+    window = Window.new(name, Rect(options.left, options.top, 282, 330), resizable: false);
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
@@ -56,16 +63,6 @@ CuePlayerGUI {
       cuePlayer.removeDependant(this);
       active = false;
     };
-  }
-
-  calculateLevelSumHeight { 
-    var outHeightSum, inHeightSum, labelHeight = 20, outMeterHeight = 50, inMeterHeight = 20;
-    labelHeight = labelHeight + 5;
-    outMeterHeight = outMeterHeight;
-    inMeterHeight = inMeterHeight + 5;
-    outHeightSum = ((monitorOutChannels/8).roundUp(1))*(outMeterHeight+labelHeight);
-    inHeightSum = monitorInChannels*inMeterHeight;
-    ^(outHeightSum + inHeightSum);
   }
 
   registerShortcuts {
@@ -99,6 +96,7 @@ CuePlayerGUI {
         font: Font(font, titleFontSize)
       )
     );
+    windowHeight = windowHeight + inputLevels.windowHeight;
   }
 
   createCueTrigger {
@@ -114,16 +112,19 @@ CuePlayerGUI {
       if(box.value == 0){timer.stop; timer.cursecs_(0)};
       if (options.largeDisplay, { cueTrigger.largeCueNumberDisplay.string = box.value })
     };
+    windowHeight = windowHeight + cueTrigger.windowHeight;
   }
 
   createTimer {
     this.createLabel("", 282, marginTop);
     timer = TimerCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
+    windowHeight = windowHeight + timer.windowHeight;
   }
 
   createMetronome{
     this.createLabel("", 282, marginTop);
     metronome = MetronomeCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
+    windowHeight = windowHeight + metronome.windowHeight;
   }
 
   createOutputLevels{
@@ -135,10 +136,12 @@ CuePlayerGUI {
         font: Font(font, titleFontSize)
       )
     );
+    windowHeight = windowHeight + outputLevels.windowHeight;
   }
 
   createServerControls {
     serverWindow = ServerWindowCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
+    windowHeight = windowHeight + serverWindow.windowHeight;
   }
 
   /* Handle Events from Dependants */
