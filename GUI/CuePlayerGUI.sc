@@ -3,8 +3,7 @@ CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, options; 
   var <window, name, clock;
-  var timer, cueTrigger, pauseButton;
-  var inputLevels, <metronome, outputLevels, serverWindowCP;
+  var inputLevels,  cueTrigger, timer, <metronome, outputLevels, serverWindow;
   var font, titleFontSize, marginTop, <active = false;
   var <groupA, <groupB,  <groupZ;
 
@@ -52,10 +51,10 @@ CuePlayerGUI {
     window.onClose = {
       inputLevels.clear;
       cueTrigger.clear;
-      timer.stop;
+      timer.clear;
       metronome.clear;
       outputLevels.clear;
-      serverWindowCP.clear;
+      serverWindow.clear;
       cuePlayer.removeDependant(this);
       active = false;
     };
@@ -83,6 +82,14 @@ CuePlayerGUI {
     }; 
   }
 
+  createLabel { arg text = "placeholder text", width = 280, height = 20; var label;
+    label = StaticText(window, Rect( width: width, height: height));
+    label.font_(Font(font, titleFontSize));
+    label.stringColor_(Color.fromHexString("#A0A0A0"););
+    label.string_(text);
+    ^label;
+  }
+
   /* -------- */
 
   createInputLevels {
@@ -102,7 +109,7 @@ CuePlayerGUI {
     cueTrigger = CueTriggerCP(window, options: (largeDisplay: options.largeDisplay));
     cueTrigger.trigButton.action = { var cueNum;
         cueNum = cuePlayer.next;
-        if (timer.isPlaying.not) {timer.play; pauseButton.value_(1)};
+        if (timer.isPlaying.not) {timer.play; timer.pauseButton.value_(1)};
     };
     cueTrigger.cueNumberBox.action = { arg box;
       cuePlayer.current = box.value.abs;
@@ -112,34 +119,9 @@ CuePlayerGUI {
     };
   }
 
-  createLabel { arg text = "placeholder text", width = 280, height = 20; var label;
-    label = StaticText(window, Rect( width: width, height: height));
-    label.font_(Font(font, titleFontSize));
-    label.stringColor_(Color.fromHexString("#A0A0A0"););
-    label.string_(text);
-    ^label;
-  }
-  createTimer { var stopButton;
+  createTimer {
     this.createLabel("", 282, marginTop);
-    this.createLabel("Timer");
-    this.createLabel("", 8);
-    timer = ClockFaceCP.new(window);
-
-    pauseButton = Button(window, Rect(width: 22, height: 20) );
-    pauseButton.states = [[">", Color.white, Color.grey], ["||", Color.white, Color.grey]];
-    pauseButton.font_(Font(font, titleFontSize));
-    pauseButton.canFocus = false;
-    pauseButton.action = { arg button; 
-      if(button.value == 0, 
-        { timer.stop  },
-        { timer.play  }
-      );
-    };
-    stopButton = Button(window, Rect(width: 22, height: 20) );
-    stopButton.states = [ ["[ ]", Color.white, Color.grey]];
-    stopButton.font_(Font(font, titleFontSize));
-    stopButton.canFocus = false;
-    stopButton.action = { arg butState; timer.stop; timer.cursecs_(0); };
+    timer = TimerCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
   }
 
   createMetronome{
@@ -160,7 +142,7 @@ CuePlayerGUI {
   }
 
   createServerControls {
-    serverWindowCP = ServerWindowCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
+    serverWindow = ServerWindowCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
   }
 
   /* Server Resources */
