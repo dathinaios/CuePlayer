@@ -110,7 +110,7 @@ MetronomeCP {
   }
 
   height {
-    ^window.view.height;
+    ^window.view.bounds.height;
   }
 
   clear {
