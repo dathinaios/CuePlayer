@@ -9,7 +9,7 @@ CuePlayerGUI {
   var font, titleFontSize, marginTop, <active = false;
 
   /* Server and Routing */
-  var outputLevels, <inputLevels, oscInputLevels, oscOutLevels;
+  var outputLevels, inputLevels, oscInputLevels, oscOutLevels;
   var <groupA, <groupB,  <groupZ;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options = ();
@@ -65,12 +65,11 @@ CuePlayerGUI {
     window.onClose = {
       metronome.clear;
       serverWindowCP.clear;
+      inputLevels.clear;
       timer.stop;
       cuePlayer.removeDependant(this);
       oscOutLevels.free;
-      oscInputLevels.free;
       outputLevels.free;
-      inputLevels.free;
       if (lrgCueWin.notNil and: {lrgCueWin.isClosed.not}) {lrgCueWin.close};
       active = false;
     };
@@ -100,36 +99,17 @@ CuePlayerGUI {
 
   /* -------- */
 
-  createInputLevels { var inLevelArray;
-    this.createLabel("Input meters").align_(\left);
-    inLevelArray = Array.newClear(monitorInChannels);
-    monitorInChannels.do{ arg i;
-      inLevelArray[i] = this.createInputLevel;
-      this.createLabel("  " ++ (i+1+options.monitorInOffset), 20).align_(\center);
-    };
-    oscInputLevels = OSCFunc({arg msg; var curMsg = 3;
-      {
-        monitorInChannels.do{ arg chan;
-          inLevelArray[chan].value = msg[curMsg].ampdb.linlin(-75, 0, 0, 1);
-          inLevelArray[chan].peakLevel = msg[curMsg+1].ampdb.linlin(-75, 0, 0, 1);
-          curMsg = curMsg + 2;
-        }
-      }.defer;
-    }, '/in_levels', Server.default.addr);
-    oscInputLevels.permanent = true;
+  createInputLevels {
+    inputLevels = InputMetersSC(
+      window, 
+      options: (
+        monitorInChannels: monitorInChannels, 
+        monitorInOffset: options.monitorInOffset, 
+        font: Font(font, titleFontSize),
+        groupIn: groupA
+      )
+    );
   }
-
-  createInputLevel { var level;
-    level = LevelIndicator(window, Rect(width:  220, height: 20));
-    level.warning = -2.dbamp;
-    level.critical = -1.dbamp;
-    level.drawsPeak = true;
-    level.background = Color.fromHexString("#A0A0A0");
-    /* level.numTicks = 11; */
-    /* level.numMajorTicks = 3; */
-    ^level;
-  }
-
   /* Cue Trigger */
 
   createCueTrigger {
@@ -269,20 +249,6 @@ CuePlayerGUI {
   }
 
   addSynths {
-    SynthDef(\inputLevels, {
-      var trig, sig, delayTrig;
-
-      sig = SoundIn.ar( monitorInChannels.collect{arg i; i+options.monitorInOffset});
-      trig = Impulse.kr(10);
-      delayTrig = Delay1.kr(trig);
-
-      SendReply.kr(trig, '/in_levels',
-        monitorInChannels.collect{ arg i;
-          [Amplitude.kr( sig[i] ), // rms of signal1
-          K2A.ar(Peak.ar( sig[i], delayTrig).lag(0, 3))] // peak of signal1
-        }.flatten;
-      );
-    }).add;
     SynthDef(\outputLevels, {
       var trig, sig, delayTrig;
 
@@ -300,7 +266,6 @@ CuePlayerGUI {
   }
 
   runSynths {
-    { inputLevels = Synth(\inputLevels, target: groupA )}.defer(1);
     { outputLevels = Synth(\outputLevels, target: groupZ) }.defer(1);
   }
 
