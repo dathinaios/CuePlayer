@@ -4,8 +4,8 @@ CuePlayerGUI {
   var cuePlayer, monitorInChannels, monitorOutChannels, options; 
   var <window;
   var name, clock;
-  var timer, trigButton, pauseButton, cueNumberDisplay, <metronome, 
-      serverInfoRoutine, lrgCueWin, largeCueNumberDisplay, muteButton;
+  var timer, trigButton, pauseButton, cueNumberDisplay, <metronome, serverWindowCP,
+      lrgCueWin, largeCueNumberDisplay;
   var font, titleFontSize, marginTop, <active = false;
 
   /* Server and Routing */
@@ -64,8 +64,8 @@ CuePlayerGUI {
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
       metronome.clear;
+      serverWindowCP.clear;
       timer.stop;
-      serverInfoRoutine.stop;
       cuePlayer.removeDependant(this);
       oscOutLevels.free;
       oscInputLevels.free;
@@ -250,36 +250,8 @@ CuePlayerGUI {
 
   /* Master */
 
-  createServerControls { var volSlider, spec, peakCPULabel, numSynthsLabel;
-    this.createLabel("Master Level").align_(\left);
-    muteButton = Button(window, Rect(width: 80, height: 20) );
-    muteButton.states = [["Mute", Color.white, Color.grey], ["Unmute", Color.white,  Color(0.9, 0.5, 0.3)]];
-    muteButton.canFocus = false;
-    muteButton.font_(Font(font, titleFontSize));
-    if(Server.default.volume.isMuted){muteButton.value = 1};
-    muteButton.action = { arg button;
-      if(button.value == 0,
-        {Server.default.unmute},
-        {Server.default.mute}
-      );
-    };
-    volSlider = Slider(window, Rect(width: 190, height: 20) ).background_(Color.fromHexString("#A0A0A0"));
-    spec = ControlSpec(0.ampdb, 2.ampdb, \db, units: " dB");
-    volSlider.value = spec.unmap(0);
-    volSlider.canFocus = false;
-    volSlider.action = { arg slider;
-      Server.default.volume = spec.map(slider.value);
-    };
-    this.createLabel("", 282, marginTop);
-    peakCPULabel = this.createLabel("Peak CPU : " ++ Server.local.peakCPU.round(0.1) ++ " %", width: 134, height: 20).align_(\left).stringColor_(Color.white);
-    numSynthsLabel = this.createLabel("Synths : " ++ Server.local.numSynths, width: 134, height: 20).align_(\right).stringColor_(Color.white);
-    serverInfoRoutine = Routine{ 
-      inf.do{
-        peakCPULabel.string = "Peak CPU : " ++ Server.local.peakCPU.round(0.1) ++ " %";
-        numSynthsLabel.string = "Synths : " ++ Server.local.numSynths;
-        0.1.wait;
-      }
-    }.play(AppClock);
+  createServerControls {
+    serverWindowCP = ServerWindowCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
   }
 
   /* Server Resources */
