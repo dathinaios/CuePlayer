@@ -22,7 +22,7 @@ AbstractGUIComponentCP {
   }
 
   createMainWindow {
-    window = Window(this.windowName, Rect(1000, 1000, width: 282, height: 60), resizable: false);
+    window = Window(this.windowName, Rect(1000, 1000, width: 282, height: this.windowHeight), resizable: false);
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
@@ -58,15 +58,15 @@ AbstractGUIComponentCP {
     this.subclassResponsibility(thisMethod);
   }
 
-  height {
-    ^window.view.bounds.height;
-  }
-
   clear {
     this.subclassResponsibility(thisMethod);
   }
 
   windowName {
+    this.subclassResponsibility(thisMethod);
+  }
+
+  windowHeight {
     this.subclassResponsibility(thisMethod);
   }
 
