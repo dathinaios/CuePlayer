@@ -1,53 +1,16 @@
 
-MetronomeCP { 
+MetronomeCP : AbstractGUIComponentCP { 
 
-  var window, <options; 
   var <metroButon, <>metroOutBox, <>metronomeVolume, <>bpmBox, <bpm = 120;
 
-  *new { arg window, options = ();
-    ^super.newCopyArgs( window, options).init;
+  setDefaultOptions {
+    super.setDefaultOptions;
+    options.tempoClock ?? { options.tempoClock = TempoClock.default };
   }
 
-  init {
-    this.setDefaultOptions;
-    this.addSynths;
+  createComponent {
     this.createMetronome;
     this.createBpmField;
-    this.setCmdPeriodActions;
-    window.front;
-  }
-
-  setDefaultOptions {
-    window ?? {this.createMainWindow};
-    options.tempoClock ?? { options.tempoClock = TempoClock.default };
-    options.font ?? {options.font = Font("Lucida Grande", 11)};
-  }
-
-  createMainWindow {
-    window = Window("Metronome", Rect(1000, 1000, width: 282, height: 60), resizable: false);
-    window.view.decorator = FlowLayout( window.view.bounds );
-    window.background_(Color.fromHexString("#282828"));
-    window.onClose = {
-      this.clear;
-    };
-  }
-
-  setCmdPeriodActions {
-    CmdPeriod.add({
-      AppClock.sched(0.1, {
-        if ( metroButon.value == 1, {
-          Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metronomeVolume.value.linlin(0,1,0,0.5), \dur, 1, \freq, 800, \out, metroOutBox.value - 1 )).play(options.tempoClock, quant:[1]);
-        });
-      });
-    });
-  }
-
-  createLabel { arg text = "placeholder text", width = 280, height = 20; var label;
-    label = StaticText(window, Rect( width: width, height: height));
-    label.font_(options.font);
-    label.stringColor_(Color.fromHexString("#A0A0A0"););
-    label.string_(text);
-    ^label;
   }
 
   createMetronome { var spec_Metro, metroOut, metro_Vol;
@@ -95,12 +58,11 @@ MetronomeCP {
     };
   }
 
-
   bpm_ { arg value;
     bpmBox.valueAction = value;
   }
 
-  addSynths {
+  runResources {
     SynthDef(\metronome, {arg amp = 0.2, freq = 800, out = 0;
       Out.ar(
         out,
@@ -109,12 +71,12 @@ MetronomeCP {
     }).add;
   }
 
-  height {
-    ^window.view.bounds.height;
-  }
-
   clear {
     Pdef(\metronome).clear;
+  }
+
+  windowName {
+    ^"Metronome"
   }
 
 }
