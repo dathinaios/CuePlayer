@@ -3,7 +3,7 @@ CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, options; 
   var <window, name, clock;
-  var timer, trigButton, pauseButton, cueNumberDisplay, lrgCueWin, largeCueNumberDisplay;
+  var timer, cueTrigger, pauseButton;
   var inputLevels, <metronome, outputLevels, serverWindowCP;
   var font, titleFontSize, marginTop, <active = false;
   var <groupA, <groupB,  <groupZ;
@@ -50,13 +50,13 @@ CuePlayerGUI {
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
-      metronome.clear;
-      serverWindowCP.clear;
       inputLevels.clear;
-      outputLevels.clear;
+      cueTrigger.clear;
       timer.stop;
+      metronome.clear;
+      outputLevels.clear;
+      serverWindowCP.clear;
       cuePlayer.removeDependant(this);
-      if (lrgCueWin.notNil and: {lrgCueWin.isClosed.not}) {lrgCueWin.close};
       active = false;
     };
   }
@@ -76,7 +76,7 @@ CuePlayerGUI {
       arg view, char, modifiers, unicode, keycode; 
       /* [char, modifiers, unicode, keycode].postln; */ 
       switch(unicode)
-      {32} { trigButton.doAction(0) } //space
+      {32} { cueTrigger.trigButton.doAction(0) } //space
       {109} {} // m
       {77} {} //M
       {112} {} //p
@@ -99,10 +99,17 @@ CuePlayerGUI {
 
   createCueTrigger {
     this.createLabel("", 282, marginTop);
-    this.createLabel("Trigger / Display & Reset Cue-number").align_(\left);
-    this.createTriggerButton;
-    this.createCueNumberDisplay;
-    if (options.largeDisplay, { this.createLargeCueNumberDisplay })
+    cueTrigger = CueTriggerCP(window, options: (largeDisplay: options.largeDisplay));
+    cueTrigger.trigButton.action = { var cueNum;
+        cueNum = cuePlayer.next;
+        if (timer.isPlaying.not) {timer.play; pauseButton.value_(1)};
+    };
+    cueTrigger.cueNumberBox.action = { arg box;
+      cuePlayer.current = box.value.abs;
+      timer.stop;
+      if(box.value == 0){timer.stop; timer.cursecs_(0)};
+      if (options.largeDisplay, { cueTrigger.largeCueNumberDisplay.string = box.value })
+    };
   }
 
   createLabel { arg text = "placeholder text", width = 280, height = 20; var label;
@@ -112,42 +119,6 @@ CuePlayerGUI {
     label.string_(text);
     ^label;
   }
-
-  createTriggerButton {
-    trigButton = Button(window, Rect(10, 200, 220, 60));
-    trigButton.font_(Font(font, 12));
-    trigButton.canFocus = false;
-    trigButton.states_([["Next Cue / FootSwitch", Color.white, Color.fromHexString("#1DA34D")]]);
-    trigButton.action_(
-      {
-        var cueNum;
-        cueNum = cuePlayer.next;
-        if (timer.isPlaying.not) {timer.play; pauseButton.value_(1)};
-      }
-    );
-  }
-
-  createCueNumberDisplay {
-    cueNumberDisplay = NumberBox(window, Rect(width: 50, height: 60)).align_(\center);
-    cueNumberDisplay.value = cuePlayer.current;
-    cueNumberDisplay.font_(Font(font, 26));
-    cueNumberDisplay.action = {
-      arg box;
-      cuePlayer.current = box.value.abs;
-      timer.stop;
-      if(box.value == 0){timer.stop; timer.cursecs_(0)};
-      if (options.largeDisplay, { largeCueNumberDisplay.string = box.value })
-    };
-  }
-
-  createLargeCueNumberDisplay { arg widthHeight = 950;
-    lrgCueWin = Window.new("Huge Cue Number", Rect(1259, 900, widthHeight, widthHeight)).front;
-    lrgCueWin.background = Color.black;
-    largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
-    largeCueNumberDisplay.font_(Font(font, widthHeight * 0.73)).stringColor_(Color.white);
-    largeCueNumberDisplay.string = cuePlayer.current;
-  }
-
   createTimer { var stopButton;
     this.createLabel("", 282, marginTop);
     this.createLabel("Timer");
@@ -211,8 +182,7 @@ CuePlayerGUI {
   }
 
   setCurrent { arg val;
-    cueNumberDisplay.value = val;
-    if (options.largeDisplay, { largeCueNumberDisplay.string = val });
+    cueTrigger.setCurrent(val);
   }
 
 }
