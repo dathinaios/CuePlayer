@@ -47,6 +47,7 @@ OutputMetersCP : AbstractGUIComponentCP {
   }
 
   runResources {
+    GroupManagerCP.initialise;
     SynthDef(\outputLevels, {
       var trig, sig, delayTrig;
 
@@ -61,7 +62,7 @@ OutputMetersCP : AbstractGUIComponentCP {
         }.flatten;
       );
     }).add;
-    { outputLevels = Synth(\outputLevels, target: options.groupOut) }.defer(1);
+    { outputLevels = Synth(\outputLevels, target: GroupManagerCP.groupZ) }.defer(1);
   }
 
   clear {

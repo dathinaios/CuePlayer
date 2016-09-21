@@ -44,6 +44,7 @@ InputMetersCP : AbstractGUIComponentCP {
   }
 
   runResources {
+    GroupManagerCP.initialise;
     SynthDef(\inputLevels, {
       var trig, sig, delayTrig;
 
@@ -58,7 +59,7 @@ InputMetersCP : AbstractGUIComponentCP {
         }.flatten;
       );
     }).add;
-    { inputLevels = Synth(\inputLevels, target: options.groupIn )}.defer(1);
+    { inputLevels = Synth(\inputLevels, target: GroupManagerCP.groupA )}.defer(1);
   }
 
   clear {

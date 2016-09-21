@@ -5,7 +5,6 @@ CuePlayerGUI {
   var <window, name, clock;
   var inputLevels,  cueTrigger, timer, <metronome, outputLevels, serverWindow;
   var font, titleFontSize, marginTop, <active = false;
-  var <groupA, <groupB,  <groupZ;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options = ();
     ^super.newCopyArgs(cuePlayer, monitorInChannels, monitorOutChannels, options).init;
@@ -15,7 +14,6 @@ CuePlayerGUI {
     clock = cuePlayer.clock;
     name = cuePlayer.name ?? "Cue Player";
 
-    this.initGroups;
     this.setDefaultOptions;
     this.initStyleVariables;
     this.createMainWindow;
@@ -98,8 +96,7 @@ CuePlayerGUI {
       options: (
         monitorInChannels: monitorInChannels, 
         monitorInOffset: options.monitorInOffset, 
-        font: Font(font, titleFontSize),
-        groupIn: groupA
+        font: Font(font, titleFontSize)
       )
     );
   }
@@ -135,28 +132,13 @@ CuePlayerGUI {
       window, 
       options: (
         monitorOutChannels: monitorOutChannels, 
-        font: Font(font, titleFontSize),
-        groupOut: groupZ
+        font: Font(font, titleFontSize)
       )
     );
   }
 
   createServerControls {
     serverWindow = ServerWindowCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
-  }
-
-  /* Server Resources */
-
-  initGroups { var groups;
-    groups  = {
-      groupA = Group.head(Server.default);
-      groupB = Group.after(groupA);
-      groupZ = Group.tail(Server.default);
-    };
-    groups.value;
-    Server.default.tree = {
-      groups.value;
-    };
   }
 
   /* Handle Events from Dependants */
