@@ -28,7 +28,7 @@ CuePlayerGUI {
     this.createTimer;
     this.createMetronome;
     this.createOutputLevels;
-    this.initServerResources;
+    this.initGroups;
     this.createServerControls;
     this.registerShortcuts;
     this.setCmdPeriodActions;
@@ -66,10 +66,9 @@ CuePlayerGUI {
       metronome.clear;
       serverWindowCP.clear;
       inputLevels.clear;
+      outputLevels.clear;
       timer.stop;
       cuePlayer.removeDependant(this);
-      oscOutLevels.free;
-      outputLevels.free;
       if (lrgCueWin.notNil and: {lrgCueWin.isClosed.not}) {lrgCueWin.close};
       active = false;
     };
@@ -195,37 +194,16 @@ CuePlayerGUI {
 
   /* Output Levels */
 
-  createOutputLevels{ var outlev, label;
+  createOutputLevels{
     this.createLabel("", 282, marginTop);
-    this.createLabel("Output meters").align_(\left);
-
-    outlev = Array.newClear(monitorOutChannels);
-    monitorOutChannels.do{ arg i; var compView;
-      compView = CompositeView(window, Rect(width:  30, height: 70) );
-      outlev[i] = LevelIndicator(compView, Rect(3, 0, width:  35, height: 50) );
-      outlev[i].warning = -2.dbamp;
-      outlev[i].critical = -1.dbamp;
-      outlev[i].drawsPeak = true;
-      outlev[i].background = Color.fromHexString("#A0A0A0");
-      /* outlev[i].numTicks = 11; */
-      /* outlev[i].numMajorTicks = 3; */
-      label = StaticText(compView, Rect( 0, 50, width: 30, height: 20)).align_(\center);
-      label.font_(Font(font, titleFontSize));
-      label.stringColor_(Color.fromHexString("#A0A0A0"));
-      label.string = i+1;
-    };
-    /* create oscfunction */
-    oscOutLevels =
-    OSCFunc({arg msg; var curMsg = 3;
-      {
-        monitorOutChannels.do{ arg chan;
-          outlev[chan].value = msg[curMsg].ampdb.linlin(-75, 0, 0, 1);
-          outlev[chan].peakLevel = msg[curMsg+1].ampdb.linlin(-75, 0, 0, 1);
-          curMsg = curMsg + 2;
-        }
-      }.defer;
-    }, '/out_levels', Server.default.addr);
-    oscOutLevels.permanent = true;
+    outputLevels = OutputMetersCP(
+      window, 
+      options: (
+        monitorOutChannels: monitorOutChannels, 
+        font: Font(font, titleFontSize),
+        groupOut: groupZ
+      )
+    );
   }
 
   /* Master */
@@ -236,37 +214,10 @@ CuePlayerGUI {
 
   /* Server Resources */
 
-  initServerResources {
-    this.initGroups;
-    this.addSynths;
-    this.runSynths;
-  }
-
   initGroups {
     groupA = Group.head(Server.default);
     groupB = Group.after(groupA);
     groupZ = Group.tail(Server.default);
-  }
-
-  addSynths {
-    SynthDef(\outputLevels, {
-      var trig, sig, delayTrig;
-
-      sig = In.ar( monitorOutChannels.collect{arg i; i});
-      trig = Impulse.kr(10);
-      delayTrig = Delay1.kr(trig);
-
-      SendReply.kr(trig, '/out_levels',
-        monitorOutChannels.collect{ arg i;
-          [Amplitude.kr( sig[i] ), // rms of signal1
-          K2A.ar(Peak.ar( sig[i], delayTrig).lag(0, 3))] // peak of signal1
-        }.flatten;
-      );
-    }).add;
-  }
-
-  runSynths {
-    { outputLevels = Synth(\outputLevels, target: groupZ) }.defer(1);
   }
 
   /* Handle Events from Dependants */
