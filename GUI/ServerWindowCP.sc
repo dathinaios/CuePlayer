@@ -1,13 +1,8 @@
 
-
 ServerWindowCP : AbstractGUIComponentCP { 
 
   var serverInfoRoutine;
   var muteButton, volSlider, peakCPULabel, numSynthsLabel;
-
-  setDefaultOptions {
-    super.setDefaultOptions;
-  }
 
   createComponent {
     this.createServerControls;
