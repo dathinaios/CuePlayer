@@ -2,16 +2,14 @@
 CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, options; 
-  var name, clock;
-  var <window;
-  var timer, trigButton, pauseButton, cueNumberDisplay, <metronome, serverWindowCP,
-      lrgCueWin, largeCueNumberDisplay;
+  var <window, name, clock;
+  var timer, trigButton, pauseButton, cueNumberDisplay, lrgCueWin, largeCueNumberDisplay;
+  var inputLevels, <metronome, outputLevels, serverWindowCP;
   var font, titleFontSize, marginTop, <active = false;
-  var outputLevels, inputLevels;
   var <groupA, <groupB,  <groupZ;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options = ();
-    ^super.newCopyArgs(cuePlayer, monitorInChannels.clip(2, 8), monitorOutChannels.clip(1, 256), options).init;
+    ^super.newCopyArgs(cuePlayer, monitorInChannels, monitorOutChannels, options).init;
   }
 
   init {
@@ -98,7 +96,6 @@ CuePlayerGUI {
       )
     );
   }
-  /* Cue Trigger */
 
   createCueTrigger {
     this.createLabel("", 282, marginTop);
@@ -151,8 +148,6 @@ CuePlayerGUI {
     largeCueNumberDisplay.string = cuePlayer.current;
   }
 
-  /* Timer */
-
   createTimer { var stopButton;
     this.createLabel("", 282, marginTop);
     this.createLabel("Timer");
@@ -181,8 +176,6 @@ CuePlayerGUI {
     metronome = MetronomeCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
   }
 
-  /* Output Levels */
-
   createOutputLevels{
     this.createLabel("", 282, marginTop);
     outputLevels = OutputMetersCP(
@@ -194,8 +187,6 @@ CuePlayerGUI {
       )
     );
   }
-
-  /* Master */
 
   createServerControls {
     serverWindowCP = ServerWindowCP(window, options: (tempoClock: clock, font: Font(font, titleFontSize)));
