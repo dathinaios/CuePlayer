@@ -48,6 +48,10 @@ ServerWindowCP : AbstractGUIComponentCP {
     serverInfoRoutine.stop;
   }
 
+  cmdPeriodAction {
+    this.runResources;
+  }
+
   windowName {
     ^"Server"
   }

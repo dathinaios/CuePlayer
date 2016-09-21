@@ -69,6 +69,10 @@ OutputMetersCP : AbstractGUIComponentCP {
     outputLevels.free;
   }
 
+  cmdPeriodAction {
+    this.runResources;
+  }
+
   windowName {
     ^"Outputs"
   }

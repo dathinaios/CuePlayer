@@ -66,6 +66,10 @@ InputMetersCP : AbstractGUIComponentCP {
     oscInputLevels.free;
   }
 
+  cmdPeriodAction {
+    this.runResources;
+  }
+
   windowName {
     ^"Inputs"
   }

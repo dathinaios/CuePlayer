@@ -2,14 +2,12 @@
 CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, options; 
-  var <window;
   var name, clock;
+  var <window;
   var timer, trigButton, pauseButton, cueNumberDisplay, <metronome, serverWindowCP,
       lrgCueWin, largeCueNumberDisplay;
   var font, titleFontSize, marginTop, <active = false;
-
-  /* Server and Routing */
-  var outputLevels, inputLevels, oscInputLevels, oscOutLevels;
+  var outputLevels, inputLevels;
   var <groupA, <groupB,  <groupZ;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options = ();
@@ -31,7 +29,6 @@ CuePlayerGUI {
     this.initGroups;
     this.createServerControls;
     this.registerShortcuts;
-    this.setCmdPeriodActions;
 
     active = true;
     window.front;
@@ -42,14 +39,6 @@ CuePlayerGUI {
     options.largeDisplay ?? { options.largeDisplay = false };
     options.left ?? { options.left = 1400 };
     options.top ?? { options.top = 650 };
-  }
-
-  setCmdPeriodActions {
-    CmdPeriod.add({
-      AppClock.sched(0.1, {
-        this.initServerResources;
-      });
-    });
   }
 
   initStyleVariables {

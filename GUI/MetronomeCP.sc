@@ -1,7 +1,7 @@
 
 MetronomeCP : AbstractGUIComponentCP { 
 
-  var <metroButon, <>metroOutBox, <>metronomeVolume, <>bpmBox, <bpm = 120;
+  var <metroButton, <>metroOutBox, <>metronomeVolume, <>bpmBox, <bpm = 120;
 
   setDefaultOptions {
     super.setDefaultOptions;
@@ -17,11 +17,11 @@ MetronomeCP : AbstractGUIComponentCP {
     metroOut = 1;
     metro_Vol = 0.1;
     this.createLabel("Metronome       Metro Vol.         Out          Bpm").align_(\left);
-    metroButon = Button(window, Rect(width: 80, height: 20) );
-    metroButon.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
-    metroButon.canFocus = false;
-    metroButon.font_();
-    metroButon.action = { arg butState;
+    metroButton = Button(window, Rect(width: 80, height: 20) );
+    metroButton.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
+    metroButton.canFocus = false;
+    metroButton.font_();
+    metroButton.action = { arg butState;
       if ( butState.value == 1, {
         Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(options.tempoClock, quant:[1]);
       });
@@ -73,6 +73,12 @@ MetronomeCP : AbstractGUIComponentCP {
 
   clear {
     Pdef(\metronome).clear;
+  }
+
+  cmdPeriodAction {
+    if ( metroButton.value == 1, {
+      Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metronomeVolume.value.linlin(0,1,0,0.5), \dur, 1, \freq, 800, \out, metroOutBox.value - 1 )).play(options.tempoClock, quant:[1]);
+    });
   }
 
   windowName {
