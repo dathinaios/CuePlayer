@@ -2,11 +2,10 @@
 CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, options; 
+  var <window;
   var name, clock;
-  var timer, trigButton, pauseButton, cueNumberDisplay, metronome, metroOutBox, 
-      metronomeVolume, bpm, serverInfoRoutine, lrgCueWin, largeCueNumberDisplay,
-      muteButton;
-  var <window, pdefText, reaperAddr;
+  var timer, trigButton, pauseButton, cueNumberDisplay, metronome, 
+      serverInfoRoutine, lrgCueWin, largeCueNumberDisplay, muteButton;
   var font, titleFontSize, marginTop, <active = false;
 
   /* Server and Routing */
@@ -28,7 +27,6 @@ CuePlayerGUI {
     this.createCueTrigger;
     this.createTimer;
     this.createMetronome;
-    this.createBpmField;
     this.createOutputLevels;
     this.initServerResources;
     this.createServerControls;
@@ -38,7 +36,6 @@ CuePlayerGUI {
     active = true;
     window.front;
   }
-
 
   setDefaultOptions {
     options.monitorInOffset ?? { options.monitorInOffset = 0 };
@@ -51,9 +48,6 @@ CuePlayerGUI {
     CmdPeriod.add({
       AppClock.sched(0.1, {
         this.initServerResources;
-        if ( metronome.value == 1, {
-          Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metronomeVolume.value.linlin(0,1,0,0.5), \dur, 1, \freq, 800, \out, metroOutBox.value - 1 )).play(clock, quant:[1]);
-        });
       });
     });
   }
@@ -69,7 +63,7 @@ CuePlayerGUI {
     window.view.decorator = FlowLayout( window.view.bounds );
     window.background_(Color.fromHexString("#282828"));
     window.onClose = {
-      Pdef(\metronome).clear;
+      metronome.clear;
       timer.stop;
       serverInfoRoutine.stop;
       cuePlayer.removeDependant(this);
@@ -102,7 +96,6 @@ CuePlayerGUI {
       {77} {} //M
       {112} {} //p
     }; 
-    
   }
 
   /* -------- */
@@ -215,52 +208,9 @@ CuePlayerGUI {
     stopButton.action = { arg butState; timer.stop; timer.cursecs_(0); };
   }
 
-  /* Metronome */
-
-  createMetronome { var spec_Metro, metroOut, metro_Vol;
-    metroOut = 1;
-    metro_Vol = 0.1;
+  createMetronome{
     this.createLabel("", 282, marginTop);
-    this.createLabel("Metronome       Metro Vol.         Out          Bpm").align_(\left);
-    metronome = Button(window, Rect(width: 80, height: 20) );
-    metronome.states = [ ["Metro", Color.white, Color.grey], ["Metro", Color.white, Color(0.9, 0.5, 0.3)]];
-    metronome.canFocus = false;
-    metronome.font_(Font(font, titleFontSize));
-    metronome.action = { arg butState;
-      if ( butState.value == 1, {
-        Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(clock, quant:[1]);
-      });
-      if ( butState.value == 0, { Pdef(\metronome).clear});
-    };
-    metronomeVolume = Slider(window, Rect(width: 82, height: 20) ).background_(Color.fromHexString("#A0A0A0"));
-    spec_Metro = ControlSpec(minval: 0, maxval: 0.5);
-    metronomeVolume.value = spec_Metro.unmap(metro_Vol);
-    metronomeVolume.canFocus = false;
-    metronomeVolume.action = {
-      metro_Vol = spec_Metro.map(metronomeVolume.value);
-      if (Pdef(\metronome).isPlaying == true, {
-        Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 )).play(clock, quant:[1])
-      });
-    };
-
-    metroOutBox = NumberBox(window, Rect(width:50, height:20)).align_(\center);
-    metroOutBox.background_(Color(0.9, 0.9, 0.9));
-    metroOutBox.normalColor_(Color.black);
-
-    metroOutBox.value = metroOut;
-    metroOutBox.action = {arg box; metroOut = box.value;
-      Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metro_Vol, \dur, 1, \freq, 800, \out, metroOut - 1 ))
-    };
-  }
-
-  createBpmField {
-    bpm = NumberBox(window, Rect(width:50, height:20)).align_(\center);
-    bpm.background_(Color(0.9, 0.9, 0.9));
-    bpm.normalColor_(Color.black);
-    bpm.value = cuePlayer.clock.tempo*60;
-    bpm.action = {arg box;
-      cuePlayer.tempo(box.value);
-    };
+    metronome = MetronomeCP(window, options: (clock: clock, font: Font(font, titleFontSize)));
   }
 
   /* Output Levels */
@@ -332,7 +282,6 @@ CuePlayerGUI {
     }.play(AppClock);
   }
 
-
   /* Server Resources */
 
   initServerResources {
@@ -376,12 +325,6 @@ CuePlayerGUI {
         }.flatten;
       );
     }).add;
-    SynthDef(\metronome, {arg amp = 0.2, freq = 800, out = 0;
-      Out.ar(
-        out,
-        FSinOsc.ar(freq: freq, mul: amp * EnvGen.kr(Env.perc(attackTime:0.001, releaseTime:0.2),doneAction:2))
-      );
-    }).add;
   }
 
   runSynths {
@@ -396,7 +339,7 @@ CuePlayerGUI {
     {\current}
     {this.setCurrent(theChanged.current)}
     {\tempo}
-    {bpm.value = theChanged.clock.tempo*60}
+    {metronome.bpm = theChanged.clock.tempo*60}
   }
 
   setCurrent { arg val;
