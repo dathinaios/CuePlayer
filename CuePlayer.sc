@@ -14,9 +14,9 @@ CuePlayer : Cues {
     MIDIIn.connectAll;
   }
 
-  addCue { arg function, cueNumber, timeline, timelineMode = \beats;
+  add { arg function, cueNumber, timeline, timelineMode = \beats;
     timeline = timeline.asFunkySchedulerCP(clock, timelineMode);
-    ^super.addCue({function.value; timeline.play;}, cueNumber);
+    ^super.add({function.value; timeline.play;}, cueNumber);
   }
 
   gui {arg monitorInChannels = 2, monitorOutChannels = 8, options;

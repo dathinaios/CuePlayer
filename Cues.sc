@@ -10,7 +10,7 @@ Cues { var <>cueList, <>current;
     cueList = Array.new;
   }
 
-  addCue { arg function, cueNumber;
+  add { arg function, cueNumber;
     if(cueNumber.isNil,
       {cueList = cueList.add(function)},
       { 
