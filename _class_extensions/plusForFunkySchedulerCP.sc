@@ -1,17 +1,17 @@
 
 + String {
 
-  asFunkySchedulerCP { arg clock; var array;
+  asFunkySchedulerCP { arg clock, mode; var array;
     array = this.standardizePath.load;
-    ^FunkySchedulerCP.newFromArray(array, clock);
+    ^FunkySchedulerCP.newFromArray(array, clock, mode);
   }
 
 }
 
 + Array {
 
-  asFunkySchedulerCP { arg clock;
-    ^FunkySchedulerCP.newFromArray(this, clock);
+  asFunkySchedulerCP { arg clock, mode;
+    ^FunkySchedulerCP.newFromArray(this, clock, mode);
   }
 
 }

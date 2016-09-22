@@ -1,15 +1,15 @@
 
 FunkySchedulerCP {
 
-  var <clock;
+  var <clock, <>mode;
   var <functionList, <>latency;
 
-  *new { arg clock;
-    ^super.newCopyArgs(clock).init;
+  *new { arg clock, mode = \beats;
+    ^super.newCopyArgs(clock, mode).init;
   }
 
-  *newFromArray { arg array, clock;
-    ^super.newCopyArgs(clock).init.fillFromArray(array);
+  *newFromArray { arg array, clock, mode = \beats;
+    ^super.newCopyArgs(clock, mode).init.fillFromArray(array);
   }
 
   init {
@@ -27,7 +27,7 @@ FunkySchedulerCP {
     }
   }
 
-  play{ arg mode = \beats;
+  play{
     switch (mode)
     { \beats } {this.scheduleToBeats}
     { \time  } {this.scheduleToTime}

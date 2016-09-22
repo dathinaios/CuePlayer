@@ -15,8 +15,8 @@ CuePlayer : Cues {
   }
 
   addCue { arg function, cueNumber, timeline, timelineMode = \beats;
-    timeline = timeline.asFunkySchedulerCP(clock);
-    ^super.addCue({function.value; timeline.play(timelineMode)}, cueNumber);
+    timeline = timeline.asFunkySchedulerCP(clock, timelineMode);
+    ^super.addCue({function.value; timeline.play;}, cueNumber);
   }
 
   gui {arg monitorInChannels = 2, monitorOutChannels = 8, options;
