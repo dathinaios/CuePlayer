@@ -1,6 +1,6 @@
 
 Cues { var <>cueList, <>current;
-  
+
   *new {
     ^super.new.init;
   }
@@ -10,16 +10,11 @@ Cues { var <>cueList, <>current;
     cueList = Array.new;
   }
 
-  add { arg function, cueNumber;
-    if(cueNumber.isNil,
-      {cueList = cueList.add(function)},
-      { 
-        if(cueList.size < cueNumber) {
-          cueList = cueList.extend(cueNumber, nil)
-        }; 
-        cueList[cueNumber - 1] = function;
-      }
-    );
+  add { arg function, cueNumber = (cueList.size + 1);
+    if(cueList.size < cueNumber) {
+      cueList = cueList.extend(cueNumber, nil);
+    }; 
+    cueList[cueNumber - 1] = function;
     ^cueList.size;
   }
 
@@ -31,8 +26,8 @@ Cues { var <>cueList, <>current;
   }
 
   trigger { arg cue = 1;
-      this.setCurrent(cue);
-      ^this.next;
+    this.setCurrent(cue);
+    ^this.next;
   }
 
   setCurrent {arg cue;
