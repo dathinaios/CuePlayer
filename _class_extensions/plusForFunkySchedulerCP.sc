@@ -1,17 +1,17 @@
 
 + String {
 
-  asTimeline { arg clock, mode; var array;
+  asTimeline { arg clock, options; var array;
     array = this.standardizePath.load;
-    ^Timeline.newFromArray(array, clock, mode);
+    ^Timeline.newFromArray(array, clock, options);
   }
 
 }
 
 + Array {
 
-  asTimeline { arg clock, mode;
-    ^Timeline.newFromArray(this, clock, mode);
+  asTimeline { arg clock, options;
+    ^Timeline.newFromArray(this, clock, options);
   }
 
 }

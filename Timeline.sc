@@ -1,20 +1,26 @@
 
 Timeline {
 
-  var <clock, <>mode;
+  var <clock, options;
   var <functionList, <>latency;
 
-  *new { arg clock, mode = \beats;
-    ^super.newCopyArgs(clock, mode).init;
+  *new { arg clock, options = ();
+    ^super.newCopyArgs(clock, options).init;
   }
 
-  *newFromArray { arg array, clock, mode = \beats;
-    ^super.newCopyArgs(clock, mode).init.fillFromArray(array);
+  *newFromArray { arg array, clock, options = ();
+    ^super.newCopyArgs(clock, options).init.fillFromArray(array);
   }
 
   init {
     if(clock.isNil, {clock = TempoClock.new.permanent_(true)});
     functionList = List.new;
+    this.setDefaultOptions;
+  }
+
+  setDefaultOptions {
+    options.mode ?? { options.mode = \beats };
+    options.quant ?? { options.quant = true };
   }
 
   add{ arg time, function;
@@ -28,25 +34,20 @@ Timeline {
   }
 
   play{
-    switch (mode)
-    { \beats } {this.scheduleToBeats}
-    { \time  } {this.scheduleToTime}
-  }
-
-  scheduleToBeats {
-    functionList.do{arg item; var beat, function;
-      beat = item[0];
-      function = item[1];
-      this.sched(clock.timeToNextBeat+beat, function);
+    functionList.do{arg item;
+      this.sched(this.time(item), item[1]);
     }
   }
 
-  scheduleToTime {
-    functionList.do{arg item; var time, function;
-      time = item[0]*clock.tempo;
-      function = item[1];
-      this.sched(clock.timeToNextBeat+time, function)
-    }
+  quantValue {
+    if(options.quant) {^clock.timeToNextBeat} {^0};
+  }
+
+  time { arg item;var time;
+    switch (options.mode)
+    { \beats } {time = item[0]}
+    { \time  } {time = item[0]*clock.tempo;};
+    ^(time + this.quantValue);
   }
 
   sched { arg time, function;

@@ -14,8 +14,8 @@ CuePlayer : Cues {
     MIDIIn.connectAll;
   }
 
-  add { arg function, cueNumber, timeline, timelineMode = \beats;
-    timeline = timeline.asTimeline(clock, timelineMode);
+  add { arg function, cueNumber, timeline, timelineOptions = ();
+    timeline = timeline.asTimeline(clock, timelineOptions);
     ^super.add({function.value; timeline.play;}, cueNumber);
   }
 
