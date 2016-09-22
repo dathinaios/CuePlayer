@@ -113,6 +113,7 @@ CuePlayerGUI {
       if (box.value == 0,       {timer.stop; timer.cursecs_(0)});
       if (options.largeDisplay, {cueTrigger.largeCueNumberDisplay.string = box.value});
     };
+    cueTrigger.setCurrent(cuePlayer.current);
     windowHeight = windowHeight + cueTrigger.windowHeight;
   }
 

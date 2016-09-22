@@ -33,7 +33,6 @@ CueTriggerCP : AbstractGUIComponentCP {
 
   createCueNumberBox {
     cueNumberBox = NumberBox(window, Rect(width: 50, height: 60)).align_(\center);
-    cueNumberBox.value = 0; //cuePlayer.current;
     cueNumberBox.font_(options.cueNumberBoxFont);
     cueNumberBox.action = { "\nUse: \n \n cueTriggerCPInstance.cueNumberBox.action = {}; \n \nto set this action to something useful!".postln; };
   }
@@ -43,7 +42,7 @@ CueTriggerCP : AbstractGUIComponentCP {
     lrgCueWin.background = Color.black;
     largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
     largeCueNumberDisplay.font_(Font(options.font.name, widthHeight * 0.73)).stringColor_(Color.white);
-    largeCueNumberDisplay.string = 0; //cuePlayer.current;
+    lrgCueWin.front;
   }
 
   runResources {
