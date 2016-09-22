@@ -107,10 +107,11 @@ CuePlayerGUI {
         if (timer.isPlaying.not) {timer.play; timer.pauseButton.value_(1)};
     };
     cueTrigger.cueNumberBox.action = { arg box;
-      cuePlayer.current = box.value.abs;
+      box.value = box.value.abs.round(1);
+      cuePlayer.current = box.value;
       timer.stop;
-      if(box.value == 0){timer.stop; timer.cursecs_(0)};
-      if (options.largeDisplay, { cueTrigger.largeCueNumberDisplay.string = box.value })
+      if (box.value == 0,       {timer.stop; timer.cursecs_(0)});
+      if (options.largeDisplay, {cueTrigger.largeCueNumberDisplay.string = box.value});
     };
     windowHeight = windowHeight + cueTrigger.windowHeight;
   }
