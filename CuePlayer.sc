@@ -15,7 +15,7 @@ CuePlayer : Cues {
   }
 
   add { arg function, cueNumber, timeline, timelineMode = \beats;
-    timeline = timeline.asFunkySchedulerCP(clock, timelineMode);
+    timeline = timeline.asTimeline(clock, timelineMode);
     ^super.add({function.value; timeline.play;}, cueNumber);
   }
 

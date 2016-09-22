@@ -1,5 +1,5 @@
 
-FunkySchedulerCP {
+Timeline {
 
   var <clock, <>mode;
   var <functionList, <>latency;
