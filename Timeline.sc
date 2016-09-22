@@ -61,7 +61,7 @@ Timeline {
     clock.clear;
   }
 
-  asFunkySchedulerCP {
+  asTimeline {
     ^this;
   }
 
