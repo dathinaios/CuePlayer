@@ -65,4 +65,61 @@ Timeline {
     ^this;
   }
 
+  plot { arg timeUnitLength = 70;
+    var plotWindow, plotUserView, currentForLine, currentForDots, orderedList;
+    var makeLine, makeDots;
+
+    plotWindow = Window("Timeline", bounds: Rect(700, 500, width: 800 , height: 150), scroll: true).front;
+    plotUserView = UserView(plotWindow , plotWindow.view.bounds);
+
+    plotWindow.view.keyDownAction = {
+      arg view, char, modifiers, unicode, keycode;
+      /* [char, modifiers, unicode, keycode].postln; */
+      switch(unicode)
+      {45} {timeUnitLength = timeUnitLength - 5; plotWindow.refresh;} // -
+      {61} {timeUnitLength = timeUnitLength + 5; plotWindow.refresh;} // =
+    };
+
+    functionList.do{ arg i, index; var newPosition;
+      plotUserView.bounds = Rect(width: (plotUserView.bounds.width + timeUnitLength), height: 400 );
+    };
+
+    currentForLine = 0@0;
+    currentForDots = 0@0;
+    orderedList = functionList.sort{arg a, b; a[0]<b[0]};
+
+    makeLine = { arg index;
+      Pen.color = Color.blue(rrand(0.0, 1), rrand(0.4, 0.8));
+      Pen.fillOval(Rect(currentForLine.x - 1, currentForLine.y + 3, width: 2, height: 8 ));
+      Pen.stringAtPoint( index.asString, currentForLine + [-3, 15]);
+      Pen.color = Color.black;
+      Pen.lineTo(currentForLine + [timeUnitLength, 0]);
+      Pen.stroke;
+    };
+
+    makeDots = { arg itemTime;
+      Pen.color = Color.red(rrand(0.0, 1), rrand(0.4, 0.8));
+      Pen.fillOval(Rect((timeUnitLength*itemTime) - 4, currentForDots.y - 12, width: 8, height: 8 ));
+      Pen.stroke;
+    };
+
+    plotWindow.view.background_(Color.white);
+    plotWindow.drawFunc = {
+      Pen.width = 0.05;
+      Pen.color = Color.black;
+      Pen.translate(50, 50);
+      orderedList.do{ arg i, index;
+        currentForDots = currentForDots + [timeUnitLength, 0];
+        makeDots.(i[0]);
+      };
+      orderedList.last[0].abs.do{ arg i, index;
+        makeLine.(index);
+        currentForLine = currentForLine + [timeUnitLength, 0];
+      };
+      currentForLine = 0@0;
+      currentForDots = 0@0;
+    };
+    plotWindow.refresh;
+  }
+
 }
