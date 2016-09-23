@@ -67,9 +67,9 @@ Timeline {
 
   plot { arg timeUnitLength = 70;
     var plotWindow, plotUserView, currentForLine, currentForDots, orderedList;
-    var makeLine, makeDots;
+    var makeLine, makeDots, dotColors;
 
-    plotWindow = Window("Timeline", bounds: Rect(700, 500, width: 800 , height: 150), scroll: true).front;
+    plotWindow = Window("Timeline", bounds: Rect(700, 500, width: 800 , height: 120), scroll: true).front;
     plotUserView = UserView(plotWindow , plotWindow.view.bounds);
 
     plotWindow.view.keyDownAction = {
@@ -88,8 +88,13 @@ Timeline {
     currentForDots = 0@0;
     orderedList = functionList.sort{arg a, b; a[0]<b[0]};
 
+    dotColors = List.new;
+    orderedList.do{ arg i, index;
+      dotColors = dotColors.add(Color.red(rrand(0.0, 1), rrand(0.4, 0.8)))
+    };
+
     makeLine = { arg index;
-      Pen.color = Color.blue(rrand(0.0, 1), rrand(0.4, 0.8));
+      Pen.color = Color.black;
       Pen.fillOval(Rect(currentForLine.x - 1, currentForLine.y + 3, width: 2, height: 8 ));
       Pen.stringAtPoint( index.asString, currentForLine + [-3, 15]);
       Pen.color = Color.black;
@@ -97,8 +102,8 @@ Timeline {
       Pen.stroke;
     };
 
-    makeDots = { arg itemTime;
-      Pen.color = Color.red(rrand(0.0, 1), rrand(0.4, 0.8));
+    makeDots = { arg itemTime, index;
+      Pen.color = dotColors[index];
       Pen.fillOval(Rect((timeUnitLength*itemTime) - 4, currentForDots.y - 12, width: 8, height: 8 ));
       Pen.stroke;
     };
@@ -110,9 +115,9 @@ Timeline {
       Pen.translate(50, 50);
       orderedList.do{ arg i, index;
         currentForDots = currentForDots + [timeUnitLength, 0];
-        makeDots.(i[0]);
+        makeDots.(i[0], index);
       };
-      orderedList.last[0].abs.do{ arg i, index;
+      (orderedList.last[0].abs+1).do{ arg i, index;
         makeLine.(index);
         currentForLine = currentForLine + [timeUnitLength, 0];
       };
