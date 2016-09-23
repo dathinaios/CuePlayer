@@ -37,11 +37,12 @@ CuePlayer : Cues {
 
   /* External Control */
 
-  midiTrigger { arg note = 60, channel = 15;
+  midiTrigger { arg note = 60, channel = 0;
     MIDIFunc.noteOn({ arg vel, noteNum, chan;
-      if (noteNum == note && chan == channel, {
-        this.trigger(vel+1);
-      }.defer);
+      if (note == noteNum && chan == channel, {
+        [vel, noteNum, chan].postln;
+        {this.trigger(vel+1)}.defer;
+      });
     }).permanent = true;
   }
 
