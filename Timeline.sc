@@ -1,7 +1,7 @@
 
 Timeline {
 
-  var <clock, options;
+  var <clock, options, path;
   var <functionList, <>latency;
 
   *new { arg clock, options = ();
@@ -12,15 +12,27 @@ Timeline {
     ^super.newCopyArgs(clock, options).init.fillFromArray(array);
   }
 
+  *newFromPath { arg path, clock, options = (); var array;
+    array = path.standardizePath.load;
+    ^super.newCopyArgs(clock, options, path).init.fillFromArray(array);
+  }
+
   init {
     if(clock.isNil, {clock = TempoClock.new.permanent_(true)});
     functionList = List.new;
     this.setDefaultOptions;
   }
 
+  reloadPath { var array;
+    functionList.clear;
+    array = path.standardizePath.load;
+    this.fillFromArray(array);
+  }
+
   setDefaultOptions {
     options.mode ?? { options.mode = \beats };
     options.quant ?? { options.quant = true };
+    options.liveReload ?? { options.liveReload = true };
   }
 
   add{ arg time, function;
@@ -34,6 +46,9 @@ Timeline {
   }
 
   play{
+    if(path.notNil and:{options.liveReload}, {
+      this.reloadPath }
+    );
     functionList.do{arg item;
       this.sched(this.time(item), item[1]);
     }

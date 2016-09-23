@@ -1,9 +1,8 @@
 
 + String {
 
-  asTimeline { arg clock, options; var array;
-    array = this.standardizePath.load;
-    ^Timeline.newFromArray(array, clock, options);
+  asTimeline { arg clock, options;
+    ^Timeline.newFromPath(this, clock, options);
   }
 
 }
