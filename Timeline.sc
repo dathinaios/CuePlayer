@@ -1,33 +1,33 @@
 
 Timeline {
 
-  var <clock, options, path;
-  var <functionList, <>latency;
+  var <>clock, options, <>path;
+  var <>functionList, <>latency;
 
   *new { arg clock, options = ();
     ^super.newCopyArgs(clock, options).init;
   }
 
   *newFromArray { arg array, clock, options = ();
-    ^super.newCopyArgs(clock, options).init.fillFromArray(array);
+    ^super.newCopyArgs(clock, options).init.functionList_(array);
   }
 
-  *newFromPath { arg path, clock, options = (); var array;
-    array = path.standardizePath.load;
-    ^super.newCopyArgs(clock, options, path).init.fillFromArray(array);
+  *newFromPath { arg path, clock, options = (); var pathReturn;
+    pathReturn = path.standardizePath.load;
+    ^pathReturn.asTimeline(clock, options).path_(path);
   }
 
   init {
     if(clock.isNil, {clock = TempoClock.new.permanent_(true)});
-    functionList = List.new;
+    functionList = Array.new;
     this.setDefaultOptions;
   }
 
-  reloadPath { var array;
+  reloadPath { var pathReturn;
     if(path.notNil and:{options.liveReload}, {
       functionList.clear;
-      array = path.standardizePath.load;
-      this.fillFromArray(array)}
+      pathReturn = path.standardizePath.load;
+      this.functionList_(pathReturn)}
     );
   }
 
@@ -38,19 +38,14 @@ Timeline {
   }
 
   add{ arg time, function;
-    functionList.add([time, function]);
+    functionList.add(time);
+    functionList.add(function);
   }
 
-  fillFromArray { arg array;
-    array.pairsDo{ arg time, function;
-      this.add(time, function);
-    }
-  }
-
-  play{
+  play {
     this.reloadPath; 
-    functionList.do{arg item;
-      this.sched(this.time(item), item[1]);
+    functionList.pairsDo{arg time, function;
+      this.sched(this.time(time), function);
     }
   }
 
@@ -58,10 +53,10 @@ Timeline {
     if(options.quant) {^clock.timeToNextBeat} {^0};
   }
 
-  time { arg item;var time;
+  time { arg value; var time;
     switch (options.mode)
-    { \beats } {time = item[0]}
-    { \time  } {time = item[0]*clock.tempo;};
+    { \beats } {time = value}
+    { \time  } {time = value*clock.tempo;};
     ^(time + this.quantValue);
   }
 
@@ -76,8 +71,11 @@ Timeline {
     clock.clear;
   }
 
-  asTimeline {
-    ^this;
+  pairUp { arg array; var newList = List.new;
+    array.pairsDo{ arg time, function;
+      newList.add([time, function]);
+    };
+    ^newList;
   }
 
   plot { arg timeUnitLength = 70;
@@ -95,13 +93,13 @@ Timeline {
       {61} {timeUnitLength = timeUnitLength + 5; plotWindow.refresh;} // =
     };
 
-    functionList.do{ arg i, index; var newPosition;
+    functionList.do{
       plotUserView.bounds = Rect(width: (plotUserView.bounds.width + timeUnitLength), height: 400 );
     };
 
     currentForLine = 0@0;
     currentForDots = 0@0;
-    orderedList = functionList.sort{arg a, b; a[0]<b[0]};
+    orderedList = this.pairUp(functionList).sort{arg a, b; a[0]<b[0]};
 
     dotColors = List.new;
     orderedList.do{ arg i, index;

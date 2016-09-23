@@ -21,7 +21,6 @@
     "------------------------------------------------------------".postln;
     (this.class.asString + "does not respond to asTimeline").warn;
     "Use one of the following objects:".postln;
-    "    Timeline".postln;
     "    Array (with time-function pairs)".postln;
     "    String (path to scd file that returns an array as above)".postln;
     "------------------------------------------------------------".postln;
