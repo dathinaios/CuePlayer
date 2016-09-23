@@ -1,5 +1,5 @@
 
-Cues { var <>cueList, <>current;
+Cues { var <>cueList, <>current, >hook;
 
   *new {
     ^super.new.init;
@@ -19,6 +19,7 @@ Cues { var <>cueList, <>current;
   }
 
   next {
+    hook.value(this);
     cueList[current].value;
     current = current + 1;
     this.changed(\current);
