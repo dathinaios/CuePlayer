@@ -7,7 +7,7 @@ CueTriggerCP : AbstractGUIComponentCP {
     super.setDefaultOptions;
     options.largeDisplay ?? { options.largeDisplay = false };
     options.cueButtonFont ?? { options.cueButtonFont = Font("Lucida Grande", 12) };
-    options.cueNumberBoxFont ?? { options.cueNumberBoxFont = Font("Lucida Grande", 26) };
+    options.cueNumberBoxFont ?? { options.cueNumberBoxFont = Font("Lucida Grande", 22) };
   }
 
   createComponent {
