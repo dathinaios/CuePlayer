@@ -71,6 +71,13 @@ MetronomeCP : AbstractGUIComponentCP {
     }).add;
   }
 
+  togglePlay {
+    if(metroButton.value == 0,
+      {metroButton.valueAction_(1)},
+      {metroButton.valueAction_(0)}
+    );
+  }
+
   clear {
     Pdef(\metronome).clear;
   }

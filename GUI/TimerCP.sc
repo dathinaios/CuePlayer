@@ -37,10 +37,18 @@ TimerCP : AbstractGUIComponentCP {
 
   play {
     timer.play;
+    pauseButton.value = 1;
   }
 
   stop {
-    timer.stop;
+    stopButton.valueAction_(0);
+  }
+
+  togglePlay {
+    if(pauseButton.value == 0,
+      {pauseButton.valueAction_(1)},
+      {pauseButton.valueAction_(0)}
+    );
   }
 
   runResources {

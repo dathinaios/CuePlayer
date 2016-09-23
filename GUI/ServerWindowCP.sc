@@ -2,7 +2,7 @@
 ServerWindowCP : AbstractGUIComponentCP { 
 
   var serverInfoRoutine;
-  var muteButton, volSlider, peakCPULabel, numSynthsLabel;
+  var <muteButton, volSlider, peakCPULabel, numSynthsLabel;
 
   createComponent {
     this.createServerControls;
@@ -33,6 +33,12 @@ ServerWindowCP : AbstractGUIComponentCP {
     numSynthsLabel = this.createLabel("Synths : " ++ Server.default.numSynths, width: 134, height: 20).align_(\right).stringColor_(Color.white);
   }
 
+  toggleMute {
+    if(muteButton.value == 0,
+      {muteButton.valueAction_(1)},
+      {muteButton.valueAction_(0)}
+    );
+  }
 
   runResources {
     serverInfoRoutine = Routine{ 
