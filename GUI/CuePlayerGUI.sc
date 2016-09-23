@@ -3,7 +3,7 @@ CuePlayerGUI {
 
   var cuePlayer, monitorInChannels, monitorOutChannels, options; 
   var <window, name, clock;
-  var inputLevels,  cueTrigger, timer, <metronome, outputLevels, serverWindow;
+  var <inputLevels,  <cueTrigger, <timer, <metronome, <outputLevels, <serverWindow;
   var <windowHeight = 0, font, titleFontSize, marginTop, <active = false;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options = ();
@@ -70,10 +70,14 @@ CuePlayerGUI {
       arg view, char, modifiers, unicode, keycode; 
       /* [char, modifiers, unicode, keycode].postln; */ 
       switch(unicode)
-      {32} { cueTrigger.trigButton.doAction(0) } //space
-      {109} {} // m
-      {77} {} //M
-      {112} {} //p
+      {32}  { cueTrigger.trigButton.doAction(0) }   //space - next cue
+      {98}  { metronome.bpmBox.focus }              //b     - focus on Bpm field
+      {99}  { cueTrigger.cueNumberBox.focus }       //c     - cue number
+      {112} { timer.togglePlay }                    //p     - play/pause
+      {115} { timer.stop }                          //s     - stop
+      {80}  { cuePlayer.plot }                      //P     - plot current timeline
+      {109} { serverWindow.toggleMute }             //m     - mute server
+      {77}  { metronome.togglePlay }                //M     - toggle metronome
     }; 
   }
 
