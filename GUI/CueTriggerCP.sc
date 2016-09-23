@@ -45,15 +45,8 @@ CueTriggerCP : AbstractGUIComponentCP {
     lrgCueWin.front;
   }
 
-  runResources {
-  }
-
   clear {
     if (lrgCueWin.notNil and: {lrgCueWin.isClosed.not}) {lrgCueWin.close};
-  }
-
-  cmdPeriodAction {
-    this.runResources;
   }
 
   windowName {
@@ -68,5 +61,9 @@ CueTriggerCP : AbstractGUIComponentCP {
     cueNumberBox.value = val;
     if (options.largeDisplay, { largeCueNumberDisplay.string = val });
   }
+
+  runResources { }
+
+  cmdPeriodAction { }
 
 }
