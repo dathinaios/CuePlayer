@@ -24,9 +24,11 @@ Timeline {
   }
 
   reloadPath { var array;
-    functionList.clear;
-    array = path.standardizePath.load;
-    this.fillFromArray(array);
+    if(path.notNil and:{options.liveReload}, {
+      functionList.clear;
+      array = path.standardizePath.load;
+      this.fillFromArray(array)}
+    );
   }
 
   setDefaultOptions {
@@ -46,9 +48,7 @@ Timeline {
   }
 
   play{
-    if(path.notNil and:{options.liveReload}, {
-      this.reloadPath }
-    );
+    this.reloadPath; 
     functionList.do{arg item;
       this.sched(this.time(item), item[1]);
     }
