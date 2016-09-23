@@ -3,6 +3,7 @@ CuePlayer : Cues {
 
   var <name;
   var <>clock, <guiInstance;
+  var oscTriggerFunc;
 
   *new { arg name;
     ^super.newCopyArgs(name).init;
@@ -44,6 +45,22 @@ CuePlayer : Cues {
     }).permanent = true;
   }
 
+  oscTrigger { arg message = 1, path = '/cueTrigger'; var address;
+    address = NetAddr("127.0.0.1", NetAddr.langPort);
+    oscTriggerFunc = OSCFunc(
+      { arg msg; if (msg[1] == message, {{this.next}.defer}); },
+      '/cueTrigger',
+      address
+    );
+    oscTriggerFunc.permanent = true;
+    this.oscTriggerInform(address, path, message)
+  }
+
+  freeOscTrigger {
+    oscTriggerFunc.free;
+    "The OSC trigger has been removed".postln;
+  }
+
   sendOSC { arg ip = "127.0.0.1", port = 57120, msg = ["/play", 1]; var address;
     address = NetAddr(ip, port);
     this.sched(clock.timeToNextBeat,{address.sendMsg(msg)});
@@ -56,6 +73,14 @@ CuePlayer : Cues {
       time.wait;
       Server.default.makeBundle(nil, function);
     }.play(clock);
+  }
+
+  oscTriggerInform { arg address, path, message;
+    "====================================================".postln;
+    ("CuePlayer OSC trigger:").postln;
+    ("" ++ address ++ " with path " ++ path).postln;
+    ("message: " ++ message).postln;
+    "====================================================".postln;
   }
 
 }
