@@ -32,8 +32,8 @@ Cues { var <>cueList, <>current, >hook;
   }
 
   setCurrent {arg cue;
-    ("Next cue will be " ++ cue).postln;
-    current = cue.abs - 1;
+    ("Next cue will be " ++ (cue + 1)).postln;
+    current = cue.abs;
     this.changed(\current);
   }
 
