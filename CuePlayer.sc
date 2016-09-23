@@ -3,7 +3,7 @@ CuePlayer : Cues {
 
   var <name;
   var <>clock, <guiInstance;
-  var oscTriggerFunc;
+  var <timelineRegister, oscTriggerFunc;
 
   *new { arg name;
     ^super.newCopyArgs(name).init;
@@ -13,10 +13,12 @@ CuePlayer : Cues {
     super.init;
     clock = TempoClock(120/60, queueSize: 2048 * 2).permanent_(true);
     MIDIIn.connectAll;
+    timelineRegister = IdentityDictionary.new;
   }
 
   add { arg function, cueNumber, timeline, timelineOptions = ();
     timeline = timeline.asTimeline(clock, timelineOptions);
+    this.addTimelineToRegister(cueNumber, timeline);
     ^super.add({function.value; timeline.play;}, cueNumber);
   }
 
@@ -33,6 +35,11 @@ CuePlayer : Cues {
     clock.tempo = bpm/60;
     this.changed(\tempo);
     ^bpm;
+  }
+
+  plot { arg cue = current; var timeline;
+    timeline = timelineRegister[cue.asSymbol];
+    if(timeline.notNil) {timeline.plot};
   }
 
   /* External Control */
@@ -82,6 +89,11 @@ CuePlayer : Cues {
     ("" ++ address ++ " with path " ++ path).postln;
     ("message: " ++ message).postln;
     "====================================================".postln;
+  }
+
+  addTimelineToRegister { arg cueNumber, timeline; var registerNumber;
+    registerNumber = if(cueNumber.isNil && timeline.notNil, {cueList.size.asSymbol}, {cueNumber.asSymbol});
+    timelineRegister.put(registerNumber, timeline);
   }
 
 }
