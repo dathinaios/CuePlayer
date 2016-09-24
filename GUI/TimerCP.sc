@@ -59,6 +59,9 @@ TimerCP : AbstractGUIComponentCP {
   }
 
   cmdPeriodAction {
+    timer.stop;
+    pauseButton.value = 0;
+    timer.isPlaying = false;
   }
 
   windowName {
