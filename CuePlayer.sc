@@ -54,12 +54,13 @@ CuePlayer : Cues {
   }
 
   oscTrigger { arg message = 1, path = '/cueTrigger';
-     oscTriggerFunc = OSCFunc(
+    oscTriggerFunc = OSCFunc(
       { arg msg; if (msg[1] == message, {{this.next}.defer}); },
 			path
     );
     oscTriggerFunc.permanent = true;
-    this.oscTriggerInform(path, message)
+    this.oscTriggerInform(path, message);
+    ^oscTriggerFunc;
   }
 
   freeOscTrigger {
