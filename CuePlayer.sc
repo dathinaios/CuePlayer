@@ -68,9 +68,9 @@ CuePlayer : Cues {
     "The OSC trigger has been removed".postln;
   }
 
-  sendOSC { arg ip = "127.0.0.1", port = 57120, msg = ["/play", 1]; var address;
+  sendOSC { arg ip = "127.0.0.1", port = 8000, msg = ["/play", 1]; var address;
     address = NetAddr(ip, port);
-    this.sched(clock.timeToNextBeat,{address.sendMsg(msg)});
+		this.sched(clock.timeToNextBeat,{address.sendMsg(msg[0], msg[1])});
   }
 
   /* Private */
