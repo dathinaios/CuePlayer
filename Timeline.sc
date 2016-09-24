@@ -2,7 +2,7 @@
 Timeline {
 
   var <>clock, options, <>path;
-  var <>functionList, <>latency;
+  var <>functionList;
 
   *new { arg clock, options = ();
     ^super.newCopyArgs(clock, options).init;
@@ -63,7 +63,7 @@ Timeline {
   sched { arg time, function;
     Routine {
       time.wait;
-      Server.default.makeBundle(latency, function);
+      Server.default.makeBundle(Server.default.latency, function);
     }.play(clock);
   }
 
