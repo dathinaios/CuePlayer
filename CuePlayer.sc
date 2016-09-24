@@ -44,24 +44,22 @@ CuePlayer : Cues {
 
   /* External Control */
 
-  midiTrigger { arg note = 60, channel = 0;
+  midiTrigger { arg note = 60, channel = 15;
     MIDIFunc.noteOn({ arg vel, noteNum, chan;
       if (note == noteNum && chan == channel, {
-        [vel, noteNum, chan].postln;
-        {this.trigger(vel+1)}.defer;
+        /*[vel, noteNum, chan].postln;*/
+        {this.trigger(vel-1)}.defer;
       });
     }).permanent = true;
   }
 
-  oscTrigger { arg message = 1, path = '/cueTrigger'; var address;
-    address = NetAddr("127.0.0.1", NetAddr.langPort);
-    oscTriggerFunc = OSCFunc(
+  oscTrigger { arg message = 1, path = '/cueTrigger';
+     oscTriggerFunc = OSCFunc(
       { arg msg; if (msg[1] == message, {{this.next}.defer}); },
-      '/cueTrigger',
-      address
+			path
     );
     oscTriggerFunc.permanent = true;
-    this.oscTriggerInform(address, path, message)
+    this.oscTriggerInform(path, message)
   }
 
   freeOscTrigger {
@@ -83,10 +81,10 @@ CuePlayer : Cues {
     }.play(clock);
   }
 
-  oscTriggerInform { arg address, path, message;
+  oscTriggerInform { arg path, message;
     "====================================================".postln;
     ("CuePlayer OSC trigger:").postln;
-    ("" ++ address ++ " with path " ++ path).postln;
+    (" with path " ++ path).postln;
     ("message: " ++ message).postln;
     "====================================================".postln;
   }

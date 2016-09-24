@@ -13,7 +13,7 @@ Cues { var <>cueList, <>current, >hook;
   add { arg function, cueNumber = (cueList.size + 1);
     if(cueList.size < cueNumber) {
       cueList = cueList.extend(cueNumber, nil);
-    }; 
+    };
     cueList[cueNumber - 1] = function;
     ^cueList.size;
   }
@@ -32,9 +32,10 @@ Cues { var <>cueList, <>current, >hook;
   }
 
   setCurrent {arg cue;
-    ("Next cue will be " ++ (cue + 1)).postln;
+    /*("Next cue will be " ++ (cue + 1)).postln;*/
     current = cue.abs;
     this.changed(\current);
+		^current;
   }
 
 }
