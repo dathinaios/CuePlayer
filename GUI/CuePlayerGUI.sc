@@ -23,7 +23,7 @@ CuePlayerGUI {
     if(options.metronome) { this.createMetronome };
     if(options.outputLevels) { this.createOutputLevels };
     if(options.serverControls) { this.createServerControls };
-    this.registerShortcuts;
+    if(options.shortcuts) { this.registerShortcuts };
 
     active = true;
     window.bounds.height = windowHeight;
@@ -41,6 +41,7 @@ CuePlayerGUI {
     options.metronome ?? { options.metronome = true };
     options.outputLevels ?? { options.outputLevels = true };
     options.serverControls ?? { options.serverControls = true };
+    options.shortcuts ?? { options.shortcuts = false };
   }
 
   initStyleVariables {
