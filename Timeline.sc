@@ -1,7 +1,7 @@
 
 Timeline {
 
-  var <>clock, options, <>path;
+  var <>clock, <options, <>path;
   var <>functionList;
 
   *new { arg clock, options = ();

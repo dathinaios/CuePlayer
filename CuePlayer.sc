@@ -44,6 +44,14 @@ CuePlayer : Cues {
     if(timeline.notNil) {timeline.plot};
   }
 
+  disableLiveReload {
+    timelineRegister.do{arg i; i.options.liveReload = false}
+  }
+
+  enableLiveReload {
+    timelineRegister.do{arg i; i.options.liveReload = true}
+  }
+
   /* External Control */
 
   midiTrigger { arg note = 60, channel = 15;
