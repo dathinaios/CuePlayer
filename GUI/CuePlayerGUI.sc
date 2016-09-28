@@ -134,6 +134,14 @@ CuePlayerGUI {
     windowHeight = windowHeight + metronome.windowHeight;
   }
 
+  setMetronomeVolume{ arg val;
+    metronome.volume_(val);
+  }
+
+  setMetronomeBus{ arg val;
+    metronome.outbus_(val);
+  }
+
   createOutputLevels{
     this.createLabel("", 282, marginTop);
     outputLevels = OutputMetersCP(

@@ -6,6 +6,7 @@ MetronomeCP : AbstractGUIComponentCP {
   setDefaultOptions {
     super.setDefaultOptions;
     options.tempoClock ?? { options.tempoClock = TempoClock.default };
+    options.font ?? { options.font = Font("Lucida Grande", 11) };
   }
 
   createComponent {
@@ -97,5 +98,12 @@ MetronomeCP : AbstractGUIComponentCP {
     ^55
   }
 
+  volume_{ arg value = 0.1;
+    this.metronomeVolume.valueAction_(value)
+  }
+
+  outbus_{ arg value = 0;
+    this.metroOutBox.valueAction_(value)
+  }
 
 }
