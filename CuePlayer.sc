@@ -18,10 +18,16 @@ CuePlayer : Cues {
     this.oscTrigger;
   }
 
-  add { arg function, cueNumber, timeline, timelineOptions = ();
+  add { arg function, timeline, timelineOptions = ();
+    timeline = timeline.asTimeline(clock, timelineOptions);
+    this.addTimelineToRegister(cueList.size+1, timeline);
+    ^super.add({function.value; timeline.play;});
+  }
+
+  put { arg cueNumber, function, timeline, timelineOptions = ();
     timeline = timeline.asTimeline(clock, timelineOptions);
     this.addTimelineToRegister(cueNumber, timeline);
-    ^super.add({function.value; timeline.play;}, cueNumber);
+    ^super.put(cueNumber, {function.value; timeline.play;});
   }
 
   gui {arg monitorInChannels = 2, monitorOutChannels = 8, options;
@@ -96,7 +102,7 @@ CuePlayer : Cues {
     "====================================================".postln;
     ("CuePlayer OSC trigger:").postln;
     (" with path " ++ path).postln;
-    ("message: " ++ message).postln;
+    (" message: " ++ message).postln;
     "====================================================".postln;
   }
 

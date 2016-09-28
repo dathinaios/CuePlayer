@@ -10,12 +10,15 @@ Cues { var <>cueList, <>current, >hook;
     cueList = Array.new;
   }
 
-  add { arg function, cueNumber = (cueList.size + 1);
+  add { arg function;
+    cueList.add(function);
+  }
+
+  put {arg cueNumber = (cueList.size + 1), function;
     if(cueList.size < cueNumber) {
       cueList = cueList.extend(cueNumber, nil);
     };
     cueList[cueNumber - 1] = function;
-    ^cueList.size;
   }
 
   next {
