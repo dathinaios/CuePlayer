@@ -83,9 +83,10 @@ MetronomeCP : AbstractGUIComponentCP {
   }
 
   cmdPeriodAction {
-    if ( metroButton.value == 1, {
-      Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metronomeVolume.value.linlin(0,1,0,0.5), \dur, 1, \freq, 800, \out, metroOutBox.value - 1 )).play(options.tempoClock, quant:[1]);
-    });
+    metroButton.value = 0;
+    /* if ( metroButton.value == 1, { */
+    /*   Pdef(\metronome, Pbind(\instrument, \metronome, \amp, metronomeVolume.value.linlin(0,1,0,0.5), \dur, 1, \freq, 800, \out, metroOutBox.value - 1 )).play(options.tempoClock, quant:[1]); */
+    /* }); */
   }
 
   windowName {
