@@ -12,8 +12,10 @@ CuePlayer : Cues {
   init {
     super.init;
     clock = TempoClock(120/60, queueSize: 2048 * 2).permanent_(true);
-    MIDIIn.connectAll;
     timelineRegister = IdentityDictionary.new;
+    MIDIIn.connectAll;
+    this.midiTrigger;
+    this.oscTrigger;
   }
 
   add { arg function, cueNumber, timeline, timelineOptions = ();
