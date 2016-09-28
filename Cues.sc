@@ -1,5 +1,8 @@
 
-Cues { var <>cueList, <>current, >hook;
+Cues { 
+  var <>cueList, <>current, >hook;
+  var cueListRaw, <>liveReload = true;
+  var attachmentList;
 
   *new {
     ^super.new.init;
@@ -8,22 +11,32 @@ Cues { var <>cueList, <>current, >hook;
   init {
     current = 0;
     cueList = Array.new;
+    cueListRaw = Array.new;
+    attachmentList = Array.new;
   }
 
-  add { arg function;
-    cueList.add(function);
+  add { arg function, attachment;
+    cueList.add(function.asCueFunction);
+    cueListRaw.add(function);
+    attachmentList.add(attachment);
   }
 
-  put {arg cueNumber = (cueList.size + 1), function;
+  put {arg cueNumber, function, attachment;
     if(cueList.size < cueNumber) {
       cueList = cueList.extend(cueNumber, nil);
+      cueListRaw = cueListRaw.extend(cueNumber, nil);
+      attachmentList = attachmentList.extend(cueNumber, nil);
     };
-    cueList[cueNumber - 1] = function;
+    cueListRaw[cueNumber - 1] = function;
+    attachmentList[cueNumber - 1] = attachment;
+    cueList[cueNumber - 1] = function.asCueFunction;
   }
 
   next {
     hook.value(this);
+    if(liveReload) {this.reloadCue};
     cueList[current].value;
+    attachmentList[current].value;
     current = current + 1;
     this.changed(\current);
     ^current;
@@ -39,6 +52,12 @@ Cues { var <>cueList, <>current, >hook;
     current = cue.abs;
     this.changed(\current);
 		^current;
+  }
+
+  reloadCue {
+    if(cueList[current].notNil){
+      cueList[current] = cueListRaw[current].asCueFunction;
+    }
   }
 
 }

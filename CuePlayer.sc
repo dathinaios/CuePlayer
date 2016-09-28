@@ -21,13 +21,13 @@ CuePlayer : Cues {
   add { arg function, timeline, timelineOptions = ();
     timeline = timeline.asTimeline(clock, timelineOptions);
     this.addTimelineToRegister(cueList.size+1, timeline);
-    ^super.add({function.value; timeline.play;});
+    ^super.add(function, {timeline.play;});
   }
 
   put { arg cueNumber, function, timeline, timelineOptions = ();
     timeline = timeline.asTimeline(clock, timelineOptions);
     this.addTimelineToRegister(cueNumber, timeline);
-    ^super.put(cueNumber, {function.value; timeline.play;});
+    ^super.put(cueNumber, function, {timeline.play;});
   }
 
   gui {arg monitorInChannels = 2, monitorOutChannels = 8, options;
@@ -51,11 +51,15 @@ CuePlayer : Cues {
   }
 
   disableLiveReload {
-    timelineRegister.do{arg i; i.options.liveReload = false}
+    timelineRegister.do{arg i; i.options.liveReload = false};
+    this.liveReload = false;
+    "Live reload disabled".postln;
   }
 
   enableLiveReload {
-    timelineRegister.do{arg i; i.options.liveReload = true}
+    timelineRegister.do{arg i; i.options.liveReload = true};
+    this.liveReload = true;
+    "Live reload enabled".postln;
   }
 
   /* External Control */
