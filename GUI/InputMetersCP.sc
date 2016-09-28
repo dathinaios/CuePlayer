@@ -7,7 +7,7 @@ InputMetersCP : AbstractGUIComponentCP {
     options.monitorInChannels ?? { options.monitorInChannels = 2 };
     options.groupIn ?? { options.groupIn = Server.default.defaultGroup};
     options.monitorInOffset ?? { options.monitorInOffset = 0};
-    options.monitorInChannels = options.monitorInChannels.clip(2,8);
+    options.monitorInChannels = options.monitorInChannels.clip(1,8);
     super.setDefaultOptions;
   }
 
@@ -53,9 +53,10 @@ InputMetersCP : AbstractGUIComponentCP {
       delayTrig = Delay1.kr(trig);
 
       SendReply.kr(trig, '/in_levels',
-        options.monitorInChannels.collect{ arg i;
-          [Amplitude.kr( sig[i] ), // rms of signal1
-          K2A.ar(Peak.ar( sig[i], delayTrig).lag(0, 3))] // peak of signal1
+        options.monitorInChannels.collect{ arg i; var chan;
+          if(options.monitorInChannels == 1) { chan = sig} {chan = sig[i]};
+          [Amplitude.kr(chan), // rms of signal1
+          K2A.ar(Peak.ar(chan, delayTrig).lag(0, 3))] // peak of signal1
         }.flatten;
       );
     }).add;
