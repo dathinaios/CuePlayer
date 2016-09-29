@@ -34,8 +34,8 @@ CuePlayerGUI {
   setDefaultOptions {
     options.monitorInOffset ?? { options.monitorInOffset = 0 };
     options.largeDisplay ?? { options.largeDisplay = false };
-    options.left ?? { options.left = 1400 };
-    options.top ?? { options.top = 650 };
+    options.left ?? { options.left = GUI.window.screenBounds.width - 282 };
+    options.top ?? { options.top = GUI.window.screenBounds.height - 330 };
     options.timer ?? { options.timer = true };
     options.metronome ?? { options.metronome = true };
     options.serverControls ?? { options.serverControls = true };
