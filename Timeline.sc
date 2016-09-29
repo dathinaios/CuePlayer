@@ -92,8 +92,16 @@ Timeline {
       arg view, char, modifiers, unicode, keycode;
       /* [char, modifiers, unicode, keycode].postln; */
       switch(unicode)
-      {45} {timeUnitLength = timeUnitLength - 5; plotWindow.refresh;} // -
-      {61} {timeUnitLength = timeUnitLength + 5; plotWindow.refresh;} // =
+      {45} {
+        timeUnitLength = timeUnitLength - 5;
+        plotUserView.bounds = plotUserView.bounds - Rect(0,0,timeUnitLength,0);
+        plotWindow.refresh;
+      } // -
+      {61} {
+        timeUnitLength = timeUnitLength + 5;
+        plotUserView.bounds = plotUserView.bounds + Rect(0,0,timeUnitLength,0);
+        plotWindow.refresh;
+      } // =
     };
 
     functionList.do{
