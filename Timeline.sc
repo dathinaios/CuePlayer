@@ -33,7 +33,7 @@ Timeline {
 
   setDefaultOptions {
     options.mode ?? { options.mode = \beats };
-    options.quant ?? { options.quant = true };
+    options.quant ?? { options.quant = 1 };
     options.liveReload ?? { options.liveReload = true };
   }
 
@@ -50,7 +50,10 @@ Timeline {
   }
 
   quantValue {
-    if(options.quant) {^clock.timeToNextBeat} {^0};
+    if(options.quant > 0, 
+      { ^clock.timeToNextBeat + (options.quant - 1) }, 
+      { ^0 }
+    );
   }
 
   time { arg value; var time;
@@ -62,7 +65,7 @@ Timeline {
 
   sched { arg time, function;
     Routine {
-      time.wait;
+      time.wait; // in beats
       Server.default.makeBundle(Server.default.latency, function);
     }.play(clock);
   }
