@@ -30,7 +30,7 @@ InputMetersCP : AbstractGUIComponentCP {
           curMsg = curMsg + 2;
         }
       }.defer;
-    }, '/in_levels', Server.default.addr);
+    }, ( '/in_levels' ++ options.monitorInChannels).asSymbol, Server.default.addr);
     oscInputLevels.permanent = true;
   }
 
@@ -45,14 +45,14 @@ InputMetersCP : AbstractGUIComponentCP {
 
   runResources {
     GroupManagerCP.initialise;
-    SynthDef(\inputLevels, {
+    SynthDef(\inputLevels ++ options.monitorInChannels, {
       var trig, sig, delayTrig;
 
       sig = SoundIn.ar( options.monitorInChannels.collect{arg i; i+options.monitorInOffset});
       trig = Impulse.kr(10);
       delayTrig = Delay1.kr(trig);
 
-      SendReply.kr(trig, '/in_levels',
+      SendReply.kr(trig, ( '/in_levels' ++ options.monitorInChannels).asSymbol,
         options.monitorInChannels.collect{ arg i; var chan;
           if(options.monitorInChannels == 1) { chan = sig} {chan = sig[i]};
           [Amplitude.kr(chan), // rms of signal1
@@ -60,7 +60,7 @@ InputMetersCP : AbstractGUIComponentCP {
         }.flatten;
       );
     }).add;
-    { inputLevels = Synth(\inputLevels, target: GroupManagerCP.groupA )}.defer(1);
+    { inputLevels = Synth(\inputLevels ++ options.monitorInChannels, target: GroupManagerCP.groupA )}.defer(1);
   }
 
   clear {

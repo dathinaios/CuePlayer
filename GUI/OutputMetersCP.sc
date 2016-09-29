@@ -42,27 +42,27 @@ OutputMetersCP : AbstractGUIComponentCP {
           curMsg = curMsg + 2;
         }
       }.defer;
-    }, '/out_levels', Server.default.addr);
+    }, ('/out_levels'++ options.monitorOutChannels).asSymbol, Server.default.addr);
     oscOutputLevels.permanent = true;
   }
 
   runResources {
     GroupManagerCP.initialise;
-    SynthDef(\outputLevels, {
+    SynthDef(\outputLevels ++ options.monitorOutChannels, {
       var trig, sig, delayTrig;
 
       sig = In.ar( options.monitorOutChannels.collect{arg i; i});
       trig = Impulse.kr(10);
       delayTrig = Delay1.kr(trig);
 
-      SendReply.kr(trig, '/out_levels',
+      SendReply.kr(trig, ('/out_levels'++ options.monitorOutChannels).asSymbol,
         options.monitorOutChannels.collect{ arg i;
           [Amplitude.kr( sig[i] ), // rms of signal1
           K2A.ar(Peak.ar( sig[i], delayTrig).lag(0, 3))] // peak of signal1
         }.flatten;
       );
     }).add;
-    { outputLevels = Synth(\outputLevels, target: GroupManagerCP.groupZ) }.defer(1);
+    { outputLevels = Synth(\outputLevels ++ options.monitorOutChannels, target: GroupManagerCP.groupZ) }.defer(1);
   }
 
   clear {
