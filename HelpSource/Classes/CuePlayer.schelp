@@ -1,0 +1,139 @@
+TITLE:: CuePlayer
+summary:: Advanced cue player for mixed media performance and not only
+categories:: Class
+related:: Classes/Timeline, Classes/Cues, Classes/CuePlayerGUI
+
+DESCRIPTION::
+(put long description here)
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new CuePlayer instance
+
+INSTANCEMETHODS::
+
+METHOD:: clearMIDI
+Clear all MIDI functions defined with midiTrigger or midiTriggerVelocity.
+
+METHOD:: put
+Add a cue function to a specific cue position.
+
+ARGUMENT:: cueNumber
+The cue number to register the function.
+
+ARGUMENT:: function
+An instance of link::Classes/Function:: or a string representing the path of an scd file. The file must return a function.
+
+ARGUMENT:: timeline
+An instance of link::Classes/Array:: with time, function pairs. Alternatively a string representing the path of an scd file. 
+The file must return an link::Classes/Array:: of time, function pairs.
+
+ARGUMENT:: timelineOptions
+An event of timeline options. See link::Classes/Timeline:: for a list of available options.
+
+METHOD:: add
+Add a cue at the end of the current cue list.
+
+ARGUMENT:: function
+An instance of link::Classes/Function:: or a string representing the path of an scd file. The file must return a function.
+
+ARGUMENT:: timeline
+An instance of link::Classes/Array:: with time, function pairs. Alternatively a string representing the path of an scd file. 
+The file must return an link::Classes/Array:: of time, function pairs.
+
+ARGUMENT:: timelineOptions
+An event of timeline options. See link::Classes/Timeline:: for a list of available options.
+
+METHOD:: tempo
+Set the tempo
+
+ARGUMENT:: bpm
+Beats per minute.
+
+returns:: Beats per minute.
+
+METHOD:: freeOscTrigger
+Free the OSC trigger that was created with oscTrigger.
+
+METHOD:: plot
+Graphic output of the current timeline items.
+
+ARGUMENT:: cue
+If provided plots the selected cue.
+
+METHOD:: enableLiveReload
+Enable live reloading of scripts provided as path strings. See add and put methods.
+
+METHOD:: disableLiveReload
+Diable live reloading of scripts provided as path strings. See add and put methods.
+
+METHOD:: gui
+Create a GUI window for a CuePlayer instance.
+
+ARGUMENT:: monitorInChannels
+A number between 0 and 8 for creating input level meters.
+
+ARGUMENT:: monitorOutChannels
+A number between 1 and 256 for creating output level meters.
+
+ARGUMENT:: options
+An event of options. See link::Classes/CuePlayerGUI:: for more info.
+
+note::
+The default event is:
+code::
+(monitorInOffset:  0, largeDisplay: false, left: 2000, top: 2000, 
+timer: true, metronome: true, serverControls: true, shortcuts: true)
+::
+::
+
+METHOD:: clock
+Return the clock currently in use by this CuePlayer instance.
+
+returns:: a link::Classes/TempoClock:: instance.
+
+METHOD:: sendOSC
+Send an open sound control message.
+
+ARGUMENT:: ip
+ARGUMENT:: port
+ARGUMENT:: msg
+
+METHOD:: useGlobalClock
+Use the common clock. This is a TempoClock used by all CuePlayer instances. To be used when
+using multiple synced CuePlayers.
+
+METHOD:: midiTrigger
+Set up a midi trigger on a given note and channel.
+
+ARGUMENT:: note
+ARGUMENT:: channel
+
+METHOD:: oscTrigger
+Set up an OSC trigger.
+
+ARGUMENT:: message
+(describe argument here)
+
+ARGUMENT:: path
+(describe argument here)
+
+METHOD:: guiInstance
+Return the instnace of link::Classes/CuePlayerGUI:: used by this CuePlayer.
+
+METHOD:: midiTriggerVelocity
+Set up a midi trigger on a given note and channel. The midi velocity controls the
+cue number (1-127).
+
+ARGUMENT:: note
+ARGUMENT:: channel
+ARGUMENT:: offset
+Add a number to the selected cue. To be used in the case of more than 127 cues.
+
+EXAMPLES::
+
+code::
+(some example code)
+::
