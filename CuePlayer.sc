@@ -1,12 +1,17 @@
 
 CuePlayer : Cues {
 
+  classvar <globalClock;
   var <>clock, <guiInstance;
   var <timelineRegister, oscTriggerFunc;
   var midiFuncRegister;
 
   *new {
     ^super.new.init;
+  }
+
+  *initClass {
+    globalClock = TempoClock(120/60, queueSize: 2048 * 2).permanent_(true);
   }
 
   init {
@@ -112,6 +117,11 @@ CuePlayer : Cues {
   sendOSC { arg ip = "127.0.0.1", port = 8000, msg = ["/play", 1]; var address;
     address = NetAddr(ip, port);
 		this.sched(clock.timeToNextBeat,{address.sendMsg(msg[0], msg[1])});
+  }
+
+  useGlobalClock {
+    clock = globalClock;
+    "This instance of CuePlayer is now using the global clock.".postln;
   }
 
   /* Private */
