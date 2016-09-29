@@ -120,7 +120,7 @@ CuePlayer : Cues {
   sched { arg time, function;
     Routine {
       time.wait;
-      Server.default.makeBundle(nil, function);
+      Server.default.makeBundle(Server.default.latency, function);
     }.play(clock);
   }
 
