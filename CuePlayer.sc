@@ -4,6 +4,7 @@ CuePlayer : Cues {
   var <name;
   var <>clock, <guiInstance;
   var <timelineRegister, oscTriggerFunc;
+  var midiFuncRegister;
 
   *new { arg name;
     ^super.newCopyArgs(name).init;
@@ -13,8 +14,10 @@ CuePlayer : Cues {
     super.init;
     clock = TempoClock(120/60, queueSize: 2048 * 2).permanent_(true);
     timelineRegister = IdentityDictionary.new;
+    midiFuncRegister = Array.new;
     MIDIIn.connectAll;
     this.midiTrigger;
+    this.midiTriggerVelocity;
     this.oscTrigger;
   }
 
@@ -64,13 +67,32 @@ CuePlayer : Cues {
 
   /* External Control */
 
-  midiTrigger { arg note = 60, channel = 15;
-    MIDIFunc.noteOn({ arg vel, noteNum, chan;
+  midiTrigger { arg note = 60, channel = 14; var func;
+    func = { arg src, chan, noteNum, vel;
+      chan = chan + 1;
+      /* [chan, noteNum, vel].postln; */
       if (note == noteNum && chan == channel, {
-        /*[vel, noteNum, chan].postln;*/
-        {this.trigger(vel-1)}.defer;
+        {this.next}.defer;
       });
-    }).permanent = true;
+    };
+    midiFuncRegister.add(func);
+    MIDIIn.addFuncTo(\noteOn, func);
+  }
+
+  midiTriggerVelocity { arg note = 60, channel = 15, offset = 0; var func;
+    func = { arg src, chan, noteNum, vel;
+      chan = chan + 1;
+      /* [chan, noteNum, vel].postln; */
+      if (note == noteNum && chan == channel, {
+        {this.trigger((vel-1)+offset)}.defer;
+      });
+    };
+    midiFuncRegister.add(func);
+    MIDIIn.addFuncTo(\noteOn,func);
+  }
+
+  clearMIDI {
+    midiFuncRegister.do{ arg func; MIDIIn.removeFuncFrom(\noteOn, func)}
   }
 
   oscTrigger { arg message = 1, path = '/cueTrigger';
