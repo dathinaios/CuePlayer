@@ -12,7 +12,7 @@ CuePlayerGUI {
 
   init {
     clock = cuePlayer.clock;
-    name = cuePlayer.name ?? "Cue Player";
+    name = "Cue Player";
 
     this.setDefaultOptions;
     this.initStyleVariables;

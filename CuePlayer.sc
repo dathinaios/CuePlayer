@@ -1,13 +1,12 @@
 
 CuePlayer : Cues {
 
-  var <name;
   var <>clock, <guiInstance;
   var <timelineRegister, oscTriggerFunc;
   var midiFuncRegister;
 
-  *new { arg name;
-    ^super.newCopyArgs(name).init;
+  *new {
+    ^super.new.init;
   }
 
   init {
