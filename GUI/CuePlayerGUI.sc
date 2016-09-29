@@ -17,11 +17,11 @@ CuePlayerGUI {
     this.setDefaultOptions;
     this.initStyleVariables;
     this.createMainWindow;
-    if(options.inputLevels) {this.createInputLevels};
+    if(monitorInChannels > 0) {this.createInputLevels};
     this.createCueTrigger;
     if(options.timer) {this.createTimer };
     if(options.metronome) { this.createMetronome };
-    if(options.outputLevels) { this.createOutputLevels };
+    if(monitorOutChannels > 0) { this.createOutputLevels };
     if(options.serverControls) { this.createServerControls };
     if(options.shortcuts) { this.registerShortcuts };
 
@@ -36,10 +36,8 @@ CuePlayerGUI {
     options.largeDisplay ?? { options.largeDisplay = false };
     options.left ?? { options.left = 1400 };
     options.top ?? { options.top = 650 };
-    options.inputLevels ?? { options.inputLevels = true };
     options.timer ?? { options.timer = true };
     options.metronome ?? { options.metronome = true };
-    options.outputLevels ?? { options.outputLevels = true };
     options.serverControls ?? { options.serverControls = true };
     options.shortcuts ?? { options.shortcuts = false };
   }
