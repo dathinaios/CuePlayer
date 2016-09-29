@@ -35,8 +35,8 @@ Cues {
   next {
     hook.value(this);
     if(liveReload) {this.reloadCue};
-    cueList[current].value;
-    attachmentList[current].value;
+    cueList[current].value(this);
+    attachmentList[current].value(this);
     current = current + 1;
     this.changed(\current);
     ^current;
