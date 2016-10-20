@@ -52,8 +52,8 @@ CuePlayer : Cues {
     ^bpm;
   }
 
-  plot { arg cue = current; var timeline;
-    timeline = timelineRegister[cue.asSymbol];
+  plot { arg cueNumber = current; var timeline;
+    timeline = timelineRegister[cueNumber.asSymbol];
     if(timeline.notNil) {timeline.plot};
   }
 
