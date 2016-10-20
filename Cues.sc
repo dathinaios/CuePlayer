@@ -1,5 +1,5 @@
 
-Cues { 
+Cues {
   var <>cueList, <>current, >hook;
   var cueListRaw, <>liveReload = true;
   var attachmentList;
@@ -42,14 +42,14 @@ Cues {
     ^current;
   }
 
-  trigger { arg cue = 1;
-    this.setCurrent(cue);
+  trigger { arg cueNumber = 1;
+    this.setCurrent(cueNumber);
     ^this.next;
   }
 
-  setCurrent {arg cue;
+  setCurrent {arg cueNumber;
     /*("Next cue will be " ++ (cue + 1)).postln;*/
-    current = cue.abs;
+    current = cueNumber.abs;
     this.changed(\current);
 		^current;
   }
