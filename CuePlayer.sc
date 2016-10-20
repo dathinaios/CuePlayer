@@ -19,9 +19,6 @@ CuePlayer : Cues {
     clock = TempoClock(120/60, queueSize: 2048 * 2).permanent_(true);
     timelineRegister = IdentityDictionary.new;
     midiFuncRegister = Array.new;
-    MIDIIn.connectAll;
-    this.midiTrigger;
-    this.midiTriggerVelocity;
     this.oscTrigger;
   }
 
@@ -72,27 +69,27 @@ CuePlayer : Cues {
   /* External Control */
 
   midiTrigger { arg note = 60, channel = 14; var func;
-    func = { arg src, chan, noteNum, vel;
+    func = { arg vel, noteNum, chan;
       chan = chan + 1;
-      /* [chan, noteNum, vel].postln; */
       if (note == noteNum && chan == channel, {
+        /* [chan, noteNum, vel].debug("midiTrigger"); */
         {this.next}.defer;
       });
     };
     midiFuncRegister.add(func);
-    MIDIIn.addFuncTo(\noteOn, func);
+    MIDIFunc.noteOn(func);
   }
 
   midiTriggerVelocity { arg note = 60, channel = 15, offset = 0; var func;
-    func = { arg src, chan, noteNum, vel;
+    func = { arg vel, noteNum, chan;
       chan = chan + 1;
-      /* [chan, noteNum, vel].postln; */
       if (note == noteNum && chan == channel, {
+        /* [chan, noteNum, vel].debug("midiTriggerVelocity"); */
         {this.trigger((vel-1)+offset)}.defer;
       });
     };
     midiFuncRegister.add(func);
-    MIDIIn.addFuncTo(\noteOn,func);
+    MIDIFunc.noteOn(func);
   }
 
   clearMIDI {
