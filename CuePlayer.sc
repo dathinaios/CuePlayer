@@ -84,7 +84,7 @@ CuePlayer : Cues {
       chan = chan + 1;
       if (note == noteNum && chan == channel, {
         /* [chan, noteNum, vel].debug("midiTriggerVelocity"); */
-        {this.trigger((vel-2)+offset)}.defer;
+        {this.trigger((vel)+offset)}.defer;
       });
     };
     midiFuncRegister.add(func);

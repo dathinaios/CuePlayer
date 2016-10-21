@@ -43,7 +43,7 @@ Cues {
   }
 
   trigger { arg cueNumber = 1;
-    cueNumber = cueNumber + 1;
+    cueNumber = cueNumber - 1;
     this.setCurrent(cueNumber);
     ^this.next;
   }
