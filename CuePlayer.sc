@@ -19,7 +19,6 @@ CuePlayer : Cues {
     clock = TempoClock(120/60, queueSize: 2048 * 2).permanent_(true);
     timelineRegister = IdentityDictionary.new;
     midiFuncRegister = Array.new;
-    this.oscTrigger;
   }
 
   add { arg function, timeline, timelineOptions = ();
@@ -68,7 +67,7 @@ CuePlayer : Cues {
 
   /* External Control */
 
-  midiTrigger { arg note = 60, channel = 14; var func;
+  midiTrigger { arg note = 60, channel = 15; var func;
     func = { arg vel, noteNum, chan;
       chan = chan + 1;
       if (note == noteNum && chan == channel, {
@@ -80,12 +79,12 @@ CuePlayer : Cues {
     MIDIFunc.noteOn(func);
   }
 
-  midiTriggerVelocity { arg note = 60, channel = 15, offset = 0; var func;
+  midiTriggerVelocity { arg note = 60, channel = 16, offset = 0; var func;
     func = { arg vel, noteNum, chan;
       chan = chan + 1;
       if (note == noteNum && chan == channel, {
         /* [chan, noteNum, vel].debug("midiTriggerVelocity"); */
-        {this.trigger((vel-1)+offset)}.defer;
+        {this.trigger((vel-2)+offset)}.defer;
       });
     };
     midiFuncRegister.add(func);
@@ -131,11 +130,9 @@ CuePlayer : Cues {
   }
 
   oscTriggerInform { arg path, message;
-    "====================================================".postln;
     ("CuePlayer OSC trigger:").postln;
     (" with path " ++ path).postln;
     (" message: " ++ message).postln;
-    "====================================================".postln;
   }
 
   addTimelineToRegister { arg cueNumber, timeline; var registerNumber;
