@@ -38,8 +38,8 @@ Timeline {
   }
 
   add{ arg time, function;
-    functionList.add(time);
-    functionList.add(function);
+    functionList = functionList.add(time);
+    functionList = functionList.add(function);
   }
 
   play {
