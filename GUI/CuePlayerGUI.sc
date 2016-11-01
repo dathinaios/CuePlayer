@@ -113,7 +113,6 @@ CuePlayerGUI {
     cueTrigger.cueNumberBox.action = { arg box;
       box.value = box.value.abs.round(1);
       cuePlayer.current = box.value;
-      timer.stop;
       if (box.value == 0,       {timer.stop; timer.cursecs_(0)});
       if (options.largeDisplay, {cueTrigger.largeCueNumberDisplay.string = box.value});
     };
