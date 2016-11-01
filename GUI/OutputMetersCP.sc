@@ -6,7 +6,7 @@ OutputMetersCP : AbstractGUIComponentCP {
   setDefaultOptions {
     options.monitorOutChannels ?? { options.monitorOutChannels = 8 };
     options.groupOut ?? { options.groupOut = Server.default.defaultGroup};
-    options.monitorOutChannels = options.monitorOutChannels.clip(1,256);
+    options.monitorOutChannels = options.monitorOutChannels.clip(1, 48);
     super.setDefaultOptions;
   }
 
