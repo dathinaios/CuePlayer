@@ -6,6 +6,7 @@ CueTriggerCP : AbstractGUIComponentCP {
   setDefaultOptions {
     super.setDefaultOptions;
     options.largeDisplay ?? { options.largeDisplay = false };
+    options.largeDisplayBounds ?? { options.largeDisplayBounds = Rect(window.bounds.left - 970, 900, 950, 950)};
     options.cueButtonFont ?? { options.cueButtonFont = Font("Lucida Grande", 12) };
     options.cueNumberBoxFont ?? { options.cueNumberBoxFont = Font("Lucida Grande", 22) };
   }
@@ -37,11 +38,13 @@ CueTriggerCP : AbstractGUIComponentCP {
     cueNumberBox.action = { "\nUse: \n \n cueTriggerCPInstance.cueNumberBox.action = {}; \n \nto set this action to something useful!".postln; };
   }
 
-  createLargeCueNumberDisplay { arg widthHeight = 950;
-    lrgCueWin = Window.new("Huge Cue Number", Rect(window.bounds.left - widthHeight - 20, 900, widthHeight, widthHeight)).front;
+  createLargeCueNumberDisplay {var width, height;
+    width = options.largeDisplayBounds.width;
+    height = options.largeDisplayBounds.height;
+    lrgCueWin = Window.new("Huge Cue Number", options.largeDisplayBounds, resizable: false).front;
     lrgCueWin.background = Color.black;
-    largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: widthHeight, height: widthHeight)).align_(\center);
-    largeCueNumberDisplay.font_(Font(options.font.name, widthHeight * 0.73)).stringColor_(Color.white);
+    largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: width, height: height)).align_(\center);
+    largeCueNumberDisplay.font_(Font(options.font.name, width * 0.73)).stringColor_(Color.white);
     lrgCueWin.front;
   }
 
