@@ -1,12 +1,12 @@
 TITLE:: CuePlayer
 summary:: Organise and execute cues for live and mixed-media works
 categories:: Class
-related:: Classes/CuePlayerGUI, Classes/Cues, Classes/Timeline
+related:: Tutorials/CuePlayerTutorial, Classes/CuePlayerGUI, Classes/Timeline, Classes/Cues 
 
 DESCRIPTION::
-The CuePlayer is useful for live and mixed electroacoustic works (possibly involving acoustic instruments) when the composer wishes to build a series of processes (cues) and execute them one after another during the course of a piece. The cues are initially organised into an Array, and later on they may be triggered via code, a GUI window or any device/software which outputs midi data, such as a footpedal or a Digital Audio Workstation.
+The CuePlayer is useful for live and mixed electroacoustic works (possibly involving acoustic instruments) when the composer wishes to build a series of processes (cues) and execute them one after another during the course of a piece. The cues are initially organised into an Array, and later on they may be triggered via code, a GUI window or any device/software which outputs midi/osc data, such as a footpedal or a Digital Audio Workstation.
 
-There are lots of features which make the CuePlayer useful for composing in-studio and performing on-stage electroacoustic works using SuperCollider. Please read below and go through this short link::Guides/CuePlayerTutorial:: for more information.
+There are lots of features which make the CuePlayer useful for composing in-studio and performing on-stage electroacoustic works using SuperCollider. Please read below and go through this short link::Tutorials/CuePlayerTutorial:: for more information.
 
 
 
@@ -14,6 +14,11 @@ CLASSMETHODS::
 
 METHOD:: new
 Create a new CuePlayer instance
+
+
+
+METHOD:: globalClock
+Returns the global clock. See link::#useGlobalClock::.
 
 
 
@@ -45,7 +50,7 @@ ARGUMENT:: function
 An instance of link::Classes/Function:: or a string representing the path of an scd file; it must return a function.
 
 ARGUMENT:: timeline
-An instance of link::Classes/Array:: with time, function pairs. Alternatively a string representing the path of an scd file. The file must return an link::Classes/Array:: of time, function pairs. See link::Classes/Timeline::. 
+An instance of link::Classes/Array:: with time - function pairs, (time is in beats or optionally in seconds). Alternatively a string representing the path of an scd file. The file must return an link::Classes/Array:: of time - function pairs, like [ 0, { }, 1, { } ]. See link::Classes/Timeline:: and the link::#examples:: at the end of this document. 
 
 ARGUMENT:: timelineOptions
 An event of timeline options. See link::Classes/Timeline::.
@@ -56,9 +61,9 @@ code::
 
 a = CuePlayer.new; // Create a new CuePlayer instance
 
-a.put(1, { "do something".postln }); // Define 1st cue. Place a function at cue-number 1.
-a.put(2, { "this is the 2nd cue".postln }); // Define 2nd cue. Place a function at cue-number 2.
-a.put(5, { "& this is the 5th cue".postln }); // Define 5th cue. Place a function at cue-number 5.
+a.put(1, { "do something".postln }); // Define 1st cue. 
+a.put(2, { "this is the 2nd cue".postln }); // Define 2nd cue. 
+a.put(5, { "& this is the 5th cue".postln }); // Define 5th cue. 
 ::
 
 
@@ -72,7 +77,7 @@ ARGUMENT:: function
 An instance of link::Classes/Function:: or a string representing the path of an scd file; it must return a function.
 
 ARGUMENT:: timeline
-An instance of link::Classes/Array:: with time, function pairs. Alternatively a string representing the path of an scd file. The file must return an link::Classes/Array:: of time, function pairs. See link::Classes/Timeline::. 
+An instance of link::Classes/Array:: with time - function pairs, (time is in beats or optionally in seconds). Alternatively a string representing the path of an scd file. The file must return an link::Classes/Array:: of time - function pairs, like [ 0, { }, 1, { } ]. See link::Classes/Timeline:: and the link::#examples:: at the end of this document. 
 
 ARGUMENT:: timelineOptions
 An event of timeline options. See link::Classes/Timeline::. 
@@ -98,6 +103,16 @@ a.put(2, { "this is cue two".postln });
 a.trigger(1); // trigger cue 1
 a.trigger(2); // trigger cue 2
 ::
+
+
+
+METHOD:: blockTrigger
+Filter out triggers that occur too fast. 
+
+When the CuePlayer receives a new trigger within less time than the blockTrigger's value, it neglects it. This avoids the piece moving forward by mistake, for example when a footpedal is rapidly pressed twice by accident.
+
+ARGUMENT:: time
+A number. Default is 0.3 secs.
 
 
 
@@ -143,8 +158,8 @@ b.gui(
 	options: (
 		monitorInOffset:  2, // Offset input monitoring by 2; (hence monitor inputs 3,4,5,6,7 here)
 		largeDisplay: false, // Show/hide the big window displaying current cue-number. Useful for the performers on stage.
-		left: 1000, // Left bound for the CuePlayer window.
-		top: 300, // Top bound for the CuePlayer window.
+		left: 1000, // Left bound of the CuePlayer window.
+		top: 300, // Top bound of the CuePlayer window.
 		timer: true, // Show/hide timer
 		metronome: true, // Show/hide metronome
 		serverControls: true, // Show/hide server controls: mute-button, volume-slider, Peak CPU, Number of Synths
@@ -155,89 +170,261 @@ b.gui(
 
 
 
+METHOD:: midiTrigger
+Set up a midi-trigger on a given note and channel to trigger the next cue. This allows to evaluate sequential cues upon receiving a midi-note through a specified midi-channel. Default note is 60 (middle C) transmitted via channel 15. See also the link::Tutorials/CuePlayerTutorial::.
+
+ARGUMENT:: note
+The midi-note which the CuePlayer listens to in order to trigger the next cue.
+
+ARGUMENT:: channel
+The midi-channel.
+
+code::
+// Create a new CuePlayer instance & bring up the GUI
+a = CuePlayer.new; 
+a.gui; 
+
+// Connect all midi devices & set up a midi-trigger for the CuePlayer
+MIDIIn.connectAll; 
+a.midiTrigger(note: 60, channel: 15); 
+
+// Ready to trigger cues from an external midi-device hooked up on channel 15 upon sending note 60.
+::
+
+
+
+METHOD:: midiTriggerVelocity
+Set up a midi-trigger on a given note and channel to trigger a cue based on the note's velocity value. This allows to evaluate specific cues upon receiving a midi-note; the velocity (1-127) controls the cue-number. Default note is 60 (middle C) transmitted via channel 16. See also the link::Tutorials/CuePlayerTutorial::.
+
+ARGUMENT:: note
+The midi-note which the CuePlayer listens to.
+
+ARGUMENT:: channel
+The midi-channel.
+
+ARGUMENT:: offset
+Add a constant to the specified cue-number. Useful when more than 127 cues are needed.
+
+code::
+// Create a new CuePlayer instance & bring up the GUI
+a = CuePlayer.new; 
+a.gui; 
+
+// Connect all midi devices & set up a midi-trigger for the CuePlayer
+MIDIIn.connectAll; 
+a.midiTriggerVelocity(note: 60, channel: 16, offset: 0); 
+
+/* Ready to trigger cues from an external midi-device hooked up on channel 16 
+based on the note's velocity value. */
+::
+
+
+
+
 METHOD:: clearMIDI
-Clear all MIDI functions defined with midiTrigger or midiTriggerVelocity.
+Clear all MIDI functions defined with midiTrigger and midiTriggerVelocity.
 
 
 
+METHOD:: oscTrigger
+Set up an Open Sound Control trigger. This allows to evaluate sequential cues upon receiving an OSC message. Default message is 1 and path '/cueTrigger'. See also the link::Tutorials/CuePlayerTutorial::.
 
+ARGUMENT:: message
+An OSC message.
 
+ARGUMENT:: path
+A Symbol indicating the path of the OSC address.
 
+code::
+// Create a new CuePlayer instance & bring up the GUI
+a = CuePlayer.new;
+a.gui;
+
+// Define cues 1, 2 & 3
+a.put(1, { "this is cue 1".postln });
+a.put(2, { "this is cue 2".postln });
+a.put(3, { "this is cue 3".postln });
+
+// An OSC responder to trigger sequential cues.
+a.oscTrigger
+
+// Test it
+m = NetAddr("127.0.0.1", NetAddr.langPort); // Create a net address
+m.sendMsg("/cueTrigger", 1); // Send a message to trigger a new cue
+m.sendMsg("/cueTrigger", 1); // Trigger another ...
+m.sendMsg("/cueTrigger", 1); // ... and another ...
+::
 
 
 
 METHOD:: freeOscTrigger
-Free the OSC trigger that was created with oscTrigger.
+Free the OSC trigger mechanism.
 
 
 
+METHOD:: sendOSC
+Send an open sound control message to a network address. See also the link::Tutorials/CuePlayerTutorial::.
 
-METHOD:: plot
-Graphic output of the current timeline items.
+ARGUMENT:: ip
+The IP number, like "127.0.0.1".
 
-ARGUMENT:: cueNumber
-If provided plots the selected cue.
+ARGUMENT:: port
+The port number, like 57110.
 
+ARGUMENT:: msg
+The message, like ["/play", 1].
 
+code::
+a = CuePlayer.new; // Create a new CuePlayer instance
 
-
-
-METHOD:: enableLiveReload
-Enable live reloading of scripts provided as path strings. See add and put methods.
-
-METHOD:: disableLiveReload
-Diable live reloading of scripts provided as path strings. See add and put methods.
-
-
-
+// Send messages (possibly to control a DAW).
+// ip/port/message need to be adjusted to match the software's specs.
+a.sendOSC("127.0.0.1", 8000, ["/play", 1]);
+a.sendOSC("127.0.0.1", 8000, ["/pause", 1]);
+::
 
 
 
 METHOD:: clock
 Return the clock currently in use by this CuePlayer instance.
 
-returns:: a link::Classes/TempoClock:: instance.
+returns:: A link::Classes/TempoClock:: instance.
 
-METHOD:: sendOSC
-Send an open sound control message.
 
-ARGUMENT:: ip
-ARGUMENT:: port
-ARGUMENT:: msg
 
-METHOD:: useGlobalClock
-Use the common clock. This is a TempoClock used by all CuePlayer instances. To be used when
-using multiple synced CuePlayers.
+anchor::useGlobalClock::
+METHOD:: useGlobalClock 
+Use the common clock. This is a TempoClock used by all CuePlayer instances. Useful when multiple synced CuePlayers are needed.
+Note::
+Current GUI implementation for this feature is under development.
+:: 
 
-METHOD:: midiTrigger
-Set up a midi trigger on a given note and channel.
 
-ARGUMENT:: note
-ARGUMENT:: channel
+METHOD:: plot
+Provides a visual representation of the selected timeline items. It is applicable only when using timelines. See link::#put:: and link::#add:: methods. 
 
-METHOD:: oscTrigger
-Set up an OSC trigger.
+ARGUMENT:: cueNumber
+An integer. If a timeline is provided, it plots the items in the selected cue-number.
 
-ARGUMENT:: message
-(describe argument here)
 
-ARGUMENT:: path
-(describe argument here)
+
+METHOD:: enableLiveReload
+Enable live reloading of scripts provided as path strings. See link::#put:: and link::#add:: methods. 
+
+METHOD:: disableLiveReload
+Diable live reloading of scripts provided as path strings. See link::#put:: and link::#add:: methods. 
+
+
 
 METHOD:: guiInstance
 Return the instnace of link::Classes/CuePlayerGUI:: used by this CuePlayer.
 
-METHOD:: midiTriggerVelocity
-Set up a midi trigger on a given note and channel. The midi velocity controls the
-cue number (1-127).
 
-ARGUMENT:: note
-ARGUMENT:: channel
-ARGUMENT:: offset
-Add a number to the selected cue. To be used in the case of more than 127 cues.
-
+anchor::examples::
 EXAMPLES::
 
 code::
-(some example code)
+/* ************************************************************************ */
+// Using few basic methods
+
+// Define a SynthDef to play with
+(
+SynthDef(\fsosynth, {
+	arg fundamental = 120, harmonics = #[0.5, 1.19, 1.5, 4], dec = 4;
+	var signal, envelope, delay;
+	signal = Mix.ar( FSinOsc.ar( fundamental * harmonics, mul: 0.07) );
+	delay = DelayN.ar(signal, delaytime: SinOsc.kr(15, mul: 25/SampleRate.ir, add: 50/SampleRate.ir ));
+	envelope = EnvGen.kr(Env.perc(attackTime:0.1,releaseTime: dec), 1, doneAction: 2);
+	Out.ar( [0,1], (signal + delay) * envelope)
+	}
+).store;
+)
+
+// Create a new CuePlayer instance & set its tempo
+a = CuePlayer.new;
+a.tempo(130);
+
+// Build the cues
+(
+// Define cue-1
+a.put(1, {
+	Synth(\fsosynth, [\fundamental, 146]);
+});
+
+// Define cue-2
+a.put(2, {
+	Synth(\fsosynth, [\fundamental, 97, \harmonics, #[0.5, 1.19, 1.5, 8] ]);
+});
+
+// Define cue-3
+a.put(3, {
+	Pdef(\pattern, Pbind(\instrument, \fsosynth, \fundamental, 110, \dec, 0.5, \dur, 1 )).play(a.clock, quant:[1]);
+	// Play the pattern at the CuePlayer's clock
+});
+
+// Add a cue at the end of the cue-list, (here it equates with cue-4)
+a.add({
+	Pdef(\pattern).clear;
+});
+)
+
+// Now, evaluate one by one
+a.trigger(1); // trigger cue 1
+a.trigger(3); // trigger cue 3
+a.tempo(100); // change the tempo
+a.setCurrent(1); // set current cue to 1 ...
+a.next; // trigger next cue (i.e cue-2)
+a.trigger(4); // trigger cue 4
+
+/* ************************************************************************ */
+// Using the GUI
+
+// Bring up the window and control the CuePlayer from its GUI
+a.gui(
+	monitorInChannels: 4, // Monitor 4 input channels
+	monitorOutChannels: 16, // Monitor 16 output channels
+
+	options: (
+		largeDisplay: true, // Show the big window displaying current cue-number.
+		// Useful for the performers on stage.
+		left: 1300, // Left bound of the CuePlayer window.
+		top: 300, // Top bound of the CuePlayer window.
+	)
+);
+
+/* ************************************************************************ */
+// Using a timeline
+
+// Put a timeline at cue-5
+a.put(5,
+	{"a timeline".postln},
+	timeline: [
+		0, {Synth(\fsosynth, [\fundamental, 174, \dec, 0.4 ])},
+		1, {Synth(\fsosynth, [\fundamental, 220, \dec, 0.4 ])},
+		2, {Synth(\fsosynth, [\fundamental, 130, \dec, 0.4 ])},
+		3, {Synth(\fsosynth, [\fundamental, 146, \dec, 0.4 ])},
+		3.5, {Synth(\fsosynth, [\fundamental, 174, \dec, 0.4 ])},
+		4, {Synth(\fsosynth, [\fundamental, 220, \dec, 0.4 ])},
+		4.5, {Synth(\fsosynth, [\fundamental, 130, \dec, 0.4 ])},
+		5, {Synth(\fsosynth, [\fundamental, 146, \dec, 1 ])},
+		7,{Synth(\fsosynth, [\fundamental, 293, \dec, 3 ])}
+	],
+	timelineOptions: (quant: 1)
+);
+
+// Trigger cue-5 with the following code or via the GUI
+a.trigger(5);
+
+// Plot the timeline's events
+a.plot(5);
+
+// Alternatively you may save the timeline (as an Array of time - function pairs) in an scd file and point to its path.
+a.put(6,
+	{"read timeline from an scd file".postln},
+	timeline: PathName(CuePlayer.class.filenameSymbol.asString).parentPath +/+ "HelpSource/Classes/timeline" +/+ "score.scd",
+	timelineOptions: (quant: 1)
+);
+
+a.trigger(6);
+/* ************************************************************************ */
 ::

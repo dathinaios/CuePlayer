@@ -1,16 +1,15 @@
 TITLE:: CuePlayerGUI
-summary:: (put short description here)
-categories:: Undocumented classes
-related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+summary:: Graphic User Interface for CuePlayer
+categories:: Class
+related:: Classes/CuePlayer, Classes/Timeline, Classes/Cues, Tutorials/CuePlayerTutorial
 
-DESCRIPTION::
-(put long description here)
+DESCRIPTION:: A window which allows the user to control the link::Classes/CuePlayer:: from a Graphic User Interface. Through the window the user can monitor input/output buses, trigger cues, use a timer and a metronome and control the server's level amongst others.
 
 
 CLASSMETHODS::
 
 METHOD:: new
-lxfigjdlgj flckgj flkbj flgckbj flckbj lgfbkj clkbj fg
+do your thing DENOIS
 
 ARGUMENT:: cuePlayer
 (describe argument here)

@@ -1,0 +1,170 @@
+TITLE:: Timeline
+summary:: Schedule functions in time using beats or seconds
+categories:: Class
+related:: Classes/CuePlayer, Classes/Cues
+
+DESCRIPTION::
+link::Classes/Timeline:: can be used for scheduling functions in time.
+
+
+
+CLASSMETHODS::
+
+
+anchor::new::
+
+METHOD:: new
+Create a new Timeline instance.
+
+ARGUMENT:: clock
+An instance of link::Classes/TempoClock::.
+
+anchor::options::
+ARGUMENT:: options
+An event containing options for the timeline. Valid options are:
+LIST::
+ ## A link::Classes/Symbol::. Choose between \beats or \time. Default is in beats.
+ ## A quantisation value in beats.
+ ## When a path to an scd file is used (see link::#newFromPath::) this will reload the file before every play, thus allowing for a smooth workflow while composing. It may be set to false to improve performance. 
+::
+
+CODE::
+	options: (
+		mode: \beats,
+		quant: 1,
+		liveReload: true
+	)
+::
+
+returns:: An instance of Timeline.
+
+
+
+METHOD:: newFromArray
+Create an instance of Timeline using an array of time - function pairs; time is in beats or optionally in seconds.
+
+ARGUMENT:: array
+An instance of link::Classes/Array:: with time - function pairs, like [ 0, { }, 1, { } ].
+
+ARGUMENT:: clock
+See link::#new:: method.
+
+ARGUMENT:: options
+See link::#new:: method.
+
+returns:: An instance of Timeline. 
+
+
+
+anchor::newFromPath::
+
+METHOD:: newFromPath
+Create an instance of Timeline using an external scd file containing an link::Classes/Array:: of time - function pairs; time is in beats or optionally in seconds.
+
+ARGUMENT:: path
+A link::Classes/String:: representing the path of an scd file. The file must return an link::Classes/Array:: of time - function pairs, like [ 0, { }, 1, { } ].
+
+ARGUMENT:: clock
+See link::#new:: method.
+time - function
+ARGUMENT:: options
+See link::#new:: method.
+
+returns:: An instance of Timeline. 
+
+CODE::
+// Example contents of an .scd file
+[
+  0, {"event 1".postln;},
+  1, {"event 2".postln;},
+  2, {"event 3".postln;},
+  3, {"event 4".postln;}
+]
+::
+
+
+
+INSTANCEMETHODS::
+
+
+
+METHOD:: play
+Start the timeline according to quantisation value.
+
+returns:: The Timeline instance. 
+
+
+
+METHOD:: stop
+Stop the timeline.
+
+
+anchor::add::
+
+METHOD:: add
+Add a time,function pair, like [ 1.5, { } ].
+
+ARGUMENT:: time
+This is in beats or seconds according to link::#options::.
+
+ARGUMENT:: function
+A link::Classes/Function:: to be avaluated at the given time.
+
+returns:: The Timeline instance. 
+
+
+
+METHOD:: plot
+Graph a simple representation of the scheduled items.
+
+ARGUMENT:: timeUnitLength
+Choose the width (in pixels) of every second in the plot. Also, use the +/- keys on the keyboard to zoom in/out of the graph.
+
+returns:: The link::Classes/Timeline:: instance.
+
+
+
+METHOD:: options
+Returns the current options event.
+
+
+
+METHOD:: clock
+Get or set the link::Classes/TempoClock::.
+
+
+
+EXAMPLES::
+code::
+
+// Using the add method
+(
+c = TempoClock(5);
+	
+t = Timeline.new(clock: c, options:(mode: \beats, quant: 1));
+t.add(2, {"test 1".postln});
+t.add(4, {"test 2".postln});
+t.add(9, {"test 3".postln});
+);
+t.play;
+t.plot;
+
+// Using an Array
+(
+t = Timeline.newFromArray(
+    [
+        0, {"test 1".postln},
+        1.5, {"test 2".postln},
+        2.5, {"test 3".postln}
+    ])
+);
+t.play; 
+
+// Using a path
+t = Timeline.newFromPath( PathName(CuePlayer.class.filenameSymbol.asString).parentPath +/+ "HelpSource/Classes/timeline" +/+ "t-score.scd" );
+t.play;
+
+// An Array or String can also be converted to a timeline.
+t = (PathName(CuePlayer.class.filenameSymbol.asString).parentPath +/+ "HelpSource/Classes/timeline" +/+ "t-score.scd").asTimeline;
+t.play;
+::
