@@ -1,5 +1,5 @@
 
-CueTriggerCP : AbstractGUIComponentCP { 
+CueTriggerCP : AbstractGUIComponentCP {
 
   var <trigButton, <cueNumberBox, lrgCueWin, <largeCueNumberDisplay;
 
@@ -25,7 +25,7 @@ CueTriggerCP : AbstractGUIComponentCP {
     trigButton = Button(window, Rect(10, 200, 220, 60));
     trigButton.font_(options.cueButtonFont);
     trigButton.canFocus = false;
-    trigButton.states_([["Next Cue / FootSwitch", Color.white, Color.fromHexString("#1DA34D")]]);
+    trigButton.states_([["Trigger Next Cue", Color.white, Color.fromHexString("#1DA34D")]]);
     trigButton.action_(
       { "\nUse: \n \n cueTriggerCPInstance.trigButton.action = {}; \n \nto set this action to something useful!".postln; }
     );
