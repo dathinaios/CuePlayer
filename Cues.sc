@@ -3,6 +3,7 @@ Cues {
   var <>cueList, <>current, >hook;
   var cueListRaw, <>liveReload = true;
   var attachmentList;
+  var blockTrigger;
 
   *new {
     ^super.new.init;
@@ -13,6 +14,7 @@ Cues {
     cueList = Array.new;
     cueListRaw = Array.new;
     attachmentList = Array.new;
+    blockTrigger = BlockTriggerCP.new;
   }
 
   add { arg function, attachment;
@@ -33,13 +35,15 @@ Cues {
   }
 
   next {
-    hook.value(this);
-    if(liveReload) {this.reloadCue};
-    cueList[current].value(this);
-    attachmentList[current].value(this);
-    current = current + 1;
-    this.changed(\current);
-    ^current;
+    if(blockTrigger.allow){
+      hook.value(this);
+      if(liveReload) {this.reloadCue};
+      cueList[current].value(this);
+      attachmentList[current].value(this);
+      current = current + 1;
+      this.changed(\current);
+      ^current;
+    }
   }
 
   trigger { arg cueNumber = 1;
@@ -59,6 +63,10 @@ Cues {
     if(cueList[current].notNil){
       cueList[current] = cueListRaw[current].asCueFunction;
     }
+  }
+
+  blockTrigger { arg time = 0.3;
+    blockTrigger.interval = time;
   }
 
 }
