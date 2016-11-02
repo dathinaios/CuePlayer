@@ -145,25 +145,38 @@ ARGUMENT:: monitorOutChannels
 An integer (1 - 48) for creating output level meters.
 
 ARGUMENT:: options
-An event of options. See link::Classes/CuePlayerGUI:: for more information. 
+An event of one or more options.
 
 code::
+/* 
+   Available options:
+   monitorInOffset: Offset input monitoring by 2; (hence monitor inputs 3,4,5,6,7 here)
+   largeDisplay: Show/hide the big window displaying current cue-number. Useful for the performers on stage.
+   largeDisplayBounds: A Rect defining the size and position of the big window display.
+   left: Left bound of the CuePlayer window.
+   top: Top bound of the CuePlayer window.
+   timer: Show/hide timer
+   metronome: Show/hide metronome
+   serverControls: Show/hide server controls: mute-button, volume-slider, Peak CPU, Number of Synths
+   shortcuts: Use shortcuts; default is false
+*/
+
 b = CuePlayer.new; // Create a new CuePlayer instance
 
 // Bring up the CuePlayer window.
 b.gui(
 	monitorInChannels: 5, // Monitor 5 input channels
 	monitorOutChannels: 24, // Monitor 24 output channels
-
 	options: (
-		monitorInOffset:  2, // Offset input monitoring by 2; (hence monitor inputs 3,4,5,6,7 here)
-		largeDisplay: false, // Show/hide the big window displaying current cue-number. Useful for the performers on stage.
-		left: 1000, // Left bound of the CuePlayer window.
-		top: 300, // Top bound of the CuePlayer window.
-		timer: true, // Show/hide timer
-		metronome: true, // Show/hide metronome
-		serverControls: true, // Show/hide server controls: mute-button, volume-slider, Peak CPU, Number of Synths
-		shortcuts: false // Use shortcuts; default is false (recommended)
+		monitorInOffset:  2,
+		largeDisplay: false,
+		largeDisplay: Rect(900, 900, 450, 450),
+		left: 1000,
+		top: 300,
+		timer: true,
+		metronome: true,
+		serverControls: true,
+		shortcuts: false
 	)
 );
 ::
