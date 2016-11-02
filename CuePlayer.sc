@@ -93,13 +93,18 @@ CuePlayer : Cues {
     midiFuncRegister.do{ arg midiFunc; midiFunc.free}
   }
 
-  oscTrigger { arg message = 1, path = '/cueTrigger';
+  oscTrigger { arg path = '/cueTrigger';
     oscTriggerFunc = OSCFunc(
-      { arg msg; if (msg[1] == message, {{this.next}.defer}); },
+      { arg msg;
+        if (msg[1] == -1,
+          { {this.next}.defer },
+          { {this.trigger(msg[1])}.defer }
+        );
+      },
 			path
     );
     oscTriggerFunc.permanent = true;
-    this.oscTriggerInform(path, message);
+    this.oscTriggerInform(path);
     ^oscTriggerFunc;
   }
 
@@ -130,7 +135,7 @@ CuePlayer : Cues {
   oscTriggerInform { arg path, message;
     ("CuePlayer OSC trigger:").postln;
     (" with path " ++ path).postln;
-    (" message: " ++ message).postln;
+    (" message: -1 for next cue or any number for specific cues").postln;
   }
 
   addTimelineToRegister { arg cueNumber, timeline; var registerNumber;
