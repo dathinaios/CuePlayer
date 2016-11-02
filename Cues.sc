@@ -65,8 +65,8 @@ Cues {
     }
   }
 
-  blockTrigger { arg time = 0.3;
-    blockTrigger.interval = time;
+  blockTrigger { arg interval = 0.3;
+    blockTrigger.interval = interval;
   }
 
 }

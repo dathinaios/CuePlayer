@@ -111,7 +111,7 @@ Filter out triggers that occur too fast.
 
 When the CuePlayer receives a new trigger within less time than the blockTrigger's value, it neglects it. This avoids the piece moving forward by mistake, for example when a footpedal is rapidly pressed twice by accident.
 
-ARGUMENT:: time
+ARGUMENT:: interval
 A number. Default is 0.3 secs.
 
 
