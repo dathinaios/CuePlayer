@@ -41,11 +41,15 @@ CuePlayer : Cues {
     }, {"The GUI for this CuePlayer is already active".warn;})
   }
 
-  tempo { arg bpm = 120;
+  tempo_ { arg bpm = 120;
     ("CuePlayer tempo set to " ++ bpm ++ " bpm").postln;
     clock.tempo = bpm/60;
     this.changed(\tempo);
     ^bpm;
+  }
+
+  tempo {
+    ^clock.tempo*60
   }
 
   plot { arg cueNumber = current; var timeline;
