@@ -75,10 +75,10 @@ returns:: An instance of Timeline.
 CODE::
 // Example contents of an .scd file
 [
-  0, {"event 1".postln;},
-  1, {"event 2".postln;},
-  2, {"event 3".postln;},
-  3, {"event 4".postln;}
+  1, {"event 1".postln;},
+  2, {"event 2".postln;},
+  3, {"event 3".postln;},
+  4, {"event 4".postln;}
 ]
 ::
 
@@ -153,9 +153,9 @@ t.plot;
 (
 t = Timeline.newFromArray(
     [
-        0, {"test 1".postln},
-        1.5, {"test 2".postln},
-        2.5, {"test 3".postln}
+        1, {"test 1".postln},
+        2.5, {"test 2".postln},
+        3.5, {"test 3".postln}
     ])
 );
 t.play; 

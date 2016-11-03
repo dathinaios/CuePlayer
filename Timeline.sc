@@ -58,7 +58,7 @@ Timeline {
 
   time { arg value; var time;
     switch (options.mode)
-    { \beats } {time = value}
+    { \beats } {time = value - 1}
     { \time  } {time = value*clock.tempo;};
     ^(time + this.quantValue);
   }
