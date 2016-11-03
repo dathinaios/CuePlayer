@@ -26,7 +26,7 @@ INSTANCEMETHODS::
 
 
 
-METHOD:: tempo
+METHOD:: tempo_
 Set the tempo. Processes may be evaluated with reference to this clock.
 
 ARGUMENT:: bpm
@@ -355,7 +355,7 @@ SynthDef(\fsosynth, {
 
 // Create a new CuePlayer instance & set its tempo
 a = CuePlayer.new;
-a.tempo(130);
+a.tempo_(130);
 
 // Build the cues
 (
@@ -384,7 +384,7 @@ a.add({
 // Now, evaluate one by one
 a.trigger(1); // trigger cue 1
 a.trigger(3); // trigger cue 3
-a.tempo(100); // change the tempo
+a.tempo_(100); // change the tempo
 a.setCurrent(1); // set current cue to 1 ...
 a.next; // trigger next cue (i.e cue-2)
 a.trigger(4); // trigger cue 4

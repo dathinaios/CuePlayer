@@ -18,7 +18,7 @@ The first thing to do is to create a CuePlayer instance and assign it to a varia
 
 code::
 a = CuePlayer.new;
-a.tempo(110);
+a.tempo_(110);
 ::
 
 We may now start building the cues. A cue is a bundle of code placed within a function which is linked to a cue-number. All cues are organised into an Array and later on they may be triggered via code, a GUI window or any device/software which outputs midi/osc data, such as a footpedal or a Digital Audio Workstation (DAW). Think of the cue-number as the index of the cue-list which holds all processes.
@@ -204,7 +204,7 @@ Both strong::put:: and strong::add:: methods of the link::Classes/CuePlayer:: cl
 
 code::
 a = CuePlayer.new;
-a.tempo(120);
+a.tempo_(120);
 
 // Use timelines for cues 1 & 2
 (
