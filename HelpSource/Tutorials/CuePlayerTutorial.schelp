@@ -71,7 +71,7 @@ a.gui(
 )
 );
 ::
-image::img/CP-gui img.png::
+image::img/cp-gui.png::
 
 Spend a little time to get familiar with this window. You can monitor up to 8 input buses and up to 48 output buses which should be enough for most pieces, but you could easily hack the source code to change this if you like. The big strong::green-button:: triggers the next cue and the white strong::number-box:: right next to it displays and sets (when needed) the current cue. The strong::timer:: displays the time elapsed (usually since the beginning of the piece) and the strong::metro-button:: starts/stops the metronome; its volume, output-bus and tempo can be adjusted. At the bottom of the window there is a strong::mute:: button to silence everything and a volume-slider to control the level of the server.
 
