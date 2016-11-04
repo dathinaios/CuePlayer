@@ -8,7 +8,7 @@ Install it as a quark from within SuperCollider, via:
 
     Quarks.gui;
 
-or download it from [github](https://github.com/dathinaios/cueplayer/archive/0.1.0.zip), unzip & and place the folder in:
+or download it from [GitHub](https://github.com/dathinaios/cueplayer/archive/0.1.0.zip), unzip & and place the folder in:
 
     ~/Library/Application Support/SuperCollider/Extensions/
 
