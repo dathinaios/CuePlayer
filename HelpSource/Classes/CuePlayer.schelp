@@ -229,9 +229,6 @@ Clear all MIDI functions defined with midiTrigger and midiTriggerVelocity.
 METHOD:: oscTrigger
 Set up an Open Sound Control trigger. This allows to evaluate a cue upon receiving an OSC message. Default path is '/cueTrigger'. Default message is -1 which will trigger the next cue; any other positive integer will trigger the respective cue. See also the link::Tutorials/CuePlayerTutorial::.
 
-ARGUMENT:: message
-An OSC message.
-
 ARGUMENT:: path
 A Symbol indicating the path of the OSC address.
 
