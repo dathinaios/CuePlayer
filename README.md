@@ -1,4 +1,4 @@
-#CuePlayer
+#CuePlayer <img src="http://fasmatwist.com/opensource-fasma/fasmatwist-logo.png" alt="CuePlayer" width="130px" height="36px" align="right">
 
 [|> project page <|](http://fasmatwist.com/opensource/)
 
