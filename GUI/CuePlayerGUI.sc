@@ -11,24 +11,26 @@ CuePlayerGUI {
   }
 
   init {
-    clock = cuePlayer.clock;
-    name = "Cue Player";
+    Server.default.waitForBoot{
+      clock = cuePlayer.clock;
+      name = "Cue Player";
 
-    this.setDefaultOptions;
-    this.initStyleVariables;
-    this.createMainWindow;
-    if(monitorInChannels > 0) {this.createInputLevels};
-    this.createCueTrigger;
-    if(options.timer) {this.createTimer };
-    if(options.metronome) { this.createMetronome };
-    if(monitorOutChannels > 0) { this.createOutputLevels };
-    if(options.serverControls) { this.createServerControls };
-    if(options.shortcuts) { this.registerShortcuts };
+      this.setDefaultOptions;
+      this.initStyleVariables;
+      this.createMainWindow;
+      if(monitorInChannels > 0) {this.createInputLevels};
+      this.createCueTrigger;
+      if(options.timer) {this.createTimer };
+      if(options.metronome) { this.createMetronome };
+      if(monitorOutChannels > 0) { this.createOutputLevels };
+      if(options.serverControls) { this.createServerControls };
+      if(options.shortcuts) { this.registerShortcuts };
 
-    active = true;
-    window.bounds.height = windowHeight;
-    window.bounds = window.bounds.height_(windowHeight + 10);
-    window.front;
+      active = true;
+      window.bounds.height = windowHeight;
+      window.bounds = window.bounds.height_(windowHeight + 10);
+      window.front;
+    }
   }
 
   setDefaultOptions {
