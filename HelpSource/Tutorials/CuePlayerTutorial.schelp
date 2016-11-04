@@ -4,9 +4,9 @@ categories:: Tutorials
 related:: Classes/CuePlayer, Classes/CuePlayerGUI, Classes/Timeline
 keyword:: live electronics, acoustic instrument, electroacoustic, composition, performance, mixed media
 
-This document introduces the CuePlayer and presents a workflow for composing and performing live and mixed electronic works. Full details of the class can be found in the link::Classes/CuePlayer:: helpfile.
+This document introduces the CuePlayer and presents a workflow for composing and performing real-time and mixed electronic works. Full details of the class can be found in the link::Classes/CuePlayer:: helpfile.
 
-The CuePlayer is a tool which helps a composer to organise processes and musical material in bundles (cues) and execute them when needed during the course of a piece. It is particularly applicable to musical works incorporating live-electronics and acoustic instruments; it may also be handy in any scenario where the composer wishes to organise, schedule and trigger bundles of processes.
+The CuePlayer is a tool which helps a composer to organise processes and musical material in bundles (cues) and execute them when needed during the course of a piece. It is particularly applicable to musical works incorporating real-time electronics and acoustic instruments; it may also be handy in any scenario where the composer wishes to organise, schedule and trigger bundles of processes.
 
 This tutorial has been written having in mind composers who may not be highly proficient in SuperCollider programming, but who have an adequate understanding of the language and are competent in electronic and/or instrumental composition. If you are a composer who is looking for a tool to write music for instruments and electronics with SuperCollider, this is especially for you. 
 
@@ -56,23 +56,18 @@ a.setCurrent(5); // sets current cue to 5
 a.next; // triggers cue-6; posts "this is cue-6"
 ::
 
-Most often you will be working along with the CuePlayer window which allows the CuePlayer to be controlled via a Graphic User Interface. Through it you can monitor input/output buses, trigger cues, use a timer and a metronome and control the server's level amongst others. It is brought up with the strong::gui:: method which has a handful of options to adjust it to your needs. See also the link::Classes/CuePlayerGUI:: helpfile.
+Most often you will be working along with the CuePlayer window which allows the CuePlayer to be controlled via a Graphic User Interface. Through it you can monitor input/output buses, trigger cues, use a timer and a metronome and control the server's level amongst others. It is brought up with the strong::gui:: method which has a handful of options to adjust it to your needs. See also the link::Classes/CuePlayer:: helpfile for more.
 
 code::
 (
 a.gui(
 	monitorInChannels: 2, // Monitor the first 2 input channels
 	monitorOutChannels: 16, // Monitor 16 output channels
-
-		options: (
-			monitorInOffset:  0, // Offset input monitoring
-		   largeDisplay: false, // Show/hide the big window displaying current cue-number
-		   left: 1300, // Left bound of the CuePlayer window
-		   top: 350, // Top bound of the CuePlayer window
-		   timer: true, // Show/hide timer
-		   metronome: true, // Show/hide metronome
-		   serverControls: true, // Show/hide server controls: mute-button, volume-slider, Peak CPU, Number of Synths
-	    )
+	options: (
+	   largeDisplay: false, // Show/hide the big window displaying current cue-number
+	   left: 1300, // Left bound of the CuePlayer window
+	   top: 350, // Top bound of the CuePlayer window
+	      )
 )
 );
 ::
@@ -84,7 +79,7 @@ section::MIDI & OSC
 
 Cues can be triggered via MIDI and OSC events.
 
-To use midi you need to connect to your midi-devices first; then you can set up a midi-trigger on a given note and channel to trigger the next cue by calling the strong::midiTrigger:: method, this allows to evaluate sequential cues upon receiving a midi-note through a specified midi-channel. It is useful when the cues need to be triggered externally (via a foot-pedal for example) and it applies particularly to performance scenarios where the instrumentalist uses a midi-device on stage to trigger sequential cues. 
+To use midi you need to connect to your midi-devices first; then you can set up a midi-trigger on a given note and channel to trigger the next cue by calling the strong::midiTrigger:: method, this allows to evaluate sequential cues upon receiving a midi-note through a specified midi-channel. It is useful when the cues need to be triggered externally (via a footpedal for example) and it applies particularly to performance scenarios where the instrumentalist uses a midi-device on stage to trigger sequential cues. 
 
 code::
 // Connect all midi devices & set up a midi-trigger for the CuePlayer
@@ -103,17 +98,19 @@ a.midiTriggerVelocity(note: 60, channel: 16, offset: 0);
 based on the note's velocity value. */
 ::
 
-When you want to trigger sequential cues via the Open Sound Control protocol you can set up an OSC trigger with the strong::oscTrigger:: method. As with strong::midiTrigger:: this method applies particularly to performance scenarios where the cues need to be triggered via an external device on stage.
+When you want to trigger cues via the Open Sound Control protocol you can set up an OSC trigger with the strong::oscTrigger:: method, which accepts a path as an argument (such as '/cueTrigger') and a message. When the message is -1 the next cue will be triggered; any other positive integer will trigger the respective cue. 
 
 code::
-// An OSC responder to trigger sequential cues.
-a.oscTrigger
+// An OSC responder
+a.oscTrigger(path:'/cueTrigger');
 
 // Test it
 m = NetAddr("127.0.0.1", NetAddr.langPort); // Create a net address
-m.sendMsg("/cueTrigger", 1); // Send a message to trigger a new cue
-m.sendMsg("/cueTrigger", 1); // Trigger another ...
-m.sendMsg("/cueTrigger", 1); // ... and another ...
+m.sendMsg("/cueTrigger", -1); // Send a message to trigger next cue
+m.sendMsg("/cueTrigger", -1); // Trigger next cue
+m.sendMsg("/cueTrigger", -1); // Trigger next cue
+m.sendMsg("/cueTrigger", 2); // Trigger cue 2 
+m.sendMsg("/cueTrigger", 5); // Trigger cue 5
 ::
 
 With strong::sendOSC:: you may send OSC messages which may be handy while composing if you want to control a DAW that accepts OSC. See the link::Classes/CuePlayer:: helpfile.
@@ -147,7 +144,7 @@ List::
 ## All electronic processes need to be organised as individual cues with the CuePlayer; they are often triggered sequentially either by the instrumentalist or the laptopist.
 ## Plug-in any midi/osc devices to the laptop.
 ## In SuperCollider connect to your midi-devices and call the strong::midiTrigger:: method to respond to the incoming midi-data and/or the strong::oscTrigger:: method to respond to osc messages. These methods allow the CuePlayer to trigger the next cue every time a device sends midi/osc data to the laptop.
-## Cues may be triggered via external devices (foot-pedals, switches, etc), code or the CuePlayer GUI.
+## Cues may be triggered via external devices (footpedals, switches, etc), code or the CuePlayer GUI.
 ::
 
 section::Organising
@@ -190,37 +187,29 @@ a.trigger(3);
 a.trigger(4);
 ::
 
-The link::Classes/Timeline:: class can be used to schedule functions in time; for this we need to use an array with time - function pairs, (time by default is in beats or optionally in seconds). 
-
-code::
-t = Timeline.new;
-t.add(1, {"test 1".postln});
-t.add(2.1, {"test 2".postln});
-t.add(3.4, {"test 3".postln});
-t.play;
-::
-
-Both strong::put:: and strong::add:: methods of the link::Classes/CuePlayer:: class accept a timeline as an argument which provides an easy way to schedule processes in the future.
+Both strong::put:: and strong::add:: methods of the link::Classes/CuePlayer:: class accept a strong::timeline:: as an argument which provides an easy way to schedule processes in the future; for this we need to use an link::Classes/Array:: with time - function pairs; (time is in beats or optionally in seconds). Here's an example on how to do this.
 
 code::
 a = CuePlayer.new;
 a.tempo_(120);
 
-// Use timelines for cues 1 & 2
+// Using a timeline for cues 1 & 2
 (
 a.put(1,
-	timeline: [
-        1, { "1 beat later".postln }, // time - function
-        2, { "2 beats later".postln },
-        3.5, { "3.5 beats later".postln }
+	// beat - function pairs
+	timeline: [ 
+        1, { "1 beat later".postln }, 
+        2, { "2 beats later".postln }, // schedule something to happen 2 beats later
+        3.5, { "3.5 beats later".postln } 
     ],
     timelineOptions: (mode: \beats, quant: 1) // this works in beats
 );
 
 a.put(2,
-	timeline: [
-        1, { "1 second later".postln }, // pairs
-        2, { "2 seconds later".postln },
+	// seconds - function pairs
+	timeline: [ 
+        1, { "1 second later".postln }, 
+        2, { "2 seconds later".postln }, // schedule something to happen 2 seconds later
         3, { "3 seconds later".postln }
     ],
     timelineOptions: (mode: \time, quant: 0) // this works in seconds

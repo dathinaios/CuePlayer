@@ -1,10 +1,10 @@
 TITLE:: CuePlayer
-summary:: Organise and execute cues for live and mixed-media works
+summary:: Organise and execute cues for real-time and mixed electronic works
 categories:: Class
 related:: Tutorials/CuePlayerTutorial, Classes/CuePlayerGUI, Classes/Timeline, Classes/Cues 
 
 DESCRIPTION::
-The CuePlayer is useful for live and mixed electroacoustic works (possibly involving acoustic instruments) when the composer wishes to build a series of processes (cues) and execute them one after another during the course of a piece. The cues are initially organised into an Array, and later on they may be triggered via code, a GUI window or any device/software which outputs midi/osc data, such as a footpedal or a Digital Audio Workstation.
+The CuePlayer is useful for real-time and mixed electronic works (possibly involving acoustic instruments) when the composer wishes to build a series of processes (cues) and execute them one after another during the course of a piece. The cues are initially organised into an Array, and later on they may be triggered via code, a GUI window or any device/software which outputs midi/osc data, such as a footpedal or a Digital Audio Workstation.
 
 There are lots of features which make the CuePlayer useful for composing in-studio and performing on-stage electroacoustic works using SuperCollider. Please read below and go through this short link::Tutorials/CuePlayerTutorial:: for more information.
 
@@ -41,16 +41,16 @@ anchor::put::
 METHOD:: put 
 Put cue at cue-number, replacing what is there.
 
-This allows explicitly to create a cue at a specific cue-number. Simply construct your cue as a function and then assign it to a cue-number, (think of the cue-number as the index of the cue-list which holds all processes).  
+This allows explicitly to create a cue at a specific cue-number. Simply construct your cue as a function and then assign it to a cue-number; (think of the cue-number as the index of the cue-list which holds all processes).  
 
 ARGUMENT:: cueNumber
 The cue-number to register the function. 
 
 ARGUMENT:: function
-An instance of link::Classes/Function:: or a string representing the path of an scd file; it must return a function.
+An instance of link::Classes/Function:: or a link::Classes/String:: representing the path of an scd file; it must return a function.
 
 ARGUMENT:: timeline
-An instance of link::Classes/Array:: with time - function pairs, (time is in beats or optionally in seconds). Alternatively a string representing the path of an scd file. The file must return an link::Classes/Array:: of time - function pairs, like [ 0, { }, 1, { } ]. See link::Classes/Timeline:: and the link::#examples:: at the end of this document. 
+An instance of link::Classes/Array:: with time - function pairs, (time is in beats or optionally in seconds). Alternatively a link::Classes/String:: representing the path of an scd file. The file must return an link::Classes/Array:: of time - function pairs, like [ 0, { }, 1, { } ]. See link::Classes/Timeline:: and the link::#examples:: at the end of this document. 
 
 ARGUMENT:: timelineOptions
 An event of timeline options. See link::Classes/Timeline::.
@@ -74,10 +74,10 @@ METHOD:: add
 Add a cue at the end of the cue-list.
 
 ARGUMENT:: function
-An instance of link::Classes/Function:: or a string representing the path of an scd file; it must return a function.
+An instance of link::Classes/Function:: or a link::Classes/String:: representing the path of an scd file; it must return a function.
 
 ARGUMENT:: timeline
-An instance of link::Classes/Array:: with time - function pairs, (time is in beats or optionally in seconds). Alternatively a string representing the path of an scd file. The file must return an link::Classes/Array:: of time - function pairs, like [ 0, { }, 1, { } ]. See link::Classes/Timeline:: and the link::#examples:: at the end of this document. 
+An instance of link::Classes/Array:: with time - function pairs, (time is in beats or optionally in seconds). Alternatively a link::Classes/String:: representing the path of an scd file. The file must return an link::Classes/Array:: of time - function pairs, like [ 0, { }, 1, { } ]. See link::Classes/Timeline:: and the link::#examples:: at the end of this document. 
 
 ARGUMENT:: timelineOptions
 An event of timeline options. See link::Classes/Timeline::. 
@@ -148,36 +148,23 @@ ARGUMENT:: options
 An event of one or more options.
 
 code::
-/* 
-   Available options:
-   monitorInOffset: Offset input monitoring by 2; (hence monitor inputs 3,4,5,6,7 here)
-   largeDisplay: Show/hide the big window displaying current cue-number. Useful for the performers on stage.
-   largeDisplayBounds: A Rect defining the size and position of the big window display.
-   left: Left bound of the CuePlayer window.
-   top: Top bound of the CuePlayer window.
-   timer: Show/hide timer
-   metronome: Show/hide metronome
-   serverControls: Show/hide server controls: mute-button, volume-slider, Peak CPU, Number of Synths
-   shortcuts: Use shortcuts; default is false
-*/
-
 b = CuePlayer.new; // Create a new CuePlayer instance
 
 // Bring up the CuePlayer window.
 b.gui(
-	monitorInChannels: 5, // Monitor 5 input channels
-	monitorOutChannels: 24, // Monitor 24 output channels
-	options: (
-		monitorInOffset:  2,
-		largeDisplay: false,
-		largeDisplay: Rect(900, 900, 450, 450),
-		left: 1000,
-		top: 300,
-		timer: true,
-		metronome: true,
-		serverControls: true,
-		shortcuts: false
-	)
+    monitorInChannels: 5, // Monitor 5 input channels
+    monitorOutChannels: 24, // Monitor 24 output channels
+    options: (
+        monitorInOffset:  2, // Offset input monitoring by 2; (hence monitor inputs 3,4,5,6,7 here)
+        largeDisplay: true, // Show/hide the big window displaying current cue-number. Useful for the performers on stage.
+        largeDisplayBounds: Rect(600, 300, 450, 450), // Set bounds of the big window.
+        left: 1200, // Left bound of the CuePlayer window.
+        top: 300, // Top bound of the CuePlayer window.
+        timer: true, // Show/hide timer
+        metronome: true, // Show/hide metronome
+        serverControls: true, //  Show/hide server controls: mute-button, volume-slider, Peak CPU, Number of Synths
+        shortcuts: false // Use shortcuts; default is false
+    )
 );
 ::
 
@@ -240,7 +227,7 @@ Clear all MIDI functions defined with midiTrigger and midiTriggerVelocity.
 
 
 METHOD:: oscTrigger
-Set up an Open Sound Control trigger. This allows to evaluate sequential cues upon receiving an OSC message. Default message is 1 and path '/cueTrigger'. See also the link::Tutorials/CuePlayerTutorial::.
+Set up an Open Sound Control trigger. This allows to evaluate a cue upon receiving an OSC message. Default path is '/cueTrigger'. Default message is -1 which will trigger the next cue; any other positive integer will trigger the respective cue. See also the link::Tutorials/CuePlayerTutorial::.
 
 ARGUMENT:: message
 An OSC message.
@@ -258,14 +245,16 @@ a.put(1, { "this is cue 1".postln });
 a.put(2, { "this is cue 2".postln });
 a.put(3, { "this is cue 3".postln });
 
-// An OSC responder to trigger sequential cues.
+// An OSC responder
 a.oscTrigger
 
 // Test it
 m = NetAddr("127.0.0.1", NetAddr.langPort); // Create a net address
-m.sendMsg("/cueTrigger", 1); // Send a message to trigger a new cue
-m.sendMsg("/cueTrigger", 1); // Trigger another ...
-m.sendMsg("/cueTrigger", 1); // ... and another ...
+m.sendMsg("/cueTrigger", -1); // Send a message to trigger next cue
+m.sendMsg("/cueTrigger", -1); // Trigger next cue
+m.sendMsg("/cueTrigger", -1); // Trigger next cue
+m.sendMsg("/cueTrigger", 2); // Trigger cue 2 
+m.sendMsg("/cueTrigger", 3); // Trigger cue 3
 ::
 
 
@@ -325,7 +314,7 @@ METHOD:: enableLiveReload
 Enable live reloading of scripts provided as path strings. See link::#put:: and link::#add:: methods. 
 
 METHOD:: disableLiveReload
-Diable live reloading of scripts provided as path strings. See link::#put:: and link::#add:: methods. 
+Disable live reloading of scripts provided as path strings. See link::#put:: and link::#add:: methods. 
 
 
 
