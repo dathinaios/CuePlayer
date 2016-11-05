@@ -1,6 +1,6 @@
 (
   name: "CuePlayer",
-  summary: "A tool for composing and performing real-time and mixed electronic works using SuperCollider.",
+  summary: "A tool for composing and performing real-time and mixed electronic works.",
   version: "0.1.0",
   schelp: "CuePlayer",
   license: "GPL",
