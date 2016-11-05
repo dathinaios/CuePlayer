@@ -1,7 +1,7 @@
 TITLE:: CuePlayer
 summary:: Organise and execute cues for real-time and mixed electronic works
 categories:: Class
-related:: Tutorials/CuePlayerTutorial, Classes/CuePlayerGUI, Classes/Timeline, Classes/Cues 
+related:: Tutorials/CuePlayerTutorial, Classes/Timeline
 
 DESCRIPTION::
 The CuePlayer is useful for real-time and mixed electronic works (possibly involving acoustic instruments) when the composer wishes to build a series of processes (cues) and execute them one after another during the course of a piece. The cues are initially organised into an Array, and later on they may be triggered via code, a GUI window or any device/software which outputs midi/osc data, such as a footpedal or a Digital Audio Workstation.

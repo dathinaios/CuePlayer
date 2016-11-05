@@ -1,7 +1,7 @@
 TITLE:: Timeline
 summary:: Schedule functions in time using beats or seconds
 categories:: Class
-related:: Classes/CuePlayer, Classes/Cues
+related:: Classes/CuePlayer
 
 DESCRIPTION::
 link::Classes/Timeline:: can be used for scheduling functions in time.

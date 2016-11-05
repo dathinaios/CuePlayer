@@ -1,7 +1,7 @@
 TITLE:: CuePlayer Tutorial
 summary:: Composing & Performing with the CuePlayer
 categories:: Tutorials
-related:: Classes/CuePlayer, Classes/CuePlayerGUI, Classes/Timeline
+related:: Classes/CuePlayer, Classes/Timeline
 keyword:: live electronics, acoustic instrument, electroacoustic, composition, performance, mixed media
 
 This document introduces the CuePlayer and presents a workflow for composing and performing real-time and mixed electronic works. Full details of the class can be found in the link::Classes/CuePlayer:: helpfile.
