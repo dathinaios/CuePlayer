@@ -14,4 +14,4 @@ or download it from [GitHub](https://github.com/dathinaios/CuePlayer/releases/la
 
 <img src="HelpSource/Tutorials/img/cp-gui.png" alt="CuePlayer" width="334px" height="547px">
 
-Copyright © 2016, Orestis Karamanlis | Dionysis Athinaios</br>This program is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html){:target="_blank"}.
+Copyright © 2016, Orestis Karamanlis | Dionysis Athinaios</br>This program is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
