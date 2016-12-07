@@ -33,6 +33,10 @@ CuePlayer : Cues {
     ^super.put(cueNumber, function, {timeline.play;});
   }
 
+  stop {
+	clock.clear;
+  }
+
   gui {arg monitorInChannels = 2, monitorOutChannels = 8, options;
     if (guiInstance.isNil or: {guiInstance.active.not},
     {
