@@ -41,7 +41,7 @@ CueTriggerCP : AbstractGUIComponentCP {
   createLargeCueNumberDisplay {var width, height;
     width = options.largeDisplayBounds.width;
     height = options.largeDisplayBounds.height;
-    lrgCueWin = Window.new("Huge Cue Number", options.largeDisplayBounds, resizable: false).front;
+    lrgCueWin = Window.new("Performer Info", options.largeDisplayBounds, resizable: false).front;
     lrgCueWin.background = Color.black;
     largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: width, height: height)).align_(\center);
     largeCueNumberDisplay.font_(Font(options.font.name, width * 0.73)).stringColor_(Color.white);
