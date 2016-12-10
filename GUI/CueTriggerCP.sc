@@ -6,7 +6,7 @@ CueTriggerCP : AbstractGUIComponentCP {
   setDefaultOptions {
     super.setDefaultOptions;
     options.largeDisplay ?? { options.largeDisplay = false };
-    options.largeDisplayBounds ?? { options.largeDisplayBounds = Rect(window.bounds.left - 970, 900, 950, 950)};
+    options.largeDisplayBounds ?? { options.largeDisplayBounds = Rect(window.bounds.left - 670, 900, 600, 600)};
     options.infoDisplay ?? { options.infoDisplay = false };
     options.cueButtonFont ?? { options.cueButtonFont = Font("Lucida Grande", 12) };
     options.cueNumberBoxFont ?? { options.cueNumberBoxFont = Font("Lucida Grande", 22) };
@@ -41,9 +41,9 @@ CueTriggerCP : AbstractGUIComponentCP {
   }
 
   createInfoDisplay {
-    infoDisplay =  StaticText(window, Rect(width: 275, height: 60)).align_(\center);
-    infoDisplay.font_(Font(options.font.name, 15)).stringColor_(Color.white);
-    infoDisplay.background_(Color.black);
+    infoDisplay =  StaticText(window, Rect(width: 275, height: 40)).align_(\center);
+    infoDisplay.font_(Font(options.font.name, 12)).stringColor_(Color.white);
+    infoDisplay.background_(Color.fromHexString("#303030")); // 323232
   }
 
   createLargeCueNumberDisplay {var width, height;
@@ -52,13 +52,14 @@ CueTriggerCP : AbstractGUIComponentCP {
     lrgCueWin = Window.new("Performer Info", options.largeDisplayBounds, resizable: false).front;
     lrgCueWin.background = Color.black;
 
-    largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: width, height: height)).align_(\center);
+    largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: width, height: height * 0.9)).align_(\center);
     largeCueNumberDisplay.font_(Font(options.font.name, width * 0.73)).stringColor_(Color.white);
 
-    largePerformerInfoDisplay =  StaticText(lrgCueWin, Rect(0, 30,width: width, height: height*0.05)).align_(\center);
-    largePerformerInfoDisplay.font_(Font(options.font.name, width * 0.03)).stringColor_(Color.white);
+	largePerformerInfoDisplay =  StaticText(lrgCueWin, Rect(0, (height * 0.9) -20, width: width, height: height*0.1)).align_(\center);
+	largePerformerInfoDisplay.font_(Font(options.font.name, width * 0.03)).stringColor_(Color.white);
+	largePerformerInfoDisplay.background_(Color.fromHexString("#303030"));
 
-    lrgCueWin.front;
+	lrgCueWin.front;
   }
 
   clear {
@@ -70,7 +71,7 @@ CueTriggerCP : AbstractGUIComponentCP {
   }
 
   windowHeight {
-	if( options.infoDisplay, { ^155 }, { ^95 });
+	if( options.infoDisplay, { ^135 }, { ^95 });
   }
 
   setCurrent { arg cueNumber, cueObject;
