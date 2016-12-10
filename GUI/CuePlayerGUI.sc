@@ -164,13 +164,14 @@ CuePlayerGUI {
   update { arg theChanged, message;
     switch (message)
     {\current}
-    {this.setCurrent(theChanged.current)}
+    {this.setCurrent(theChanged)}
     {\tempo}
     {metronome.bpm = theChanged.clock.tempo*60}
   }
 
-  setCurrent { arg val;
-    cueTrigger.setCurrent(val);
+  setCurrent { arg cuePlayer; var currentCue;
+	currentCue = cuePlayer.current;
+    cueTrigger.setCurrent(currentCue, cuePlayer.getCueObject(currentCue));
   }
 
 }

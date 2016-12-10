@@ -13,6 +13,10 @@
     ^this;
   }
 
+  performerInfo {
+	^""
+  }
+
 }
 
 + Cue {
@@ -41,6 +45,10 @@
 
   asCueFunction {
     ^nil;
+  }
+
+  performerInfo {
+	^""
   }
 
 }

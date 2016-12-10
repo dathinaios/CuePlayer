@@ -1,18 +1,16 @@
 
 Cue {
-  var <>title, <>func, <>performerInfo;
+  var <>info, <>func, <>performerInfo;
 
-  *new { arg title = "|> aCue <|", func, performerInfo = "N\A";
-    ^super.newCopyArgs(title, func, performerInfo).init;
+  *new { arg info = "", func, performerInfo = "";
+    ^super.newCopyArgs(info, func, performerInfo).init;
   }
 
   init {
   }
 
   value { arg cuePlayer;
-	title.postln;
-	func.value;
-	performerInfo.postln;
+	func.value(cuePlayer);
   }
 
 }

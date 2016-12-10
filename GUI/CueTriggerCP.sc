@@ -1,7 +1,7 @@
 
 CueTriggerCP : AbstractGUIComponentCP {
 
-  var <trigButton, <cueNumberBox, lrgCueWin, <largeCueNumberDisplay;
+  var <trigButton, <cueNumberBox, lrgCueWin, <largeCueNumberDisplay, <largePerformerInfoDisplay;
 
   setDefaultOptions {
     super.setDefaultOptions;
@@ -43,8 +43,13 @@ CueTriggerCP : AbstractGUIComponentCP {
     height = options.largeDisplayBounds.height;
     lrgCueWin = Window.new("Performer Info", options.largeDisplayBounds, resizable: false).front;
     lrgCueWin.background = Color.black;
+
     largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: width, height: height)).align_(\center);
     largeCueNumberDisplay.font_(Font(options.font.name, width * 0.73)).stringColor_(Color.white);
+
+    largePerformerInfoDisplay =  StaticText(lrgCueWin, Rect(0, 30,width: width, height: height*0.05)).align_(\center);
+    largePerformerInfoDisplay.font_(Font(options.font.name, width * 0.03)).stringColor_(Color.white);
+
     lrgCueWin.front;
   }
 
@@ -60,9 +65,12 @@ CueTriggerCP : AbstractGUIComponentCP {
     ^95
   }
 
-  setCurrent { arg val;
-    cueNumberBox.value = val;
-    if (options.largeDisplay, { largeCueNumberDisplay.string = val });
+  setCurrent { arg cueNumber, cueObject;
+    cueNumberBox.value = cueNumber;
+    if (options.largeDisplay, {
+	  largeCueNumberDisplay.string = cueNumber;
+	  largePerformerInfoDisplay.string = cueObject.performerInfo;
+	});
   }
 
   runResources { }

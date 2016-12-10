@@ -59,6 +59,10 @@ Cues {
 		^current;
   }
 
+  getCueObject { arg cueNumber;
+      ^cueList[cueNumber - 1];
+  }
+
   reloadCue {
     if(cueList[current].notNil){
       cueList[current] = cueListRaw[current].asCueFunction;
