@@ -37,6 +37,7 @@ CuePlayerGUI {
     options.monitorInOffset ?? { options.monitorInOffset = 0 };
     options.largeDisplay ?? { options.largeDisplay = false };
     options.largeDisplayBounds ?? { options.largeDisplayBounds = nil };
+    options.infoDisplay ?? { options.infoDisplay = false };
     options.left ?? { options.left = GUI.window.screenBounds.width - 282 };
     options.top ?? { options.top = GUI.window.screenBounds.height - 330 };
     options.timer ?? { options.timer = true };
@@ -107,8 +108,14 @@ CuePlayerGUI {
 
   createCueTrigger {
     this.createLabel("", 282, marginTop);
-    cueTrigger = CueTriggerCP(window, options: (largeDisplay: options.largeDisplay, largeDisplayBounds: options.largeDisplayBounds));
-    cueTrigger.trigButton.action = { var cueNum;
+	cueTrigger = CueTriggerCP(window,
+	  options: (
+		largeDisplay: options.largeDisplay,
+		largeDisplayBounds: options.largeDisplayBounds,
+		infoDisplay: options.infoDisplay
+	  )
+	);
+	cueTrigger.trigButton.action = { var cueNum;
         cueNum = cuePlayer.next;
         if (timer.isPlaying.not) {timer.play; timer.pauseButton.value_(1)};
     };

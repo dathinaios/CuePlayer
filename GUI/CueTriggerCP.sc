@@ -1,12 +1,13 @@
 
 CueTriggerCP : AbstractGUIComponentCP {
 
-  var <trigButton, <cueNumberBox, lrgCueWin, <largeCueNumberDisplay, <largePerformerInfoDisplay;
+  var <trigButton, <cueNumberBox, lrgCueWin, <largeCueNumberDisplay, <largePerformerInfoDisplay, <infoDisplay;
 
   setDefaultOptions {
     super.setDefaultOptions;
     options.largeDisplay ?? { options.largeDisplay = false };
     options.largeDisplayBounds ?? { options.largeDisplayBounds = Rect(window.bounds.left - 970, 900, 950, 950)};
+    options.infoDisplay ?? { options.infoDisplay = false };
     options.cueButtonFont ?? { options.cueButtonFont = Font("Lucida Grande", 12) };
     options.cueNumberBoxFont ?? { options.cueNumberBoxFont = Font("Lucida Grande", 22) };
   }
@@ -19,7 +20,8 @@ CueTriggerCP : AbstractGUIComponentCP {
     this.createLabel("Trigger / Display & Reset Cue-number").align_(\left);
     this.createTriggerButton;
     this.createCueNumberBox;
-    if (options.largeDisplay, { this.createLargeCueNumberDisplay })
+    if (options.largeDisplay, { this.createLargeCueNumberDisplay });
+    if (options.infoDisplay, { this.createInfoDisplay });
   }
 
   createTriggerButton {
@@ -36,6 +38,12 @@ CueTriggerCP : AbstractGUIComponentCP {
     cueNumberBox = NumberBox(window, Rect(width: 50, height: 60)).align_(\center);
     cueNumberBox.font_(options.cueNumberBoxFont);
     cueNumberBox.action = { "\nUse: \n \n cueTriggerCPInstance.cueNumberBox.action = {}; \n \nto set this action to something useful!".postln; };
+  }
+
+  createInfoDisplay {
+    infoDisplay =  StaticText(window, Rect(width: 275, height: 60)).align_(\center);
+    infoDisplay.font_(Font(options.font.name, 15)).stringColor_(Color.white);
+    infoDisplay.background_(Color.black);
   }
 
   createLargeCueNumberDisplay {var width, height;
@@ -62,7 +70,7 @@ CueTriggerCP : AbstractGUIComponentCP {
   }
 
   windowHeight {
-    ^95
+	if( options.infoDisplay, { ^155 }, { ^95 });
   }
 
   setCurrent { arg cueNumber, cueObject;
@@ -70,6 +78,9 @@ CueTriggerCP : AbstractGUIComponentCP {
     if (options.largeDisplay, {
 	  largeCueNumberDisplay.string = cueNumber;
 	  largePerformerInfoDisplay.string = cueObject.performerInfo;
+	});
+    if (options.infoDisplay, {
+	  infoDisplay.string = cueObject.info;
 	});
   }
 
