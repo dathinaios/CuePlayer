@@ -1,5 +1,5 @@
 
-Cue {
+CueInfo {
   var <>info, <>func, <>performerInfo;
 
   *new { arg info = "", func, performerInfo = "";
@@ -11,6 +11,10 @@ Cue {
 
   value { arg cuePlayer;
 	func.value(cuePlayer);
+  }
+
+  tags {
+	^['info']
   }
 
 }
