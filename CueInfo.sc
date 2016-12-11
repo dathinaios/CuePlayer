@@ -13,8 +13,4 @@ CueInfo {
 	func.value(cuePlayer);
   }
 
-  tags {
-	^['info']
-  }
-
 }
