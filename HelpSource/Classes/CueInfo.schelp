@@ -1,0 +1,82 @@
+TITLE:: CueInfo
+summary:: Add descriptive text to cues.
+categories:: Class
+related:: Classes/CuePlayer, Tutorials/CuePlayerTutorial, Classes/Timeline
+
+DESCRIPTION::
+CueInfo attaches text to a cue which may be subsequently displayed on screen. The class is part of the link::Classes/CuePlayer:: quark.
+
+CLASSMETHODS::
+
+METHOD:: new
+Define a cue and attach descriptive information. See the link::#examples:: at the end of the document.
+
+ARGUMENT:: cueTitle
+An instance of link::Classes/String::. Provide a title, describing what the cue does. This text can be displayed on the strong::cueplayer window::. It may be useful for the laptopist in order to recall what each cue is about while the piece unfolds.
+
+ARGUMENT:: largeDisplayInfo
+An instance of link::Classes/String::. Provide a short text to be displayed on a separate window (what is called the strong::large display::). It may be used to communicate instructions and information to the performer on stage by means of a second display.
+
+ARGUMENT:: function
+An instance of link::Classes/Function::.
+
+returns:: An instance of CueInfo
+
+
+
+INSTANCEMETHODS::
+
+METHOD:: largeDisplayInfo
+
+METHOD:: asCueFunction
+
+METHOD:: value
+
+ARGUMENT:: cuePlayer
+
+METHOD:: cueTitle
+
+METHOD:: function
+
+anchor::examples::
+EXAMPLES::
+
+code::
+// make a simple SynthDef to play with
+(
+SynthDef(\oneNote, {
+	arg note = 60, dec = 2;
+	var sig;
+	sig = SinOsc.ar(note.midicps) * Line.kr(1,0,dec, doneAction:2) * 0.1;
+	Out.ar([0,1], sig);
+}).add;
+
+a = CuePlayer.new; // Create a new CuePlayer instance
+
+// Define the cues
+
+// Define 1st cue & add text information
+a.put(1,
+  CueInfo(
+	cueTitle: "play a middle C", // this will be projected on the cueplayer window
+	largeDisplayInfo:  "Part A", // ... and this on the large display
+	function: { Synth(\oneNote, [\note, 60]) }
+	));
+
+// Define 2nd cue and add text information
+a.put(2,
+  CueInfo(
+	cueTitle: "play an F",
+	largeDisplayInfo:  "Part B",
+	function: { Synth(\oneNote, [\note, 65]) }
+));
+
+// Define 3rd cue, without adding text information
+a.put(3, { "do something".postln });
+
+// bring up the GUIs
+a.gui(options:(infoDisplay: true, largeDisplay: true));
+
+// Now hit the green button on the cueplayer window
+)
+::

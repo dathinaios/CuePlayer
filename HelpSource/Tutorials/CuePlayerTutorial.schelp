@@ -1,14 +1,14 @@
 TITLE:: CuePlayer Tutorial
 summary:: Composing & Performing with the CuePlayer
 categories:: Tutorials
-related:: Classes/CuePlayer, Classes/Timeline
+related:: Classes/CuePlayer, Classes/CueInfo, Classes/Timeline
 keyword:: live electronics, acoustic instrument, electroacoustic, composition, performance, mixed media
 
 This document introduces the CuePlayer and presents a workflow for composing and performing real-time and mixed electronic works. Full details of the class can be found in the link::Classes/CuePlayer:: helpfile.
 
 The CuePlayer is a tool which helps a composer to organise processes and musical material in bundles (cues) and execute them when needed during the course of a piece. It is particularly applicable to musical works incorporating real-time electronics and acoustic instruments; it may also be handy in any scenario where the composer wishes to organise, schedule and trigger bundles of processes.
 
-This tutorial has been written having in mind composers who may not be highly proficient in SuperCollider programming, but who have an adequate understanding of the language and are competent in electronic and/or instrumental composition. If you are a composer who is looking for a tool to write music for instruments and electronics with SuperCollider, this is especially for you. 
+This tutorial has been written having in mind composers who may not be highly proficient in SuperCollider programming, but who have an adequate understanding of the language and are competent in electronic and/or instrumental composition. If you are a composer who is looking for a tool to write music for instruments and electronics with SuperCollider, this is especially for you.
 
 
 
@@ -23,18 +23,18 @@ a.tempo_(110);
 
 We may now start building the cues. A cue is a bundle of code placed within a function which is linked to a cue-number. All cues are organised into an Array and later on they may be triggered via code, a GUI window or any device/software which outputs midi/osc data, such as a footpedal or a Digital Audio Workstation (DAW). Think of the cue-number as the index of the cue-list which holds all processes.
 
-An easy way to build a cue is with the strong::put:: method which allows explicitly to create a cue at a specific cue-number. 
+An easy way to build a cue is with the strong::put:: method which allows explicitly to create a cue at a specific cue-number.
 
 code::
-a.put(1, { "this is cue-1".postln }); 
-a.put(2, { "this is cue-2".postln }); 
-a.put(5, { "this is cue-5".postln }); 
+a.put(1, { "this is cue-1".postln });
+a.put(2, { "this is cue-2".postln });
+a.put(5, { "this is cue-5".postln });
 ::
 
 We could also strong::add:: a cue at the end of the cue-list in a similar fashion.
 
 code::
-a.add({ "this is cue-6".postln }); 
+a.add({ "this is cue-6".postln });
 ::
 
 When we want to execute a cue we call strong::trigger::, specifying also a cue-number.
@@ -49,14 +49,14 @@ a.trigger(6); // posts "this is cue-6"
 a.trigger(7); // nothing
 ::
 
-The strong::setCurrent:: method sets the current cue and the strong::next:: method is a quick way to trigger the next one. 
+The strong::setCurrent:: method sets the current cue and the strong::next:: method is a quick way to trigger the next one.
 
 code::
 a.setCurrent(5); // sets current cue to 5
 a.next; // triggers cue-6; posts "this is cue-6"
 ::
 
-Most often you will be working along with the CuePlayer window which allows the CuePlayer to be controlled via a Graphic User Interface. Through it you can monitor input/output buses, trigger cues, use a timer and a metronome and control the server's level amongst others. It is brought up with the strong::gui:: method which has a handful of options to adjust it to your needs. See also the link::Classes/CuePlayer:: helpfile for more.
+Most often you will be working along with the CuePlayer window which allows the CuePlayer to be controlled via a Graphic User Interface. Through it you can monitor input/output buses, trigger cues, use a timer and a metronome and control the server's level amongst others. It is brought up with the strong::gui:: method which has a handful of options to adjust it to your needs. See the link::Classes/CuePlayer:: helpfile for more.
 
 code::
 (
@@ -75,16 +75,42 @@ image::img/cp-gui.png::
 
 Spend a little time to get familiar with this window. You can monitor up to 8 input buses and up to 48 output buses which should be enough for most pieces, but you could easily hack the source code to change this if you like. The big strong::green-button:: triggers the next cue and the white strong::number-box:: right next to it displays and sets (when needed) the current cue. The strong::timer:: displays the time elapsed (usually since the beginning of the piece) and the strong::metro-button:: starts/stops the metronome; its volume, output-bus and tempo can be adjusted. At the bottom of the window there is a strong::mute:: button to silence everything and a volume-slider to control the level of the server.
 
+For each cue we can attach text which may be subsequently displayed on screen. This may prove useful for the laptopist in order to see what each cue does while the piece unfolds and to communicate instructions and information to the performer. Have a look at the link::Classes/CueInfo::'s helpfile for information on this feature.
+
+code::
+a.guiInstance.window.close; // close the cueplayer window when open
+
+// Define cue-7 & add text information
+(
+a.put(7,
+	CueInfo(
+		cueTitle: "this appears on the cueplayer window",
+		largeDisplayInfo:  "performer's info",
+		function: { "do something".postln } ))
+);
+
+// bring up the GUIs
+(
+a.gui(options:(
+	infoDisplay: true, // shows the cue-title
+	largeDisplay: true, )) // shows the big window
+);
+
+// trigger cue-7
+a.trigger(7);
+// "cueTitle" appears on the cueplayer gui & "largeDisplayInfo" on a second window for the performer.
+::
+
 section::MIDI & OSC
 
 Cues can be triggered via MIDI and OSC events.
 
-To use midi you need to connect to your midi-devices first; then you can set up a midi-trigger on a given note and channel to trigger the next cue by calling the strong::midiTrigger:: method, this allows to evaluate sequential cues upon receiving a midi-note through a specified midi-channel. It is useful when the cues need to be triggered externally (via a footpedal for example) and it applies particularly to performance scenarios where the instrumentalist uses a midi-device on stage to trigger sequential cues. 
+To use midi you need to connect to your midi-devices first; then you can set up a midi-trigger on a given note and channel to trigger the next cue by calling the strong::midiTrigger:: method, this allows to evaluate sequential cues upon receiving a midi-note through a specified midi-channel. It is useful when the cues need to be triggered externally (via a footpedal for example) and it applies particularly to performance scenarios where the instrumentalist uses a midi-device on stage to trigger sequential cues.
 
 code::
 // Connect all midi devices & set up a midi-trigger for the CuePlayer
-MIDIIn.connectAll; 
-a.midiTrigger(note: 60, channel: 15); 
+MIDIIn.connectAll;
+a.midiTrigger(note: 60, channel: 15);
 
 // Ready to trigger cues from an external midi-device hooked up on channel 15 upon sending note 60.
 ::
@@ -92,13 +118,13 @@ a.midiTrigger(note: 60, channel: 15);
 There is also the strong::midiTriggerVelocity:: method which sets up a midi-trigger on a given note and channel based on the note's velocity value. It allows to evaluate specific cues upon receiving a midi-note with velocity (1-127) controlling the cue-number. This method is useful while composing, when for example the cues need to be triggered externally via a Digital Audio Workstation (DAW).
 
 code::
-a.midiTriggerVelocity(note: 60, channel: 16, offset: 0); 
+a.midiTriggerVelocity(note: 60, channel: 16, offset: 0);
 
-/* Ready to trigger cues from an external midi-device hooked up on channel 16 
+/* Ready to trigger cues from an external midi-device hooked up on channel 16
 based on the note's velocity value. */
 ::
 
-When you want to trigger cues via the Open Sound Control protocol you can set up an OSC trigger with the strong::oscTrigger:: method, which accepts a path as an argument (such as '/cueTrigger') and a message. When the message is -1 the next cue will be triggered; any other positive integer will trigger the respective cue. 
+When you want to trigger cues via the Open Sound Control protocol you can set up an OSC trigger with the strong::oscTrigger:: method, which accepts a path as an argument (such as '/cueTrigger') and a message. When the message is -1 the next cue will be triggered; any other positive integer will trigger the respective cue.
 
 code::
 // An OSC responder
@@ -109,7 +135,7 @@ m = NetAddr("127.0.0.1", NetAddr.langPort); // Create a net address
 m.sendMsg("/cueTrigger", -1); // Send a message to trigger next cue
 m.sendMsg("/cueTrigger", -1); // Trigger next cue
 m.sendMsg("/cueTrigger", -1); // Trigger next cue
-m.sendMsg("/cueTrigger", 2); // Trigger cue 2 
+m.sendMsg("/cueTrigger", 2); // Trigger cue 2
 m.sendMsg("/cueTrigger", 5); // Trigger cue 5
 ::
 
@@ -130,15 +156,15 @@ List::
 ## On a Mac OS, make sure that your DAW uses the IAC Driver which will allow midi-data to be sent internally from one application to another (Applications>Utilities>Audio Midi Setup).
 ## Within the DAW create a midi-track and route its output to a dedicated midi-channel (16 for example) via IAC. Place a series of midi-notes in the track exactly where the cues should be triggered. All notes need to be the same (middle Cs for example); the 1st note (corresponding to cue-1) should have a velocity of 1, the 2nd a velocity of 2, and so on ...
 ## In SuperCollider, make an instance of the CuePlayer and assign it to a variable. Connect to your midi-devices and call the strong::midiTriggerVelocity:: method to respond to the incoming midi-data. This will allow the CuePlayer to trigger the respective cue every time it receives a note from the DAW via the specified midi-channel.
-## Build your cues in SuperCollider as you progress with the instrumental part. 
-## Hitting "play" inside the DAW not only plays-back the instrumental part (possibly through a virtual instrument track) but also triggers the electronics in SuperCollider. If live-processing of the acoustic source is needed then the output of the virtual instrument needs to be routed (preferably internally) to SuperCollider for processing. 
+## Build your cues in SuperCollider as you progress with the instrumental part.
+## Hitting "play" inside the DAW not only plays-back the instrumental part (possibly through a virtual instrument track) but also triggers the electronics in SuperCollider. If live-processing of the acoustic source is needed then the output of the virtual instrument needs to be routed (preferably internally) to SuperCollider for processing.
 ::
 
-This scenario allows to lay out the piece in a familiar environment and audition the instrumental part along with the electronics in SuperCollider which should be triggered exactly where the score depicts. With this workflow a composer can audition the piece while it is being built, test, debug, adjust and predict with consistency how the work will sound in "real-life". 
+This scenario allows to lay out the piece in a familiar environment and audition the instrumental part along with the electronics in SuperCollider which should be triggered exactly where the score depicts. With this workflow a composer can audition the piece while it is being built, test, debug, adjust and predict with consistency how the work will sound in "real-life".
 
-section::Performing 
+section::Performing
 
-This section outlines how the CuePlayer can be used when presenting works for instruments and electronics. It's quite straight forward: 
+This section outlines how the CuePlayer can be used when presenting works for instruments and electronics. It's quite straight forward:
 
 List::
 ## All electronic processes need to be organised as individual cues with the CuePlayer; they are often triggered sequentially either by the instrumentalist or the laptopist.
@@ -161,22 +187,22 @@ b = PathName(CuePlayer.class.filenameSymbol.asString).parentPath;
 // Load cues from individual scd files from disk.
 (
 a.put(
-    cueNumber: 1, 
+    cueNumber: 1,
     function: b ++ "HelpSource/Tutorials/cues/cue1.scd",
 );
 
 a.put(
-    cueNumber: 2, 
+    cueNumber: 2,
     function: b ++ "HelpSource/Tutorials/cues/cue2.scd",
 );
 
 a.put(
-    cueNumber: 3, 
+    cueNumber: 3,
     function: b ++ "HelpSource/Tutorials/cues/cue3.scd",
 );
 
 a.put(
-    cueNumber: 4, 
+    cueNumber: 4,
     function: b ++ "HelpSource/Tutorials/cues/cue4.scd",
 );
 );
@@ -197,18 +223,18 @@ a.tempo_(120);
 (
 a.put(1,
 	// beat - function pairs
-	timeline: [ 
-        1, { "1 beat later".postln }, 
+	timeline: [
+        1, { "1 beat later".postln },
         2, { "2 beats later".postln }, // schedule something to happen 2 beats later
-        3.5, { "3.5 beats later".postln } 
+        3.5, { "3.5 beats later".postln }
     ],
     timelineOptions: (mode: \beats, quant: 1) // this works in beats
 );
 
 a.put(2,
 	// seconds - function pairs
-	timeline: [ 
-        1, { "1 second later".postln }, 
+	timeline: [
+        1, { "1 second later".postln },
         2, { "2 seconds later".postln }, // schedule something to happen 2 seconds later
         3, { "3 seconds later".postln }
     ],
