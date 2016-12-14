@@ -1,7 +1,7 @@
 
 CueTriggerCP : AbstractGUIComponentCP {
 
-  var <trigButton, <cueNumberBox, lrgCueWin, <largeCueNumberDisplay, <largePerformerInfoDisplay, <infoDisplay;
+  var <trigButton, <cueNumberBox, lrgCueWin, <largeCueNumberDisplay, <largeInfoTextField, <infoDisplayTextField;
 
   setDefaultOptions {
     super.setDefaultOptions;
@@ -41,23 +41,23 @@ CueTriggerCP : AbstractGUIComponentCP {
   }
 
   createInfoDisplay {
-    infoDisplay =  StaticText(window, Rect(width: 275, height: 40)).align_(\center);
-    infoDisplay.font_(Font(options.font.name, 12)).stringColor_(Color.white);
-    infoDisplay.background_(Color.fromHexString("#303030")); // 323232
+    infoDisplayTextField =  StaticText(window, Rect(width: 275, height: 40)).align_(\center);
+    infoDisplayTextField.font_(Font(options.font.name, 12)).stringColor_(Color.white);
+    infoDisplayTextField.background_(Color.fromHexString("#303030")); // 323232
   }
 
   createLargeCueNumberDisplay {var width, height;
     width = options.largeDisplayBounds.width;
     height = options.largeDisplayBounds.height;
-    lrgCueWin = Window.new("Performer Info", options.largeDisplayBounds, resizable: false).front;
+    lrgCueWin = Window.new("", options.largeDisplayBounds, resizable: false).front;
     lrgCueWin.background = Color.black;
 
     largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: width, height: height * 0.9)).align_(\center);
     largeCueNumberDisplay.font_(Font(options.font.name, width * 0.73)).stringColor_(Color.white);
 
-	largePerformerInfoDisplay =  StaticText(lrgCueWin, Rect(0, (height * 0.9) -20, width: width, height: height*0.1)).align_(\center);
-	largePerformerInfoDisplay.font_(Font(options.font.name, width * 0.03)).stringColor_(Color.white);
-	largePerformerInfoDisplay.background_(Color.fromHexString("#303030"));
+	largeInfoTextField =  StaticText(lrgCueWin, Rect(0, (height * 0.9) -20, width: width, height: height*0.1)).align_(\center);
+	largeInfoTextField.font_(Font(options.font.name, width * 0.03)).stringColor_(Color.white);
+	largeInfoTextField.background_(Color.fromHexString("#303030"));
 
 	lrgCueWin.front;
   }
@@ -78,10 +78,10 @@ CueTriggerCP : AbstractGUIComponentCP {
     cueNumberBox.value = cueNumber;
     if (options.largeDisplay, {
 	  largeCueNumberDisplay.string = cueNumber;
-	  largePerformerInfoDisplay.string = cueObject.performerInfo;
+	  largeInfoTextField.string = cueObject.largeDisplayInfo;
 	});
     if (options.infoDisplay, {
-	  infoDisplay.string = cueObject.info;
+	  infoDisplayTextField.string = cueObject.cueTitle;
 	});
   }
 

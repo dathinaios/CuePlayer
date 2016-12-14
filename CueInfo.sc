@@ -1,16 +1,13 @@
 
 CueInfo {
-  var <>info, <>func, <>performerInfo;
+  var <>cueTitle, <>largeDisplayInfo, <>function;
 
-  *new { arg info = "", func, performerInfo = "";
-    ^super.newCopyArgs(info, func, performerInfo).init;
-  }
-
-  init {
+  *new { arg cueTitle = "", largeDisplayInfo = "", function;
+    ^super.newCopyArgs(cueTitle, largeDisplayInfo, function);
   }
 
   value { arg cuePlayer;
-	func.value(cuePlayer);
+	function.value(cuePlayer);
   }
 
 }

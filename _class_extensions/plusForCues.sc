@@ -13,17 +13,17 @@
     ^this;
   }
 
-  performerInfo {
+  largeDisplayInfo {
 	^""
   }
 
-  info {
+  cueTitle {
 	^""
   }
 
 }
 
-+ Cue {
++ CueInfo {
 
   asCueFunction {
     ^this;
@@ -51,11 +51,11 @@
     ^nil;
   }
 
-  performerInfo {
+  largeDisplayInfo {
 	^""
   }
 
-  info {
+  cueTitle {
 	^""
   }
 
