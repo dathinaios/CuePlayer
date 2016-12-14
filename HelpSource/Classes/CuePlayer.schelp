@@ -131,7 +131,13 @@ anchor::next::
 METHOD:: next
 Trigger next cue.
 
+METHOD:: hook
+Register a function to be avaluated right before triggering a new cue. The function is passed in the cuePlayer as an argument.
 
+code::
+b = CuePlayer.new;
+b.hook = {arg cueplayer; cueplayer.current.postln; }
+::
 
 METHOD:: gui
 Create a GUI window for the CuePlayer.
