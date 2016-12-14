@@ -73,14 +73,18 @@ CuePlayerGUI {
       arg view, char, modifiers, unicode, keycode; 
       /* [char, modifiers, unicode, keycode].postln; */ 
       switch(unicode)
-      {32}  { cueTrigger.trigButton.doAction(0) }   //space - next cue
-      {98}  { metronome.bpmBox.focus }              //b     - focus on Bpm field
-      {99}  { cueTrigger.cueNumberBox.focus }       //c     - cue number
-      {112} { timer.togglePlay }                    //p     - play/pause
-      {115} { timer.stop }                          //s     - stop
-      {80}  { cuePlayer.plot }                      //P     - plot current timeline
-      {109} { serverWindow.toggleMute }             //m     - mute server
-      {77}  { metronome.togglePlay }                //M     - toggle metronome
+      {32}  { cueTrigger.trigButton.doAction(0) }             //space - next cue
+      {98}  { if(options.metronome){metronome.bpmBox.focus}}  //b     - focus on Bpm field
+      {99}  { cueTrigger.cueNumberBox.focus }                 //c     - cue number
+      {112} { if(options.timer){timer.togglePlay}}            //p     - play/pause
+      {115} { if(options.timer){timer.stop} }                 //s     - stop
+      {80}  { cuePlayer.plot }                                //P     - plot current timeline
+      {109} {
+		if(options.serverControls){                           //m     - mute server
+		  serverWindow.toggleMute
+		}
+	  }
+      {77}  { if(options.metronome){metronome.togglePlay} }   //M     - toggle metronome
     }; 
   }
 
@@ -117,13 +121,19 @@ CuePlayerGUI {
 	);
 	cueTrigger.trigButton.action = { var cueNum;
         cueNum = cuePlayer.next;
-        if (timer.isPlaying.not) {timer.play; timer.pauseButton.value_(1)};
-    };
+		if(options.timer){
+		  if (timer.isPlaying.not) {timer.play; timer.pauseButton.value_(1)};
+		};
+	};
     cueTrigger.cueNumberBox.action = { arg box;
       box.value = box.value.abs.round(1);
       cuePlayer.current = box.value;
-      if (box.value == 0,       {timer.stop; timer.cursecs_(0)});
-      if (options.largeDisplay, {cueTrigger.largeCueNumberDisplay.string = box.value});
+      if (box.value == 0 and:{options.timer}, {
+		  timer.stop; timer.cursecs_(0)
+	  });
+      if (options.largeDisplay, {
+		cueTrigger.largeCueNumberDisplay.string = box.value;
+	  });
     };
     cueTrigger.setCurrent(cuePlayer.current);
     windowHeight = windowHeight + cueTrigger.windowHeight;
@@ -173,7 +183,11 @@ CuePlayerGUI {
     {\current}
     {this.setCurrent(theChanged)}
     {\tempo}
-    {metronome.bpm = theChanged.clock.tempo*60}
+    {
+	  if(options.metronome){
+		metronome.bpm = theChanged.clock.tempo*60
+	  };
+	}
   }
 
   setCurrent { arg cuePlayer; var currentCue;
