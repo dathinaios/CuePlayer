@@ -1,7 +1,7 @@
 
 CueTriggerCP : AbstractGUIComponentCP {
 
-  var <trigButton, <cueNumberBox, lrgCueWin, <largeCueNumberDisplay, <largeInfoTextField, <infoDisplayTextField;
+  var <trigButton, <cueNumberBox, <lrgCueWin, <largeCueNumberDisplay, <largeInfoTextField, <infoDisplayTextField;
 
   setDefaultOptions {
     super.setDefaultOptions;
