@@ -18,9 +18,9 @@ Cues {
   }
 
   add { arg function, attachment;
-    cueList.add(function.asCueFunction);
-    cueListRaw.add(function);
-    attachmentList.add(attachment);
+    cueList = cueList.add(function.asCueFunction);
+    cueListRaw = cueListRaw.add(function);
+    attachmentList = attachmentList.add(attachment);
   }
 
   put {arg cueNumber, function, attachment;
