@@ -187,8 +187,8 @@ b.gui(
 );
 ::
 
-METHOD:: midiTrigger
-Set up a midi-trigger on a given note and channel to trigger the next cue. This allows to evaluate sequential cues upon receiving a midi-note through a specified midi-channel. Default note is 60 (middle C) transmitted via channel 15. See also the link::Tutorials/CuePlayerTutorial::.
+METHOD:: midiTriggerNoteOn
+Set up a midi-trigger on a given note and channel to trigger the next cue. This allows to evaluate sequential cues upon receiving a midi-note through a specified midi-channel. Default note is 60 (middle C) transmitted via channel 15. Bear in mind that the CuePlayer starts counting midi-channels from 1, (as opposed to 0). See also the link::Tutorials/CuePlayerTutorial::.
 
 ARGUMENT:: note
 The midi-note which the CuePlayer listens to in order to trigger the next cue.
@@ -203,7 +203,7 @@ a.gui;
 
 // Connect all midi devices & set up a midi-trigger for the CuePlayer
 MIDIIn.connectAll;
-a.midiTrigger(note: 60, channel: 15);
+a.midiTriggerNoteOn(note: 60, channel: 15);
 
 // Ready to trigger cues from an external midi-device hooked up on channel 15 upon sending note 60.
 ::
@@ -211,7 +211,7 @@ a.midiTrigger(note: 60, channel: 15);
 
 
 METHOD:: midiTriggerVelocity
-Set up a midi-trigger on a given note and channel to trigger a cue based on the note's velocity value. This allows to evaluate specific cues upon receiving a midi-note; the velocity (1-127) controls the cue-number. Default note is 60 (middle C) transmitted via channel 16. See also the link::Tutorials/CuePlayerTutorial::.
+Set up a midi-trigger on a given note and channel to trigger a cue based on the note's velocity value. This allows to evaluate specific cues upon receiving a midi-note; the velocity (1-127) controls the cue-number. Default note is 60 (middle C) transmitted via channel 16. Bear in mind that the CuePlayer starts counting midi-channels from 1, (as opposed to 0). See also the link::Tutorials/CuePlayerTutorial::.
 
 ARGUMENT:: note
 The midi-note which the CuePlayer listens to.
@@ -238,8 +238,36 @@ based on the note's velocity value. */
 
 
 
+METHOD:: midiTriggerControl
+Set up a midi-trigger on a given value of a midi-controller to trigger the next cue. This allows to evaluate sequential cues upon receiving a midi-control message from an external device (such as a foot-pedal) through a specified midi-channel. Default value is 0, controller-number is 64, transmitted via channel 1. Bear in mind that the CuePlayer starts counting midi-channels from 1 (as opposed to 0).
+
+ARGUMENT:: value
+The value of the midi-controller which will trigger the next cue.
+
+ARGUMENT:: ccNum
+The controller's number.
+
+ARGUMENT:: channel
+The midi-channel.
+
+
+code::
+// Create a new CuePlayer instance & bring up the GUI
+a = CuePlayer.new;
+a.gui;
+
+// Connect all midi devices & set up a trigger which will respond to midi-control messages
+MIDIIn.connectAll;
+a.midiTriggerControl(value: 127, ccNum: 64, channel: 1)
+
+// Ready to trigger cues from midi-controller 64 hooked up on channel 1 upon sending the value 127
+::
+
+
+
+
 METHOD:: clearMIDI
-Clear all MIDI functions defined with midiTrigger and midiTriggerVelocity.
+Clear all MIDI functions defined with midiTriggerNoteOn and midiTriggerVelocity.
 
 
 

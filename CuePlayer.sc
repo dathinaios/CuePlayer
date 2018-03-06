@@ -75,11 +75,20 @@ CuePlayer : Cues {
 
   /* External Control */
 
-  midiTrigger { arg note = 60, channel = 15; var func;
+  midiTrigger { arg note = 60, channel = 15; var msg;
+    "\n==============".postln;
+    msg = "\nThe method midiTrigger has been deprecated";
+    msg = msg ++ "\nand will be removed. Please use\nmidiTriggerNoteOn instead.";
+    msg.warn;
+    "==============\n".postln;
+    this.midiTriggerNoteOn(note, channel);
+  }
+
+  midiTriggerNoteOn { arg note = 60, channel = 15; var func;
     func = { arg vel, noteNum, chan;
       chan = chan + 1;
       if (note == noteNum && chan == channel, {
-        /* [chan, noteNum, vel].debug("midiTrigger"); */
+        /* [chan, noteNum, vel].debug("midiTriggerNoteOn"); */
         {this.next}.defer;
       });
     };
@@ -95,6 +104,16 @@ CuePlayer : Cues {
       });
     };
     midiFuncRegister = midiFuncRegister.add(MIDIFunc.noteOn(func).fix);
+  }
+
+  midiTriggerControl { arg value = 0, ccNum = 64, channel = 1 ; var func;
+    func = { arg val, controller, chan;
+      chan = chan + 1;
+      if (value == val && ccNum == controller && channel == chan, {
+        {this.next}.defer;
+      });
+    };
+    midiFuncRegister = midiFuncRegister.add(MIDIFunc.cc(func).fix);
   }
 
   clearMIDI {

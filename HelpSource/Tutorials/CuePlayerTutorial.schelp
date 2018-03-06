@@ -105,17 +105,27 @@ section::MIDI & OSC
 
 Cues can be triggered via MIDI and OSC events.
 
-To use midi you need to connect to your midi-devices first; then you can set up a midi-trigger on a given note and channel to trigger the next cue by calling the strong::midiTrigger:: method, this allows to evaluate sequential cues upon receiving a midi-note through a specified midi-channel. It is useful when the cues need to be triggered externally (via a footpedal for example) and it applies particularly to performance scenarios where the instrumentalist uses a midi-device on stage to trigger sequential cues.
+To use midi you need to connect to your midi-devices first; then you may set up a midi-trigger on a given note and channel to trigger the next cue by calling the strong::midiTriggerNoteOn:: method, this allows to evaluate sequential cues upon receiving a midi-note through a specified midi-channel. Bear in mind that the CuePlayer starts counting midi-channels from 1, (as opposed to 0).
 
 code::
 // Connect all midi devices & set up a midi-trigger for the CuePlayer
 MIDIIn.connectAll;
-a.midiTrigger(note: 60, channel: 15);
+a.midiTriggerNoteOn(note: 60, channel: 15);
 
 // Ready to trigger cues from an external midi-device hooked up on channel 15 upon sending note 60.
 ::
 
-There is also the strong::midiTriggerVelocity:: method which sets up a midi-trigger on a given note and channel based on the note's velocity value. It allows to evaluate specific cues upon receiving a midi-note with velocity (1-127) controlling the cue-number. This method is useful while composing, when for example the cues need to be triggered externally via a Digital Audio Workstation (DAW).
+It may also be useful to trigger cues via an external midi-controller.  This applies particularly to performance scenarios where the instrumentalist uses a foot-pedal on stage to trigger sequential cues. For this you will need to use the strong::midiTriggerControl:: method.
+
+code::
+// Connect all midi devices & set up a trigger which will respond to midi-control messages
+MIDIIn.connectAll;
+a.midiTriggerControl(value: 127, ccNum: 64, channel: 1)
+
+// Ready to trigger cues from midi-controller 64 hooked up on channel 1 upon sending the value 127
+::
+
+There is also the strong::midiTriggerVelocity:: method which sets up a midi-trigger on a given note and channel based on the note's velocity value. It allows to evaluate specific cues upon receiving a midi-note with velocity (1-127) controlling the cue-number. This method is useful while composing; when the cues need to be triggered externally via a Digital Audio Workstation (DAW).
 
 code::
 a.midiTriggerVelocity(note: 60, channel: 16, offset: 0);
@@ -155,7 +165,7 @@ List::
 ## Use your preferred Digital Audio Workstation to lay out the piece. Work with a virtual sampler instrument in order to have some sort of feedback for the instrumental part while composing.
 ## On a Mac OS, make sure that your DAW uses the IAC Driver which will allow midi-data to be sent internally from one application to another (Applications>Utilities>Audio Midi Setup).
 ## Within the DAW create a midi-track and route its output to a dedicated midi-channel (16 for example) via IAC. Place a series of midi-notes in the track exactly where the cues should be triggered. All notes need to be the same (middle Cs for example); the 1st note (corresponding to cue-1) should have a velocity of 1, the 2nd a velocity of 2, and so on ...
-## In SuperCollider, make an instance of the CuePlayer and assign it to a variable. Connect to your midi-devices and call the strong::midiTriggerVelocity:: method to respond to the incoming midi-data. This will allow the CuePlayer to trigger the respective cue every time it receives a note from the DAW via the specified midi-channel.
+## In SuperCollider, make an instance of the CuePlayer and assign it to a variable. Connect to your midi-devices and call the strong::midiTriggerVelocity:: method to respond to the incoming midi-notes. This will allow the CuePlayer to trigger the respective cue every time it receives a note from the DAW via the specified midi-channel.
 ## Build your cues in SuperCollider as you progress with the instrumental part.
 ## Hitting "play" inside the DAW not only plays-back the instrumental part (possibly through a virtual instrument track) but also triggers the electronics in SuperCollider. If live-processing of the acoustic source is needed then the output of the virtual instrument needs to be routed (preferably internally) to SuperCollider for processing.
 ::
@@ -169,8 +179,8 @@ This section outlines how the CuePlayer can be used when presenting works for in
 List::
 ## All electronic processes need to be organised as individual cues with the CuePlayer; they are often triggered sequentially either by the instrumentalist or the laptopist.
 ## Plug-in any midi/osc devices to the laptop.
-## In SuperCollider connect to your midi-devices and call the strong::midiTrigger:: method to respond to the incoming midi-data and/or the strong::oscTrigger:: method to respond to osc messages. These methods allow the CuePlayer to trigger the next cue every time a device sends midi/osc data to the laptop.
-## Cues may be triggered via external devices (footpedals, switches, etc), code or the CuePlayer GUI.
+## In SuperCollider connect to your midi-devices and call the strong::midiTriggerControl:: method to respond to incoming midi-control messages (from a foot-pedal for example) and/or use the strong::oscTrigger:: method to respond to osc messages. These methods allow the CuePlayer to trigger the next cue every time a device sends midi/osc data to the laptop.
+## Cues may be triggered via external devices (keyboards, controllers, switches, etc), code or the CuePlayer GUI.
 ::
 
 section::Organising
