@@ -2,6 +2,7 @@
 CueTriggerCP : AbstractGUIComponentCP {
 
   var <trigButton, <cueNumberBox, <lrgCueWin, <largeCueNumberDisplay, <largeInfoTextField, <infoDisplayTextField;
+  var <drawList, <frameRate = 24, drawRoutine;
 
   setDefaultOptions {
     super.setDefaultOptions;
@@ -60,6 +61,20 @@ CueTriggerCP : AbstractGUIComponentCP {
 	largeInfoTextField.background_(Color.fromHexString("#303030"));
 
 	lrgCueWin.front;
+
+    this.setupAnimationForLrgWin;
+
+  }
+
+  setupAnimationForLrgWin {
+    drawList = List.new;
+    lrgCueWin.drawFunc = { drawList.do{arg i; i.value}; };
+    drawRoutine = Routine({
+      inf.do{
+        this.refresh;
+        (1/frameRate).wait;
+      };
+    });
   }
 
   clear {
@@ -88,5 +103,27 @@ CueTriggerCP : AbstractGUIComponentCP {
   runResources { }
 
   cmdPeriodAction { }
+
+  addToDrawFunc { arg func;
+    if( drawList.size == 0, {
+      drawRoutine.play(AppClock);
+    });
+    drawList.add(func);
+  }
+
+  removeFromDrawFunc { arg func;
+    drawList.remove(func);
+    if (drawList.size == 0){
+      drawRoutine.stop;
+    };
+  }
+
+  refresh {
+    lrgCueWin.refresh;
+  }
+
+  lrgWinBounds {
+    ^lrgCueWin.bounds;
+  }
 
 }
