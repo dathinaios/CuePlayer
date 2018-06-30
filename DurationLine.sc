@@ -12,6 +12,16 @@ DurationLine {
 
   create {
     arg duration = 5, color = Color.white, width = 2;
+
+    if(cueTrigger.lrgCueWin.notNil, {
+      this.animation(duration, color, width);
+    });
+
+  }
+
+  animation { 
+    arg duration = 5, color = Color.white, width = 2;
+
     var offset = 0;
     var penFunction;
 
@@ -32,7 +42,7 @@ DurationLine {
     };
 
     cueTrigger.addToDrawFunc(penFunction);
-
+    
   }
 
 }
