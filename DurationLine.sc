@@ -11,7 +11,7 @@ DurationLine {
   }
 
   create {
-    arg duration = 5, color = Color.white, lineWidth = 2;
+    arg duration = 5, color = Color.white, width = 2;
     var offset = 0;
     var penFunction;
 
@@ -21,7 +21,7 @@ DurationLine {
 
     penFunction = {
       Pen.use {
-        Pen.width = lineWidth;
+        Pen.width = width;
         Pen.color_(color);
         Pen.beginPath;
         Pen.moveTo(Point(0+offset,0));
@@ -30,7 +30,7 @@ DurationLine {
         offset = offset + (cueTrigger.lrgWinBounds.width+20 / (duration*cueTrigger.frameRate));
       };
     };
-    
+
     cueTrigger.addToDrawFunc(penFunction);
 
   }
