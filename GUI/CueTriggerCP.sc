@@ -106,7 +106,7 @@ CueTriggerCP : AbstractGUIComponentCP {
 
   addToDrawFunc { arg func;
     if( drawList.size == 0, {
-      drawRoutine.play(AppClock);
+      drawRoutine.reset.play(AppClock);
     });
     drawList.add(func);
   }
@@ -115,6 +115,7 @@ CueTriggerCP : AbstractGUIComponentCP {
     drawList.remove(func);
     if (drawList.size == 0){
       drawRoutine.stop;
+      this.refresh;
     };
   }
 
