@@ -3,10 +3,10 @@ DurationLine {
   var <cuePlayer, cueTrigger;
 
   *new { arg cuePlayer;
-    ^super.newCopyArgs(cuePlayer).init;
+    ^super.newCopyArgs(cuePlayer).getCueTriggerFromCuePlayer;
   }
 
-  init {
+  getCueTriggerFromCuePlayer {
     cueTrigger = cuePlayer.guiInstance.cueTrigger;
   }
 
