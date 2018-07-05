@@ -7,7 +7,9 @@ DurationLine {
   }
 
   getCueTriggerFromCuePlayer {
-    cueTrigger = cuePlayer.guiInstance.cueTrigger;
+    Server.default.waitForBoot{
+      cueTrigger = cuePlayer.guiInstance.cueTrigger;
+    }
   }
 
   create {
