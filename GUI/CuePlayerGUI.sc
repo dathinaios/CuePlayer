@@ -193,6 +193,9 @@ CuePlayerGUI {
   setCurrent { arg cuePlayer; var currentCue;
 	currentCue = cuePlayer.current;
     cueTrigger.setCurrent(currentCue, cuePlayer.getCueObject(currentCue));
+    if(options.timer){
+      if (timer.isPlaying.not) {timer.play; timer.pauseButton.value_(1)};
+    };
   }
 
 }
