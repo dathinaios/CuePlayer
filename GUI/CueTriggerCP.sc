@@ -102,7 +102,10 @@ CueTriggerCP : AbstractGUIComponentCP {
 
   runResources { }
 
-  cmdPeriodAction { }
+  cmdPeriodAction {
+    drawList.clear;
+    drawRoutine.reset.play(AppClock);
+  }
 
   addToDrawFunc { arg func;
     if( drawList.size == 0, {

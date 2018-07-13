@@ -37,7 +37,7 @@ DurationLine {
         Pen.color_(color);
         Pen.beginPath;
         Pen.moveTo(Point(0+offset,0));
-        Pen.lineTo(Point(0+offset,600));
+        Pen.lineTo(Point(0+offset, cueTrigger.lrgWinBounds.height));
         Pen.stroke;
         offset = offset + (cueTrigger.lrgWinBounds.width+20 / (duration*cueTrigger.frameRate));
       };
