@@ -32,8 +32,8 @@ Timeline {
   }
 
   setDefaultOptions {
-    options.mode ?? { options.mode = \beats };
-    options.quant ?? { options.quant = 1 };
+    options.mode ?? { options.mode = \time };
+    options.quant ?? { options.quant = 0 };
     options.liveReload ?? { options.liveReload = true };
   }
 
