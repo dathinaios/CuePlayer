@@ -127,8 +127,7 @@ CuePlayer : Cues {
           { {this.next}.defer },
           { {this.trigger(msg[1])}.defer }
         );
-      },
-			path
+      }, path
     );
     oscTriggerFunc.permanent = true;
     this.oscTriggerInform(path);
