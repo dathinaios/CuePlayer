@@ -92,7 +92,7 @@ CuePlayer : Cues {
         {this.next}.defer;
       });
     };
-    midiFuncRegister = midiFuncRegister.add(MIDIFunc.noteOn(func).fix);
+    this.addMIDIFunc(MIDIFunc.noteOn(func).fix);
   }
 
   midiTriggerVelocity { arg note = 60, channel = 16, offset = 0; var func;
@@ -103,7 +103,7 @@ CuePlayer : Cues {
         {this.trigger((vel)+offset)}.defer;
       });
     };
-    midiFuncRegister = midiFuncRegister.add(MIDIFunc.noteOn(func).fix);
+    this.addMIDIFunc(MIDIFunc.noteOn(func).fix);
   }
 
   midiTriggerControl { arg value = 0, ccNum = 64, channel = 1 ; var func;
@@ -113,7 +113,11 @@ CuePlayer : Cues {
         {this.next}.defer;
       });
     };
-    midiFuncRegister = midiFuncRegister.add(MIDIFunc.cc(func).fix);
+    this.addMIDIFunc(MIDIFunc.cc(func).fix);
+  }
+
+  addMIDIFunc { arg midiFunc;
+    midiFuncRegister = midiFuncRegister.add(midiFunc);
   }
 
   clearMIDI {
