@@ -1,0 +1,63 @@
+TITLE:: DurationLine
+summary:: Display a scrolling line on the large window.
+categories:: Class
+related:: Classes/CuePlayer
+
+DESCRIPTION::
+DurationLine allows to display a vertical line on the large window which scrolls from left to right within a certain amount of time. This may be used to have a visual representation on how long a particular process lasts.
+
+
+
+CLASSMETHODS::
+
+
+anchor::new::
+
+METHOD:: new
+Create a new DurationLine instance.
+
+
+INSTANCEMETHODS::
+
+anchor::create::
+
+METHOD:: create
+Create a duration-line specifying its duration, color and vertical-width.
+
+ARGUMENT:: duration
+The time (in seconds) it takes for the vertical line to scan the window from left to right.
+
+ARGUMENT:: color
+Defines the color of the line.
+
+ARGUMENT:: width
+Defines the thickness of the line.
+
+CODE::
+(
+a = CuePlayer.new; // Create a new CuePlayer instance & bring up its GUI
+a.gui( monitorInChannels: 2, monitorOutChannels: 8,
+	options:(
+		largeDisplay: true, largeDisplayBounds: Rect(1400, 210, 285, 285)
+	)
+);
+
+~durLine = DurationLine(a); // create a durationline
+
+a.put(1, {
+	"this is cue-1".postln;
+	// display a red vertical line in the big window moving from left to right within 1 second
+	~durLine.create(duration: 1, color: Color.red, width: 30);
+});
+
+a.put(2, {
+	"this is cue-2".postln;
+		// display a blue vertical line in the big window moving from left to right within 3 seconds
+	~durLine.create(duration: 3, color: Color.blue, width: 15);
+})
+)
+
+
+a.trigger(1);
+a.trigger(2);
+::

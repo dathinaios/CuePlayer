@@ -23,14 +23,14 @@ anchor::options::
 ARGUMENT:: options
 An event containing options for the timeline. Valid options are:
 LIST::
- ## A link::Classes/Symbol::. Choose between \beats or \time. Default is in beats.
+ ## A link::Classes/Symbol::. Choose between \beats or \time. Default is in time.
  ## A quantisation value in beats.
- ## When a path to an scd file is used (see link::#newFromPath::) this will reload the file before every play, thus allowing for a smooth workflow while composing. It may be set to false to improve performance. 
+ ## When a path to an scd file is used (see link::#newFromPath::) this will reload the file before every play, thus allowing for a smooth workflow while composing. It may be set to false to improve performance.
 ::
 
 CODE::
 	options: (
-		mode: \beats,
+		mode: \time,
 		quant: 1,
 		liveReload: true
 	)
@@ -52,7 +52,7 @@ See link::#new:: method.
 ARGUMENT:: options
 See link::#new:: method.
 
-returns:: An instance of Timeline. 
+returns:: An instance of Timeline.
 
 
 
@@ -70,7 +70,7 @@ time - function
 ARGUMENT:: options
 See link::#new:: method.
 
-returns:: An instance of Timeline. 
+returns:: An instance of Timeline.
 
 CODE::
 // Example contents of an .scd file
@@ -91,7 +91,7 @@ INSTANCEMETHODS::
 METHOD:: play
 Start the timeline according to quantisation value.
 
-returns:: The Timeline instance. 
+returns:: The Timeline instance.
 
 
 
@@ -105,12 +105,12 @@ METHOD:: add
 Add a time,function pair, like [ 1.5, { } ].
 
 ARGUMENT:: time
-This is in beats or seconds according to link::#options::.
+This is in seconds or beats according to link::#options::.
 
 ARGUMENT:: function
 A link::Classes/Function:: to be avaluated at the given time.
 
-returns:: The Timeline instance. 
+returns:: The Timeline instance.
 
 
 
@@ -140,7 +140,7 @@ code::
 // Using the add method
 (
 c = TempoClock(5);
-	
+
 t = Timeline.new(clock: c, options:(mode: \beats, quant: 1));
 t.add(2, {"test 1".postln});
 t.add(4, {"test 2".postln});
@@ -158,7 +158,7 @@ t = Timeline.newFromArray(
         3.5, {"test 3".postln}
     ])
 );
-t.play; 
+t.play;
 
 // Using a path
 t = Timeline.newFromPath( PathName(CuePlayer.class.filenameSymbol.asString).parentPath +/+ "HelpSource/Classes/timeline" +/+ "t-score.scd" );
