@@ -263,12 +263,15 @@ a.midiTriggerControl(value: 127, ccNum: 64, channel: 1)
 // Ready to trigger cues from midi-controller 64 hooked up on channel 1 upon sending the value 127
 ::
 
+METHOD:: addMIDIFunc
+Add a custom midi function.
 
+ARGUMENT:: midiFunc
+An instance of link::Classes/MIDIFunc::.
 
 
 METHOD:: clearMIDI
 Clear all MIDI functions defined with midiTriggerNoteOn and midiTriggerVelocity.
-
 
 
 METHOD:: oscTrigger
