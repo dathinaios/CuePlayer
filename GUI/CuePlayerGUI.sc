@@ -126,13 +126,13 @@ CuePlayerGUI {
 		};
 	};
     cueTrigger.cueNumberBox.action = { arg box;
-      box.value = box.value.abs.round(1);
-      cuePlayer.current = box.value;
+      box.value = box.value.abs.round(1).asInteger;
+      cuePlayer.current = box.value.asInteger;
       if (box.value == 0 and:{options.timer}, {
 		  timer.stop; timer.cursecs_(0)
 	  });
       if (options.largeDisplay, {
-		cueTrigger.largeCueNumberDisplay.string = box.value;
+		cueTrigger.largeCueNumberDisplay.string = box.value.asInteger;
 	  });
     };
     cueTrigger.setCurrent(cuePlayer.current);
