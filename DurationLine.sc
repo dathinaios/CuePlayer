@@ -1,9 +1,24 @@
 
 DurationLine {
+  classvar <active = true;
   var <cuePlayer, cueTrigger;
 
   *new { arg cuePlayer;
     ^super.newCopyArgs(cuePlayer).getCueTriggerFromCuePlayer;
+  }
+
+  *activate {
+    active = true;
+  }
+
+  *deactivate {
+    active = false;
+  }
+
+  *toggle {
+    if(active,
+      { active = false },
+      { active = true });
   }
 
   getCueTriggerFromCuePlayer {
@@ -15,7 +30,7 @@ DurationLine {
   create {
     arg duration = 5, color = Color.white, width = 2;
 
-    if(cueTrigger.lrgCueWin.notNil, {
+    if(active and:{cueTrigger.lrgCueWin.notNil}, {
       this.animation(duration, color, width);
     });
 
