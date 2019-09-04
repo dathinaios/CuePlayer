@@ -7,11 +7,11 @@ DurationLine {
     ^super.newCopyArgs(cuePlayer).getCueTriggerFromCuePlayer;
   }
 
-  *activate {
+  *on {
     active = true;
   }
 
-  *deactivate {
+  *off {
     active = false;
   }
 
