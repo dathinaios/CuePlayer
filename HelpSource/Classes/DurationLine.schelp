@@ -10,11 +10,25 @@ DurationLine allows to display a vertical line on the large window which scrolls
 
 CLASSMETHODS::
 
-
 anchor::new::
 
 METHOD:: new
 Create a new DurationLine instance.
+
+anchor::on::
+
+METHOD:: on
+Show the duration line on the large window.
+
+anchor::off::
+
+METHOD:: off
+Hide the duration line on the large window.
+
+anchor::toggle::
+
+METHOD:: toggle
+Switch on/off the duration line on the large window.
 
 
 INSTANCEMETHODS::
