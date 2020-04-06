@@ -34,13 +34,14 @@ Cues {
     cueList[cueNumber - 1] = function.asCueFunction;
   }
 
-  next {
+  next { var currentFuncIndex;
+    currentFuncIndex = current;
     if(blockTrigger.allow){
       hook.value(this);
-      if(liveReload) {this.reloadCue};
-      cueList[current].value(this);
-      attachmentList[current].value(this);
       current = current + 1;
+      if(liveReload) {this.reloadCue};
+      cueList[currentFuncIndex].value(this);
+      attachmentList[currentFuncIndex].value(this);
       this.changed(\current);
       ^current;
     }
@@ -56,7 +57,7 @@ Cues {
     /*("Next cue will be " ++ (cue + 1)).postln;*/
     current = cueNumber.abs;
     this.changed(\current);
-		^current;
+    ^current;
   }
 
   getCueObject { arg cueNumber;
