@@ -37,12 +37,18 @@ Cues {
   next { var currentFuncIndex;
     currentFuncIndex = current;
     if(blockTrigger.allow){
+
       hook.value(this);
+
       current = current + 1;
+      this.changed(\current);
+
       if(liveReload) {this.reloadCue};
+
       cueList[currentFuncIndex].value(this);
       attachmentList[currentFuncIndex].value(this);
-      this.changed(\current);
+      this.changed(\next);
+
       ^current;
     }
   }

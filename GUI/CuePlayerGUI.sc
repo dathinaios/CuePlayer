@@ -112,28 +112,22 @@ CuePlayerGUI {
 
   createCueTrigger {
     this.createLabel("", 282, marginTop);
-	cueTrigger = CueTriggerCP(window,
-	  options: (
-		largeDisplay: options.largeDisplay,
-		largeDisplayBounds: options.largeDisplayBounds,
-		infoDisplay: options.infoDisplay
-	  )
-	);
-	cueTrigger.trigButton.action = { var cueNum;
-        cueNum = cuePlayer.next;
-		if(options.timer){
-		  if (timer.isPlaying.not) {timer.play; timer.pauseButton.value_(1)};
-		};
-	};
+    cueTrigger = CueTriggerCP(window,
+      options: (
+        largeDisplay: options.largeDisplay,
+        largeDisplayBounds: options.largeDisplayBounds,
+        infoDisplay: options.infoDisplay
+      )
+    );
+    cueTrigger.trigButton.action = { var cueNum;
+      cueNum = cuePlayer.next;
+    };
     cueTrigger.cueNumberBox.action = { arg box;
       box.value = box.value.abs.round(1).asInteger;
       cuePlayer.current = box.value.asInteger;
-      if (box.value == 0 and:{options.timer}, {
-		  timer.stop; timer.cursecs_(0)
-	  });
       if (options.largeDisplay, {
-		cueTrigger.largeCueNumberDisplay.string = box.value.asInteger;
-	  });
+        cueTrigger.largeCueNumberDisplay.string = box.value.asInteger;
+      });
     };
     cueTrigger.setCurrent(cuePlayer.current);
     windowHeight = windowHeight + cueTrigger.windowHeight;
@@ -182,19 +176,31 @@ CuePlayerGUI {
     switch (message)
     {\current}
     {this.setCurrent(theChanged)}
+    {\next}
+    {this.startTimer(theChanged)}
     {\tempo}
     {
-	  if(options.metronome){
-		metronome.bpm = theChanged.clock.tempo*60
-	  };
-	}
+      if(options.metronome){
+        metronome.bpm = theChanged.clock.tempo*60
+      };
+    }
   }
 
   setCurrent { arg cuePlayer; var currentCue;
-	currentCue = cuePlayer.current;
+    currentCue = cuePlayer.current;
     cueTrigger.setCurrent(currentCue, cuePlayer.getCueObject(currentCue));
-    if(options.timer){
+    if(options.timer and:{currentCue == 0}){
+      timer.stop; timer.cursecs_(0); timer.pauseButton.value_(0);
+    };
+  }
+
+  startTimer { arg cuePlayer; var currentCue;
+    currentCue = cuePlayer.current;
+    if(options.timer and:{currentCue != 0}){
       if (timer.isPlaying.not) {timer.play; timer.pauseButton.value_(1)};
+    };
+    if(options.timer and:{currentCue == 0}){
+      timer.stop; timer.cursecs_(0); timer.pauseButton.value_(0);
     };
   }
 
