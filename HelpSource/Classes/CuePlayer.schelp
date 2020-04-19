@@ -346,6 +346,16 @@ Note::
 Current GUI implementation for this feature is under development.
 ::
 
+METHOD:: timelineRegister
+
+The timelines are stored in a Dictionary that you can access from your CuePlayer instance using the cue number as the key.
+
+code::
+a = CuePlayer.new;
+a.timelineRegister; // the dictionary
+// to access the TimeLine of a specific cue
+a.timelineRegister[\3]; // timeline of cue 3
+::
 
 METHOD:: plot
 Provides a visual representation of the selected timeline items. It is applicable only when using timelines. See link::#put:: and link::#add:: methods.
