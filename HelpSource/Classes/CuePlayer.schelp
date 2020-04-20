@@ -373,6 +373,7 @@ code::
    1360, {"the performers and technicians are returning from dinner".postln},
    2680, {"and you are still soundchecking".postln},
  ]);
+ b.add({"works with only a function and no timeline as well".postln});
 )
 
 b.fastForward(5); // problem solved... 

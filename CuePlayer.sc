@@ -157,16 +157,23 @@ this.sched(clock.timeToNextBeat,{address.sendMsg(msg[0], msg[1])});
   fastForward {arg interval = 10, timelineOptions;
     var time = 0;
     fastForwardTimeline = Timeline.new(clock, timelineOptions);
-    (cueList.size).do{ arg cueNumber;
-      var functionList = timelineRegister[(cueNumber+1).asSymbol].functionList;
-      functionList.pairsDo{ arg i, function;
-        fastForwardTimeline.add(time, function);
+    (cueList.size).do{ arg idx; 
+      var cueNumber = idx + 1;
+      var timeline = timelineRegister[cueNumber.asSymbol];
+      if(timeline.notNil){
+        timeline.functionList.pairsDo{ arg i, function;
+          fastForwardTimeline.add(time, function);
+          time = time + interval;
+        };
+      }{
+        //if cue only contains a function
+        fastForwardTimeline.add(time, cueList[idx]);
         time = time + interval;
       };
     };
     "Starting fastForward".postln;
     fastForwardTimeline.play; 
-  } 
+  }
 
   stopFastForward {
     fastForwardTimeline.stop;
