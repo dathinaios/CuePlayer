@@ -5,6 +5,7 @@ CuePlayer : Cues {
   var <>clock, <guiInstance;
   var <timelineRegister, oscTriggerFunc;
   var midiFuncRegister;
+  var <fastForwardTimeline;
 
   *new {
     ^super.new.init;
@@ -22,19 +23,19 @@ CuePlayer : Cues {
   }
 
   add { arg function, timeline, timelineOptions = ();
-    timeline = timeline.asTimeline(clock, timelineOptions);
-    this.addTimelineToRegister(cueList.size+1, timeline);
-    ^super.add(function, {timeline.play;});
-  }
+  timeline = timeline.asTimeline(clock, timelineOptions);
+  this.addTimelineToRegister(cueList.size+1, timeline);
+  ^super.add(function, {timeline.play;});
+}
 
-  put { arg cueNumber, function, timeline, timelineOptions = ();
-    timeline = timeline.asTimeline(clock, timelineOptions);
-    this.addTimelineToRegister(cueNumber, timeline);
-    ^super.put(cueNumber, function, {timeline.play;});
+put { arg cueNumber, function, timeline, timelineOptions = ();
+timeline = timeline.asTimeline(clock, timelineOptions);
+this.addTimelineToRegister(cueNumber, timeline);
+^super.put(cueNumber, function, {timeline.play;});
   }
 
   stop {
-	clock.clear;
+    clock.clear;
   }
 
   gui {arg monitorInChannels = 2, monitorOutChannels = 8, options;
@@ -128,29 +129,48 @@ CuePlayer : Cues {
     oscTriggerFunc = OSCFunc(
       { arg msg;
         if (msg[1] == -1,
-          { {this.next}.defer },
-          { {this.trigger(msg[1])}.defer }
-        );
-      }, path
-    );
-    oscTriggerFunc.permanent = true;
-    this.oscTriggerInform(path);
-    ^oscTriggerFunc;
-  }
+        { {this.next}.defer },
+        { {this.trigger(msg[1])}.defer }
+      );
+    }, path
+  );
+  oscTriggerFunc.permanent = true;
+  this.oscTriggerInform(path);
+  ^oscTriggerFunc;
+}
 
-  freeOscTrigger {
-    oscTriggerFunc.free;
-    "The OSC trigger has been removed".postln;
-  }
+freeOscTrigger {
+  oscTriggerFunc.free;
+  "The OSC trigger has been removed".postln;
+}
 
-  sendOSC { arg ip = "127.0.0.1", port = 8000, msg = ["/play", 1]; var address;
-    address = NetAddr(ip, port);
-		this.sched(clock.timeToNextBeat,{address.sendMsg(msg[0], msg[1])});
+sendOSC { arg ip = "127.0.0.1", port = 8000, msg = ["/play", 1]; var address;
+address = NetAddr(ip, port);
+this.sched(clock.timeToNextBeat,{address.sendMsg(msg[0], msg[1])});
   }
 
   useGlobalClock {
     clock = globalClock;
     "This instance of CuePlayer is now using the global clock.".postln;
+  }
+
+  fastForward {arg interval = 10, timelineOptions;
+    var time = 0;
+    fastForwardTimeline = Timeline.new(clock, timelineOptions);
+    (cueList.size).do{ arg cueNumber;
+      var functionList = timelineRegister[(cueNumber+1).asSymbol].functionList;
+      functionList.pairsDo{ arg i, function;
+        fastForwardTimeline.add(time, function);
+        time = time + interval;
+      };
+    };
+    "Starting fastForward".postln;
+    fastForwardTimeline.play; 
+  } 
+
+  stopFastForward {
+    fastForwardTimeline.stop;
+    "Stopped fastForward".postln;
   }
 
   /* Private */

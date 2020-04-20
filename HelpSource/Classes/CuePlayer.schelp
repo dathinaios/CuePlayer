@@ -354,6 +354,33 @@ ARGUMENT:: cueNumber
 An integer. If a timeline is provided, it plots the items in the selected cue-number.
 
 
+METHOD:: fastForward
+Provides a way to step through all timelines of all cues. Useful for a quick check of all instances. Best used in conjunction with a hook to ensure proper cleanup after each cue has been launched.
+
+ARGUMENT:: interval
+An integer. If the cue contains a timeline it will step through it, replacing the original scheduling with this. The original cue is not modified.
+
+code::
+(
+ b = CuePlayer.new;
+ b.add(timeline: [
+   0, {"this is the first event".postln},
+   240, {"a very, very long time later".postln},
+   1680, {"...by which time the performers and technicians have lost patience and left for dinner while you are still soundchecking".postln},
+ ]);
+ b.add(timeline: [
+   0, {"next cue, first event".postln},
+   1360, {"the performers and technicians are returning from dinner".postln},
+   2680, {"and you are still soundchecking".postln},
+ ]);
+)
+
+b.fastForward(5); // problem solved... 
+
+::
+
+METHOD:: stopFastForward
+Stops fastForwarding of cues.
 
 METHOD:: enableLiveReload
 Enable live reloading of scripts provided as path strings. See link::#put:: and link::#add:: methods.
