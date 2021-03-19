@@ -35,6 +35,7 @@ Timeline {
     options.mode ?? { options.mode = \time };
     options.quant ?? { options.quant = 0 };
     options.liveReload ?? { options.liveReload = true };
+    options.offset ?? { options.offset = 0 };
   }
 
   add{ arg time, function;
@@ -43,15 +44,16 @@ Timeline {
   }
 
   play {
-    this.reloadPath; 
+    this.reloadPath;
+    this.applyOffset(options.offset);
     functionList.pairsDo{arg time, function;
       this.sched(this.time(time), function);
     }
   }
 
   quantValue {
-    if(options.quant > 0, 
-      { ^clock.timeToNextBeat + (options.quant - 1) }, 
+    if(options.quant > 0,
+      { ^clock.timeToNextBeat + (options.quant - 1) },
       { ^0 }
     );
   }
@@ -79,6 +81,20 @@ Timeline {
       newList.add([time, function]);
     };
     ^newList;
+  }
+
+  applyOffset { arg value;
+    if(value != 0) {
+      functionList.pairsDo{arg time, function, index;
+        if(time < value, {
+          functionList = functionList.put(index, nil);
+          functionList = functionList.put(index+1, nil);
+        },{
+          functionList = functionList.put(index, time-value);
+        });
+      };
+      functionList = functionList.select({ arg i; i.notNil });
+    };
   }
 
   plot { arg timeUnitLength = 70;
