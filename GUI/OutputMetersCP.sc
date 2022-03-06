@@ -47,7 +47,6 @@ OutputMetersCP : AbstractGUIComponentCP {
   }
 
   runResources {
-    GroupManagerCP.initialise;
     SynthDef(\outputLevels ++ options.monitorOutChannels, {
       var trig, sig, delayTrig;
 
