@@ -44,6 +44,7 @@ InputMetersCP : AbstractGUIComponentCP {
   }
 
   runResources {
+    GroupManagerCP.initialise;
     SynthDef(\inputLevels ++ options.monitorInChannels, {
       var trig, sig, delayTrig;
 
