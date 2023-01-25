@@ -170,6 +170,10 @@ CuePlayerGUI {
     windowHeight = windowHeight + serverWindow.windowHeight;
   }
 
+  setServerVolume { arg val;
+    serverWindow.volume_(val);
+  }
+
   /* Handle Events from Dependants */
 
   update { arg theChanged, message;

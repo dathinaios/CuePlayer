@@ -2,7 +2,7 @@
 ServerWindowCP : AbstractGUIComponentCP { 
 
   var serverInfoRoutine;
-  var <muteButton, volSlider, peakCPULabel, numSynthsLabel;
+  var <muteButton, <volSlider, peakCPULabel, numSynthsLabel;
 
   createComponent {
     this.createServerControls;
@@ -64,6 +64,10 @@ ServerWindowCP : AbstractGUIComponentCP {
 
   windowHeight {
     ^80
+  }
+
+  volume_ { arg volume;
+    volSlider.valueAction_(volume)
   }
 
 }
