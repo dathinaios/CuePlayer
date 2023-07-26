@@ -1,5 +1,5 @@
 AbstractGUIComponentCP {
-    classvar <>cmdPeriodActionsAdded = false;
+  classvar <>cmdPeriodActionsAdded = false;
 
   var window, <options;
 
@@ -30,14 +30,14 @@ AbstractGUIComponentCP {
   }
 
   setCmdPeriodActions {
-      this.class.cmdPeriodActionsAdded.not.if({
-          CmdPeriod.add({
-              AppClock.sched(0.1, {
-                  this.cmdPeriodAction;
-              });
-          });
-          this.class.cmdPeriodActionsAdded = true;
-      })
+    this.class.cmdPeriodActionsAdded.not.if({
+      CmdPeriod.add({
+        AppClock.sched(0.1, {
+          this.cmdPeriodAction;
+        });
+      });
+      this.class.cmdPeriodActionsAdded = true;
+    })
   }
 
   createLabel { arg text = "placeholder text", width = 280, height = 20; var label;
