@@ -56,11 +56,11 @@ CueTriggerCP : AbstractGUIComponentCP {
     largeCueNumberDisplay =  StaticText(lrgCueWin, Rect(width: width, height: height * 0.9)).align_(\center);
     largeCueNumberDisplay.font_(Font(options.font.name, width * 0.73)).stringColor_(Color.white);
 
-	largeInfoTextField =  StaticText(lrgCueWin, Rect(0, (height * 0.9) -20, width: width, height: height*0.1)).align_(\center);
-	largeInfoTextField.font_(Font(options.font.name, width * 0.06)).stringColor_(Color.white);
-	largeInfoTextField.background_(Color.fromHexString("#303030"));
+    largeInfoTextField =  StaticText(lrgCueWin, Rect(0, (height * 0.9) -20, width: width, height: height*0.1)).align_(\center);
+    largeInfoTextField.font_(Font(options.font.name, width * 0.06)).stringColor_(Color.white);
+    largeInfoTextField.background_(Color.fromHexString("#303030"));
 
-	lrgCueWin.front;
+    lrgCueWin.front;
 
     this.setupAnimationForLrgWin;
 
