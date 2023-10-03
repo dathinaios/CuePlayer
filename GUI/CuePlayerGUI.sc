@@ -1,7 +1,7 @@
 
 CuePlayerGUI {
 
-  var cuePlayer, monitorInChannels, monitorOutChannels, options; 
+  var cuePlayer, monitorInChannels, monitorOutChannels, options;
   var <window, name, clock;
   var <inputLevels,  <cueTrigger, <timer, <metronome, <outputLevels, <serverWindow;
   var <windowHeight = 0, font, titleFontSize, marginTop, <active = false;
@@ -69,9 +69,9 @@ CuePlayerGUI {
   }
 
   registerShortcuts {
-    window.view.keyDownAction = { 
-      arg view, char, modifiers, unicode, keycode; 
-      /* [char, modifiers, unicode, keycode].postln; */ 
+    window.view.keyDownAction = {
+      arg view, char, modifiers, unicode, keycode;
+      /* [char, modifiers, unicode, keycode].postln; */
       switch(unicode)
       {32}  { cueTrigger.trigButton.doAction(0) }             //space - next cue
       {98}  { if(options.metronome){metronome.bpmBox.focus}}  //b     - focus on Bpm field
@@ -85,7 +85,7 @@ CuePlayerGUI {
 		}
 	  }
       {77}  { if(options.metronome){metronome.togglePlay} }   //M     - toggle metronome
-    }; 
+    };
   }
 
   createLabel { arg text = "placeholder text", width = 280, height = 20; var label;
@@ -100,10 +100,10 @@ CuePlayerGUI {
 
   createInputLevels {
     inputLevels = InputMetersCP(
-      window, 
+      window,
       options: (
-        monitorInChannels: monitorInChannels, 
-        monitorInOffset: options.monitorInOffset, 
+        monitorInChannels: monitorInChannels,
+        monitorInOffset: options.monitorInOffset,
         font: Font(font, titleFontSize)
       )
     );
@@ -156,9 +156,9 @@ CuePlayerGUI {
   createOutputLevels{
     this.createLabel("", 282, marginTop);
     outputLevels = OutputMetersCP(
-      window, 
+      window,
       options: (
-        monitorOutChannels: monitorOutChannels, 
+        monitorOutChannels: monitorOutChannels,
         font: Font(font, titleFontSize)
       )
     );
