@@ -1,7 +1,6 @@
 AbstractGUIComponentCP {
-  classvar <>cmdPeriodActionsAdded = false;
 
-  var window, <options;
+  var window, <options, cmdPeriodActionAdded = false;
 
   *new { arg window, options = ();
     ^super.newCopyArgs( window, options).init;
@@ -30,13 +29,13 @@ AbstractGUIComponentCP {
   }
 
   setCmdPeriodActions {
-    this.class.cmdPeriodActionsAdded.not.if({
+    cmdPeriodActionAdded.not.if({
       CmdPeriod.add({
         AppClock.sched(0.1, {
           this.cmdPeriodAction;
         });
       });
-      this.class.cmdPeriodActionsAdded = true;
+      cmdPeriodActionAdded = true;
     })
   }
 
