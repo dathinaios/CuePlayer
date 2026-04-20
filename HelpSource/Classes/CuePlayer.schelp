@@ -189,7 +189,7 @@ b.gui(
 		timer: true, // Show/hide timer
 		metronome: true, // Show/hide metronome
 		serverControls: true, //  Show/hide server controls: mute-button, volume-slider, Peak CPU, Number of Synths
-		plugins: [\basic, "./Plugins/basic.scd"], // Optional GUI plugin
+		// plugins: [\basic, "./Plugins/basic.scd"], // Optional GUI plugin syntax
 		shortcuts: false // Use shortcuts; default is false
 		// spacebar: trigger next cue
 		// b: focus on bpm box
