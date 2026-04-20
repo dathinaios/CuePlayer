@@ -195,6 +195,10 @@ CuePlayerGUI {
     var normalizedEntries;
     options.plugins ?? { options.plugins = List.new };
     if(options.plugins.isKindOf(Event)) { options.plugins = [options.plugins] };
+    if(options.plugins.isString.not and:{ options.plugins.isSequenceableCollection } and:{ options.plugins.size == 2 }
+      and:{ options.plugins[0].isKindOf(Symbol) or:{ options.plugins[0].isString } }) {
+      options.plugins = [options.plugins];
+    };
     if(options.plugins.isSequenceableCollection.not) {
       "Ignoring plugins option: expected a collection of plugin entries.".warn;
       options.plugins = List.new;

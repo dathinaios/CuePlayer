@@ -22,9 +22,7 @@ a.put(2, { "cue 2 fired".postln });
 
 a.gui(
 	options: (
-		plugins: [
-			[\basic, "./Plugins/basic.scd"]
-		]
+		plugins: [\basic, "./Plugins/basic.scd"]
 	)
 );
 )
