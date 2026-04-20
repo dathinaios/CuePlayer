@@ -1,0 +1,80 @@
+TITLE:: PluginCP
+summary:: GUI plugin frame for CuePlayerGUI
+categories:: GUI
+related:: Classes/CuePlayer, Classes/CuePlayerGUI, Classes/AbstractGUIComponentCP
+
+DESCRIPTION::
+
+PluginCP is the generic frame used by link::Classes/CuePlayerGUI:: for custom GUI plugins supplied through strong::CuePlayer:gui(... options: (plugins: ...))::.
+
+Plugins are GUI-only. They are not registered on the CuePlayer itself; they are configured as part of the GUI options.
+
+SECTION:: Plugin entries
+
+Each entry in strong::options.plugins:: is either:
+
+LIST::
+## code::[\id, optionsOrPath]:: for a single plugin.
+## code::[[\a, optionsOrPathA], [\b, optionsOrPathB]]:: for multiple plugins.
+## code::(id: \id, options: (...))::
+## code::(id: \id, path: "./Plugins/foo.scd")::
+::
+
+If a path is given, the file must evaluate to an Event of plugin options.
+
+SECTION:: Plugin options
+
+DEFINITIONLIST::
+## strong::name::
+|| Label shown above the frame. Default: code::"Plugin"::.
+
+## strong::height::
+|| Height of the content area. Default: code::40::.
+
+## strong::showLabel::
+|| Whether to show the label. Default: code::true::.
+
+## strong::build::
+|| Function called once when the plugin is created. Receives the PluginCP instance.
+
+## strong::onCue::
+|| Function called on CuePlayer dependant updates. Receives code::(plug, cuePlayer, message)::.
+
+## strong::onCmdPeriod::
+|| Function called on CmdPeriod. Receives the PluginCP instance.
+
+## strong::onClear::
+|| Function called when the main GUI window closes. Receives the PluginCP instance.
+::
+
+All callbacks are optional.
+
+SECTION:: Instance interface
+
+DEFINITIONLIST::
+## strong::contentView::
+|| A CompositeView bounded to code::280 x options.height::. Place widgets here.
+
+## strong::window::
+|| The parent CuePlayerGUI window.
+
+## strong::store(key, value)::
+|| Store a value on the plugin instance.
+
+## strong::at(key)::
+|| Retrieve a stored value.
+::
+
+SECTION:: Example
+
+CODE::
+(
+a = CuePlayer.new;
+
+a.gui(
+	options: (
+		plugins: [\basic, "./Plugins/basic.scd"]
+	)
+);
+)
+::
