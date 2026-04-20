@@ -49,7 +49,7 @@ b = CuePlayer.new;
 b.gui(
 	options: (
 		largeDisplay: true,
-		largeDisplayBounds: Rect(1400, 210, 285, 285),
+		largeDisplayOptions: (bounds: Rect(1400, 210, 285, 285)),
 		plugins: [\durationLine, "./Plugins/duration_line.scd"]
 	)
 );
