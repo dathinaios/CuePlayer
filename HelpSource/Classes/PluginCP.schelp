@@ -17,6 +17,10 @@ code::[\a, optionsOrPathA, \b, optionsOrPathB]::
 
 strong::optionsOrPath:: is either an Event of plugin options or a String path to a file that evaluates to such an Event.
 
+Relative String paths are resolved relative to the calling file.
+
+If the same plugin id appears more than once, the later entry replaces the earlier one.
+
 SECTION:: Plugin options
 
 DEFINITIONLIST::
@@ -33,7 +37,7 @@ DEFINITIONLIST::
 || Function called once when the plugin is created. Receives the PluginCP instance.
 
 ## strong::onCue::
-|| Function called on CuePlayer dependant updates. Receives code::(plug, cuePlayer, message)::.
+|| Function called on CuePlayer dependant updates. Receives code::(plug, cuePlayer, message)::; common messages are code::\current::, code::\next:: and code::\tempo::.
 
 ## strong::onCmdPeriod::
 || Function called on CmdPeriod. Receives the PluginCP instance.
