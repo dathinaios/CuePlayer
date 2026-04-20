@@ -8,10 +8,6 @@ PluginCP : AbstractGUIComponentCP {
     options.name      ?? { options.name = "Plugin" };
     options.height    ?? { options.height = 40 };
     options.showLabel ?? { options.showLabel = true };
-    options[\build]       ?? { options[\build] = { arg plug; } };
-    options[\onCue]       ?? { options[\onCue] = { arg plug, theChanged, message; } };
-    options[\onCmdPeriod] ?? { options[\onCmdPeriod] = { arg plug; } };
-    options[\onClear]     ?? { options[\onClear] = { arg plug; } };
   }
 
   createComponent {
