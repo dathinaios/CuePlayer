@@ -64,7 +64,10 @@ a.gui(
 	monitorInChannels: 2, // Monitor the first 2 input channels
 	monitorOutChannels: 16, // Monitor 16 output channels
 	options: (
-	   largeDisplay: false, // Show/hide the big window displaying current cue-number
+	   largeDisplay: true, // Show/hide the big window displaying current cue-number
+	   largeDisplayOptions: (
+		   bounds: Rect(600, 300, 450, 450) // Position and size of the large window
+	   ),
 	   left: 1300, // Left bound of the CuePlayer window
 	   top: 350, // Top bound of the CuePlayer window
 	      )
@@ -73,7 +76,7 @@ a.gui(
 ::
 image::img/cp-gui.png::
 
-Spend a little time to get familiar with this window. You can monitor up to 8 input buses and up to 48 output buses which should be enough for most pieces, but you could easily hack the source code to change this if you like. The big strong::green-button:: triggers the next cue and the white strong::number-box:: right next to it displays and sets (when needed) the current cue. The strong::timer:: displays the time elapsed (usually since the beginning of the piece) and the strong::metro-button:: starts/stops the metronome; its volume, output-bus and tempo can be adjusted. At the bottom of the window there is a strong::mute:: button to silence everything and a volume-slider to control the level of the server.
+Spend a little time to get familiar with this window. You can monitor up to 8 input buses and up to 48 output buses which should be enough for most pieces, but you could easily hack the source code to change this if you like. The big strong::green-button:: triggers the next cue and the white strong::number-box:: right next to it displays and sets (when needed) the current cue. The strong::timer:: displays the time elapsed (usually since the beginning of the piece) and the strong::metro-button:: starts/stops the metronome; its volume, output-bus and tempo can be adjusted. At the bottom of the window there is a strong::mute:: button to silence everything and a volume-slider to control the level of the server. CuePlayer also supports GUI plugins; for a brief example see strong::Examples/plugins.scd:: and for details see the strong::.gui:: method in the link::Classes/CuePlayer:: helpfile.
 
 For each cue we can attach text which may be subsequently displayed on screen. This may prove useful for the laptopist in order to see what each cue does while the piece unfolds and to communicate instructions and information to the performer. Have a look at the link::Classes/CueInfo::'s helpfile for information on this feature.
 
@@ -93,7 +96,8 @@ a.put(7,
 (
 a.gui(options:(
 	infoDisplay: true, // shows the cue-title
-	largeDisplay: true, )) // shows the big window
+	largeDisplay: true,
+	largeDisplayOptions: (bounds: Rect(600, 300, 450, 450)) )) // shows the big window
 );
 
 // trigger cue-7
