@@ -11,12 +11,9 @@ Plugins are GUI-only. They are not registered on the CuePlayer itself; they are 
 
 SECTION:: Plugin entries
 
-Each entry in strong::options.plugins:: is either:
+strong::options.plugins:: is a flat array of id/optionsOrPath pairs:
 
-LIST::
-## code::[\id, optionsOrPath]:: for a single plugin.
-## code::[\a, optionsOrPathA, \b, optionsOrPathB]:: for multiple plugins.
-::
+code::[\a, optionsOrPathA, \b, optionsOrPathB]::
 
 strong::optionsOrPath:: is either an Event of plugin options or a String path to a file that evaluates to such an Event.
 
