@@ -6,23 +6,29 @@ LargeDisplayCP : AbstractGUIComponentCP {
 
   setDefaultOptions {
     super.setDefaultOptions;
-    options.largeDisplayBounds ?? { options.largeDisplayBounds = Rect(window.bounds.left - 670, 900, 600, 600) };
+    options.bounds         ?? { options.bounds         = Rect(window.bounds.left - 670, 900, 600, 600) };
+    options.background     ?? { options.background     = Color.black };
+    options.textColor      ?? { options.textColor      = Color.white };
+    options.infoBackground ?? { options.infoBackground = Color.fromHexString("#303030") };
+    options.infoTextColor  ?? { options.infoTextColor  = Color.white };
+    options.cueNumberSize  ?? { options.cueNumberSize  = nil };
+    options.infoTextSize   ?? { options.infoTextSize   = nil };
   }
 
   createComponent { var bounds, w, h;
-    bounds = options.largeDisplayBounds;
+    bounds = options.bounds;
     w = bounds.width;
     h = bounds.height;
 
     lrgCueWin = Window.new("", bounds, resizable: false);
-    lrgCueWin.background = Color.black;
+    lrgCueWin.background = options.background;
 
     largeCueNumberDisplay = StaticText(lrgCueWin, Rect(width: w, height: h * 0.9)).align_(\center);
-    largeCueNumberDisplay.font_(Font(options.font.name, w * 0.73)).stringColor_(Color.white);
+    largeCueNumberDisplay.font_(Font(options.font.name, options.cueNumberSize ?? { w * 0.73 })).stringColor_(options.textColor);
 
     largeInfoTextField = StaticText(lrgCueWin, Rect(0, (h * 0.9) - 20, width: w, height: h * 0.1)).align_(\center);
-    largeInfoTextField.font_(Font(options.font.name, w * 0.06)).stringColor_(Color.white);
-    largeInfoTextField.background_(Color.fromHexString("#303030"));
+    largeInfoTextField.font_(Font(options.font.name, options.infoTextSize ?? { w * 0.06 })).stringColor_(options.infoTextColor);
+    largeInfoTextField.background_(options.infoBackground);
 
     lrgCueWin.front;
     this.setupAnimation;

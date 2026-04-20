@@ -42,6 +42,7 @@ CuePlayerGUI {
     options.monitorInOffset ?? { options.monitorInOffset = 0 };
     options.largeDisplay ?? { options.largeDisplay = false };
     options.largeDisplayBounds ?? { options.largeDisplayBounds = nil };
+    options.largeDisplayOptions ?? { options.largeDisplayOptions = () };
     options.infoDisplay ?? { options.infoDisplay = false };
     options.left ?? { options.left = GUI.window.screenBounds.width - 282 };
     options.top ?? { options.top = GUI.window.screenBounds.height - 330 };
@@ -136,11 +137,14 @@ CuePlayerGUI {
     windowHeight = windowHeight + cueTrigger.windowHeight;
   }
 
-  createLargeDisplay {
-    largeDisplay = LargeDisplayCP(window, options: (
-      largeDisplayBounds: options.largeDisplayBounds,
-      font: Font(font, titleFontSize)
-    ));
+  createLargeDisplay { var ldOptions;
+    ldOptions = options.largeDisplayOptions.copy;
+    if(options.largeDisplayBounds.notNil) {
+      "largeDisplayBounds is deprecated and will be removed in a future version, use largeDisplayOptions: (bounds: ...)".warn;
+      ldOptions[\bounds] ?? { ldOptions[\bounds] = options.largeDisplayBounds };
+    };
+    ldOptions[\font] ?? { ldOptions[\font] = Font(font, titleFontSize) };
+    largeDisplay = LargeDisplayCP(window, options: ldOptions);
     largeDisplay.setCurrent(cuePlayer.current, cuePlayer.getCueObject(cuePlayer.current));
   }
 
