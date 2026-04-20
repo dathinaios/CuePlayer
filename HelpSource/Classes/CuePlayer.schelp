@@ -159,7 +159,8 @@ An event of one or more options.
 
 The following keys are recognised:
 LIST::
-## strong::monitorInOffset::, strong::largeDisplay::, strong::largeDisplayBounds::, strong::infoDisplay::, strong::left::, strong::top::, strong::timer::, strong::metronome::, strong::serverControls::, strong::shortcuts::.
+## strong::monitorInOffset::, strong::largeDisplay::, strong::largeDisplayOptions::, strong::infoDisplay::, strong::left::, strong::top::, strong::timer::, strong::metronome::, strong::serverControls::, strong::shortcuts::.
+## strong::largeDisplayOptions:: accepts: strong::bounds::, strong::background::, strong::textColor::, strong::infoBackground::, strong::infoTextColor::, strong::cueNumberSize::, strong::infoTextSize::.
 ## strong::plugins:: — GUI plugin entries, typically written as code::[\foo, "./Plugins/foo.scd"]::. See link::Classes/PluginCP::.
 ::
 
@@ -173,7 +174,15 @@ b.gui(
 	options: (
 		monitorInOffset:  2, // Offset input monitoring by 2; (hence monitor inputs 3,4,5,6,7 here)
 		largeDisplay: true, // Show/hide the big window displaying current cue-number. Useful for the performers on stage.
-		largeDisplayBounds: Rect(600, 300, 450, 450), // Set bounds of the big window.
+		largeDisplayOptions: (
+			bounds:         Rect(600, 300, 450, 450), // Position and size of the large window.
+			background:     Color.black,              // Background colour of the large window.
+			textColor:      Color.white,              // Colour of the cue-number text.
+			infoBackground: Color.fromHexString("#303030"), // Background colour of the info bar.
+			infoTextColor:  Color.white,              // Colour of the info bar text.
+			cueNumberSize:  nil,                      // Font size of the cue number. nil = proportional to window width.
+			infoTextSize:   nil                       // Font size of the info bar text. nil = proportional to window width.
+		),
 		infoDisplay: true, // Show/hide the cue-title.
 		left: 1200, // Left bound of the CuePlayer window.
 		top: 300, // Top bound of the CuePlayer window.

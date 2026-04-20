@@ -52,7 +52,7 @@ CODE::
 a = CuePlayer.new; // Create a new CuePlayer instance & bring up its GUI
 a.gui( monitorInChannels: 2, monitorOutChannels: 8,
 	options:(
-		largeDisplay: true, largeDisplayBounds: Rect(1400, 210, 285, 285)
+		largeDisplay: true, largeDisplayOptions: (bounds: Rect(1400, 210, 285, 285))
 	)
 );
 
