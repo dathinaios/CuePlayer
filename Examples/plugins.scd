@@ -1,5 +1,5 @@
 /*
-Minimal PluginCP test using a file-based plugin definition.
+PluginCP examples using file-based plugin definitions.
 
 The plugin spec lives in Plugins/basic.scd and is loaded through
 gui(options: (plugins: ...)).
