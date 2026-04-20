@@ -4,6 +4,7 @@ CuePlayerGUI {
   var cuePlayer, monitorInChannels, monitorOutChannels, options;
   var <window, name, clock;
   var <inputLevels,  <cueTrigger, <timer, <metronome, <outputLevels, <serverWindow;
+  var <plugins;
   var <windowHeight = 0, font, titleFontSize, marginTop, <active = false;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options = ();
@@ -11,6 +12,7 @@ CuePlayerGUI {
   }
 
   init {
+    this.preparePluginSpecs;
     Server.default.waitForBoot{
       clock = cuePlayer.clock;
       name = "Cue Player";
@@ -24,6 +26,7 @@ CuePlayerGUI {
       if(options.metronome) { this.createMetronome };
       if(monitorOutChannels > 0) { this.createOutputLevels };
       if(options.serverControls) { this.createServerControls };
+      if(options.plugins.notEmpty) { this.createPlugins };
       if(options.shortcuts) { this.registerShortcuts };
 
       active = true;
@@ -44,6 +47,7 @@ CuePlayerGUI {
     options.metronome ?? { options.metronome = true };
     options.serverControls ?? { options.serverControls = true };
     options.shortcuts ?? { options.shortcuts = false };
+    options.plugins ?? { options.plugins = List.new };
   }
 
   initStyleVariables {
@@ -63,6 +67,7 @@ CuePlayerGUI {
       metronome.clear;
       outputLevels.clear;
       serverWindow.clear;
+      plugins !? { plugins.do({ arg p; p.clear }) };
       cuePlayer.removeDependant(this);
       active = false;
     };
@@ -170,6 +175,86 @@ CuePlayerGUI {
     windowHeight = windowHeight + serverWindow.windowHeight;
   }
 
+  createPlugins {
+    plugins = IdentityDictionary.new;
+    options.plugins.do({ arg entry; var mergedOptions, instance;
+      mergedOptions = entry.options.copy;
+      mergedOptions[\font]       ?? { mergedOptions[\font] = Font(font, titleFontSize) };
+      mergedOptions[\cuePlayer]  ?? { mergedOptions[\cuePlayer] = cuePlayer };
+      mergedOptions[\tempoClock] ?? { mergedOptions[\tempoClock] = clock };
+      this.createLabel("", 282, marginTop);
+      instance = PluginCP.new(window, mergedOptions);
+      plugins[entry.id] = instance;
+      windowHeight = windowHeight + instance.windowHeight;
+    });
+  }
+
+  pluginAt { arg id; ^plugins !? { plugins[id] } }
+
+  preparePluginSpecs {
+    var normalizedEntries;
+    options.plugins ?? { options.plugins = List.new };
+    if(options.plugins.isKindOf(Event)) { options.plugins = [options.plugins] };
+    if(options.plugins.isSequenceableCollection.not) {
+      "Ignoring plugins option: expected a collection of plugin entries.".warn;
+      options.plugins = List.new;
+      ^this;
+    };
+    normalizedEntries = List.new;
+    options.plugins.do({ arg entry; var normalizedEntry;
+      normalizedEntry = this.normalizedPluginEntry(entry);
+      if(normalizedEntry.notNil) {
+        if(normalizedEntries.any({ arg existing; existing.id == normalizedEntry.id })) {
+          ("Plugin id % is already present in gui options; replacing.".format(normalizedEntry.id)).warn;
+          normalizedEntries = normalizedEntries.reject({ arg existing; existing.id == normalizedEntry.id });
+        };
+        normalizedEntries.add(normalizedEntry);
+      };
+    });
+    options.plugins = normalizedEntries;
+  }
+
+  normalizedPluginEntry { arg entry; var id, optionsOrPath, resolvedOptions;
+    if(entry.isKindOf(Event)) {
+      id = entry[\id];
+      optionsOrPath = entry[\options] ?? { entry[\path] };
+    } {
+      if(entry.isString.not and:{ entry.isSequenceableCollection } and:{ entry.size == 2 }) {
+        id = entry[0];
+        optionsOrPath = entry[1];
+      } {
+        "Ignoring plugin entry: expected an Event or [id, optionsOrPath].".warn;
+        ^nil;
+      };
+    };
+    if(id.isNil) {
+      "Ignoring plugin entry with no id.".warn;
+      ^nil;
+    };
+    if(optionsOrPath.isNil) {
+      "Ignoring plugin %: expected \\options or \\path.".format(id).warn;
+      ^nil;
+    };
+    resolvedOptions = if(optionsOrPath.isString) {
+      this.loadPluginOptionsFromPath(optionsOrPath);
+    } {
+      optionsOrPath
+    };
+    if(resolvedOptions.isKindOf(Event).not) {
+      "Ignoring plugin %: expected an Event of options.".format(id).warn;
+      ^nil;
+    };
+    ^(id: id, options: resolvedOptions);
+  }
+
+  loadPluginOptionsFromPath { arg path; var basePath;
+    if(path.beginsWith("/").not and:{ path.beginsWith("~").not }) {
+      basePath = thisProcess.nowExecutingPath;
+      if(basePath.notNil) { path = PathName(basePath).pathOnly +/+ path };
+    };
+    ^path.standardizePath.load;
+  }
+
   setServerVolume { arg val;
     serverWindow.volume_(val);
   }
@@ -187,7 +272,8 @@ CuePlayerGUI {
       if(options.metronome){
         metronome.bpm = theChanged.clock.tempo*60
       };
-    }
+    };
+    plugins !? { plugins.do({ arg p; p.update(theChanged, message) }) };
   }
 
   setCurrent { arg cuePlayer; var currentCue;

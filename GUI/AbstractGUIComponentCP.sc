@@ -1,6 +1,6 @@
 AbstractGUIComponentCP {
 
-  var window, <options, cmdPeriodActionAdded = false;
+  var <window, <options, cmdPeriodActionAdded = false;
 
   *new { arg window, options = ();
     ^super.newCopyArgs( window, options).init;
