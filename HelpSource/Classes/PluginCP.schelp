@@ -15,12 +15,10 @@ Each entry in strong::options.plugins:: is either:
 
 LIST::
 ## code::[\id, optionsOrPath]:: for a single plugin.
-## code::[[\a, optionsOrPathA], [\b, optionsOrPathB]]:: for multiple plugins.
-## code::(id: \id, options: (...))::
-## code::(id: \id, path: "./Plugins/foo.scd")::
+## code::[\a, optionsOrPathA, \b, optionsOrPathB]:: for multiple plugins.
 ::
 
-If a path is given, the file must evaluate to an Event of plugin options.
+strong::optionsOrPath:: is either an Event of plugin options or a String path to a file that evaluates to such an Event.
 
 SECTION:: Plugin options
 

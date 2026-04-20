@@ -192,71 +192,8 @@ CuePlayerGUI {
   pluginAt { arg id; ^plugins !? { plugins[id] } }
 
   preparePluginSpecs {
-    var normalizedEntries;
     options.plugins ?? { options.plugins = List.new };
-    if(options.plugins.isKindOf(Event)) { options.plugins = [options.plugins] };
-    if(options.plugins.isString.not and:{ options.plugins.isSequenceableCollection } and:{ options.plugins.size == 2 }
-      and:{ options.plugins[0].isKindOf(Symbol) or:{ options.plugins[0].isString } }) {
-      options.plugins = [options.plugins];
-    };
-    if(options.plugins.isSequenceableCollection.not) {
-      "Ignoring plugins option: expected a collection of plugin entries.".warn;
-      options.plugins = List.new;
-      ^this;
-    };
-    normalizedEntries = List.new;
-    options.plugins.do({ arg entry; var normalizedEntry;
-      normalizedEntry = this.normalizedPluginEntry(entry);
-      if(normalizedEntry.notNil) {
-        if(normalizedEntries.any({ arg existing; existing.id == normalizedEntry.id })) {
-          ("Plugin id % is already present in gui options; replacing.".format(normalizedEntry.id)).warn;
-          normalizedEntries = normalizedEntries.reject({ arg existing; existing.id == normalizedEntry.id });
-        };
-        normalizedEntries.add(normalizedEntry);
-      };
-    });
-    options.plugins = normalizedEntries;
-  }
-
-  normalizedPluginEntry { arg entry; var id, optionsOrPath, resolvedOptions;
-    if(entry.isKindOf(Event)) {
-      id = entry[\id];
-      optionsOrPath = entry[\options] ?? { entry[\path] };
-    } {
-      if(entry.isString.not and:{ entry.isSequenceableCollection } and:{ entry.size == 2 }) {
-        id = entry[0];
-        optionsOrPath = entry[1];
-      } {
-        "Ignoring plugin entry: expected an Event or [id, optionsOrPath].".warn;
-        ^nil;
-      };
-    };
-    if(id.isNil) {
-      "Ignoring plugin entry with no id.".warn;
-      ^nil;
-    };
-    if(optionsOrPath.isNil) {
-      "Ignoring plugin %: expected \\options or \\path.".format(id).warn;
-      ^nil;
-    };
-    resolvedOptions = if(optionsOrPath.isString) {
-      this.loadPluginOptionsFromPath(optionsOrPath);
-    } {
-      optionsOrPath
-    };
-    if(resolvedOptions.isKindOf(Event).not) {
-      "Ignoring plugin %: expected an Event of options.".format(id).warn;
-      ^nil;
-    };
-    ^(id: id, options: resolvedOptions);
-  }
-
-  loadPluginOptionsFromPath { arg path; var basePath;
-    if(path.beginsWith("/").not and:{ path.beginsWith("~").not }) {
-      basePath = thisProcess.nowExecutingPath;
-      if(basePath.notNil) { path = PathName(basePath).pathOnly +/+ path };
-    };
-    ^path.standardizePath.load;
+    options.plugins = options.plugins.asPluginSpecs(thisProcess.nowExecutingPath);
   }
 
   setServerVolume { arg val;
