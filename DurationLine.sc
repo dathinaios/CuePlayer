@@ -1,6 +1,6 @@
 DurationLine {
   classvar <active = true;
-  var <cuePlayer, cueTrigger, durationLinePlugin;
+  var <cuePlayer, largeDisplay, durationLinePlugin;
 
   *new { arg cuePlayer;
     ^super.newCopyArgs(cuePlayer);
@@ -23,10 +23,10 @@ DurationLine {
   refreshGuiRefs {
     var gui = cuePlayer.guiInstance;
     if(gui.notNil and:{ gui.active }) {
-      cueTrigger         = gui.cueTrigger;
+      largeDisplay       = gui.largeDisplay;
       durationLinePlugin = gui.pluginAt(\durationLine);
     } {
-      cueTrigger = nil;
+      largeDisplay = nil;
       durationLinePlugin = nil;
     };
   }
@@ -38,7 +38,7 @@ DurationLine {
 
     this.refreshGuiRefs;
 
-    if(cueTrigger.notNil and:{ cueTrigger.lrgCueWin.notNil }) {
+    if(largeDisplay.notNil) {
       this.animateLargeWindow(duration, color, width);
     };
 
@@ -54,22 +54,22 @@ DurationLine {
     var startTime = Main.elapsedTime;
 
     AppClock.sched(duration + 2, {
-      cueTrigger.removeFromDrawFunc(penFunction);
+      largeDisplay.removeFromDrawFunc(penFunction);
     });
 
     penFunction = {
-      var offset = (Main.elapsedTime - startTime) / duration * cueTrigger.lrgWinBounds.width;
+      var offset = (Main.elapsedTime - startTime) / duration * largeDisplay.lrgWinBounds.width;
       Pen.use {
         Pen.width = width;
         Pen.color_(color);
         Pen.beginPath;
         Pen.moveTo(Point(offset, 0));
-        Pen.lineTo(Point(offset, cueTrigger.lrgWinBounds.height));
+        Pen.lineTo(Point(offset, largeDisplay.lrgWinBounds.height));
         Pen.stroke;
       };
     };
 
-    cueTrigger.addToDrawFunc(penFunction);
+    largeDisplay.addToDrawFunc(penFunction);
   }
 
   animateStrip {

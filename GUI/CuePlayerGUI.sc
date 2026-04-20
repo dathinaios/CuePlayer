@@ -5,6 +5,7 @@ CuePlayerGUI {
   var <window, name, clock;
   var <inputLevels,  <cueTrigger, <timer, <metronome, <outputLevels, <serverWindow;
   var <plugins;
+  var <largeDisplay;
   var <windowHeight = 0, font, titleFontSize, marginTop, <active = false;
 
   *new { arg cuePlayer, monitorInChannels = 2, monitorOutChannels = 8, options = ();
@@ -22,6 +23,7 @@ CuePlayerGUI {
       this.createMainWindow;
       if(monitorInChannels > 0) {this.createInputLevels};
       this.createCueTrigger;
+      if(options.largeDisplay) { this.createLargeDisplay };
       if(options.timer) {this.createTimer };
       if(options.metronome) { this.createMetronome };
       if(monitorOutChannels > 0) { this.createOutputLevels };
@@ -63,6 +65,7 @@ CuePlayerGUI {
     window.onClose = {
       inputLevels.clear;
       cueTrigger.clear;
+      largeDisplay !? { largeDisplay.clear };
       timer.clear;
       metronome.clear;
       outputLevels.clear;
@@ -119,8 +122,6 @@ CuePlayerGUI {
     this.createLabel("", 282, marginTop);
     cueTrigger = CueTriggerCP(window,
       options: (
-        largeDisplay: options.largeDisplay,
-        largeDisplayBounds: options.largeDisplayBounds,
         infoDisplay: options.infoDisplay
       )
     );
@@ -129,13 +130,18 @@ CuePlayerGUI {
     };
     cueTrigger.cueNumberBox.action = { arg box;
       box.value = box.value.abs.round(1).asInteger;
-      cuePlayer.current = box.value.asInteger;
-      if (options.largeDisplay, {
-        cueTrigger.largeCueNumberDisplay.string = box.value.asInteger;
-      });
+      cuePlayer.setCurrent(box.value.asInteger);
     };
     cueTrigger.setCurrent(cuePlayer.current);
     windowHeight = windowHeight + cueTrigger.windowHeight;
+  }
+
+  createLargeDisplay {
+    largeDisplay = LargeDisplayCP(window, options: (
+      largeDisplayBounds: options.largeDisplayBounds,
+      font: Font(font, titleFontSize)
+    ));
+    largeDisplay.setCurrent(cuePlayer.current, cuePlayer.getCueObject(cuePlayer.current));
   }
 
   createTimer {
@@ -220,6 +226,7 @@ CuePlayerGUI {
   setCurrent { arg cuePlayer; var currentCue;
     currentCue = cuePlayer.current;
     cueTrigger.setCurrent(currentCue, cuePlayer.getCueObject(currentCue));
+    largeDisplay !? { largeDisplay.setCurrent(currentCue, cuePlayer.getCueObject(currentCue)) };
     if(options.timer and:{currentCue == 0}){
       timer.stop; timer.cursecs_(0); timer.pauseButton.value_(0);
     };
