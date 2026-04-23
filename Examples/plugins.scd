@@ -1,8 +1,8 @@
 /*
-PluginCP examples using file-based plugin definitions.
+PluginCP examples.
 
-The plugin spec lives in Plugins/basic.scd and is loaded through
-gui(options: (plugins: ...)).
+Built-in plugins ship in the quark's Plugins/ folder and are loaded by symbol key.
+Custom plugins are loaded from a file path; the id is derived from the filename.
 
 Run the block, then try:
 - a.next;
@@ -22,7 +22,7 @@ a.put(2, { "cue 2 fired".postln });
 
 a.gui(
 	options: (
-		plugins: [\basic, "./Plugins/basic.scd"],
+		plugins: [\basic],
 	)
 );
 )
@@ -39,9 +39,7 @@ a.trigger(2);
 a.tempo_(100);
 
 /* ------------------------------------------------------------------ */
-// DurationLine strip plugin
-// The same DurationLine.create call renders on both the large performer
-// window and the strip inside the main GUI.
+// DurationLine strip plugin (built-in)
 
 (
 b = CuePlayer.new;
@@ -50,7 +48,7 @@ b.gui(
 	options: (
 		largeDisplay: true,
 		largeDisplayOptions: (bounds: Rect(1400, 210, 285, 285)),
-		plugins: [\durationLine, "./Plugins/duration_line.scd"]
+		plugins: [\durationLine]
 	)
 );
 
@@ -74,3 +72,12 @@ b.put(3, {
 
 b.trigger(1);
 b.trigger(2);
+
+/* ------------------------------------------------------------------ */
+// Custom plugin from a user-supplied file
+// The id is derived from the filename (e.g. my_plugin.scd → \my_plugin)
+
+(
+c = CuePlayer.new;
+c.gui(options: (plugins: ["./path/to/my_plugin.scd"]));
+)

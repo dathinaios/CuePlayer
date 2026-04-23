@@ -161,7 +161,7 @@ The following keys are recognised:
 LIST::
 ## strong::monitorInOffset::, strong::largeDisplay::, strong::largeDisplayOptions::, strong::infoDisplay::, strong::left::, strong::top::, strong::timer::, strong::metronome::, strong::serverControls::, strong::shortcuts::.
 ## strong::largeDisplayOptions:: accepts: strong::bounds::, strong::background::, strong::textColor::, strong::infoBackground::, strong::infoTextColor::, strong::cueNumberSize::, strong::infoTextSize::.
-## strong::plugins:: — GUI plugin entries, typically written as code::[\foo, "./Plugins/foo.scd"]::. See link::Classes/PluginCP::.
+## strong::plugins:: — GUI plugin entries: a Symbol for a built-in plugin (e.g. code::\durationLine::) or a String path to a custom plugin file. See link::Classes/PluginCP::.
 ::
 
 code::
@@ -189,7 +189,7 @@ b.gui(
 		timer: true, // Show/hide timer
 		metronome: true, // Show/hide metronome
 		serverControls: true, //  Show/hide server controls: mute-button, volume-slider, Peak CPU, Number of Synths
-		// plugins: [\basic, "./Plugins/basic.scd"], // Optional GUI plugin syntax
+		// plugins: [\basic], // Optional GUI plugin syntax
 		shortcuts: false // Use shortcuts; default is false
 		// spacebar: trigger next cue
 		// b: focus on bpm box

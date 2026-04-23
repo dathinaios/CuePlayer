@@ -1,5 +1,5 @@
 // Duration-line strip plugin spec.
-// Returns an options Event for use in gui(options: (plugins: [\durationLine, "./Plugins/duration_line.scd"])).
+// Built-in plugin: use gui(options: (plugins: [\durationLine])).
 (
   name: "Duration Line",
   height: 20,
